@@ -1,0 +1,9 @@
+setup.py
+plotlytools/__init__.py
+plotlytools/colors.py
+plotlytools/plotlytools.py
+plotlytools.egg-info/PKG-INFO
+plotlytools.egg-info/SOURCES.txt
+plotlytools.egg-info/dependency_links.txt
+plotlytools.egg-info/not-zip-safe
+plotlytools.egg-info/top_level.txt

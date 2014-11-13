@@ -1,0 +1,10 @@
+setup.py
+ninjatools/__init__.py
+ninjatools/colors.py
+ninjatools/pandastools.py
+ninjatools/plotlytools.py
+ninjatools.egg-info/PKG-INFO
+ninjatools.egg-info/SOURCES.txt
+ninjatools.egg-info/dependency_links.txt
+ninjatools.egg-info/not-zip-safe
+ninjatools.egg-info/top_level.txt
