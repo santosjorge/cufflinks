@@ -203,7 +203,7 @@ def _to_iplot(self,colors=None,kind='scatter',fill=False,sortbars=False,keys=Fal
 def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readable=False,
 			theme='pearl',xTitle='',yTitle='',colors=None,fill=False,kind='scatter',
 			barmode='',title='',annotations=None,asFigure=False,asImage=False,
-			dimensions=(1116,587),sortbars=False,keys=False,bestfit=False,bestfit_colors=None):
+			dimensions=(1116,587),sortbars=False,keys=False,bestfit=False,bestfit_colors=None,**kwargs):
 	"""
 	Returns a plotly chart either as inline chart, image of Figure object
 
@@ -296,12 +296,22 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 		layout['xaxis2']=copy.deepcopy(layout['xaxis'])
 		layout['yaxis2'].update(domain=[0,.25],title=kind.capitalize())
 		layout['xaxis2'].update(anchor='y2',showticklabels=False)
+	elif kind=='bubble':
+		x=self[kwargs['x']]
+		y=self[kwargs['y']]
+		z=self[kwargs['z']]/kwargs['scale']
+		labels=self[kwargs['labels']]
+		gen=colorgen()
+		marker=Marker(color=[gen.next() for i in range(len(x))],size=z)
+		trace=Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
+		data=Data([trace])
 
 	if asFigure:
 		return Figure(data=data,layout=layout)
 	elif asImage:
-		return py.image.save_as(Figure(data=data,layout=layout),filename=filename,format='png',
+		py.image.save_as(Figure(data=data,layout=layout),filename=filename,format='png',
 			width=dimensions[0],height=dimensions[1])
+		return py.image.ishow(Figure(data=data,layout=layout))
 	else:
 		return py.iplot(Figure(data=data,layout=layout),world_readable=False,filename=filename)
 
