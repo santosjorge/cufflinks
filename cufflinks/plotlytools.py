@@ -36,12 +36,12 @@ def getLayout(theme='solar',title='',xTitle='',yTitle='',barmode='',annotations=
 	if theme=='solar':
 		layout=Layout(legend=Legend(bgcolor=charcoal,font={'color':pearl}),
 						paper_bgcolor=charcoal,plot_bgcolor=charcoal,
-						yaxis=YAxis(tickfont={'color':grey03},gridcolor=grid,title=yTitle,
+						yaxis=YAxis(tickfont={'color':grey12},gridcolor=grey08,title=yTitle,
 								 titlefont={'color':pearl}),
-						xaxis=XAxis(tickfont={'color':grey03},gridcolor=grid,title=xTitle),
+						xaxis=XAxis(tickfont={'color':grey12},gridcolor=grey08,title=xTitle),
 								titlefont={'color':pearl})
 		if annotations:
-			annotations.update({'arrowcolor':grey04,'font':{'color':pearl}})
+			annotations.update({'arrowcolor':grey11,'font':{'color':pearl}})
 
 	elif theme=='pearl':
 		layout=Layout(legend=Legend(bgcolor=pearl02,font={'color':pearl06}),

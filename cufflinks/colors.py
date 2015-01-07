@@ -3,13 +3,13 @@ import numpy as np
 import colorsys
 from IPython.display import HTML
 
+class CufflinksError(Exception):
+		pass
+
 # Colour Definitions
 # ---------------------------------
 
-grid='#434343'
-tickfont='#666666'
-charcoal="#151516"
-pearl='#D9D9D9'
+
 orange='#ff9933'
 blue='#3780bf'
 pink='#ff0088'
@@ -18,17 +18,37 @@ red='#db4052'
 purple='#6432AB'
 white="#FFFFFF"
 black="#000000"
-grey02="#E2E2E2"
-grey03="#C2C2C2"
-grey04="#8C8C8C"
-grey05="#666570"
-grey06="#3C3C42"
-grey07="#36363C"
-grey08="#252529"
-grey09="#1E1E21"
-grey10="#1A1A1C"
-grey11="#151516"
-grey12="#0A0A0A"
+
+# grey02="#E2E2E2"
+# grey03="#C2C2C2"
+# grey04="#8C8C8C"
+# grey05="#434343"
+# grey06="#666570"
+# grey07="#666666"
+# grey08="#3C3C42"
+# grey09="#36363C"
+# grey10="#252529"
+# grey11="#1E1E21"
+# grey12="#1A1A1C"
+# grey13="#151516"
+# grey14="#0A0A0A"
+
+charcoal="#151516"
+grey01="#0A0A0A"
+grey02="#151516"
+grey03="#1A1A1C"
+grey04="#1E1E21"
+grey05="#252529"
+grey06="#36363C"
+grey07="#3C3C42"
+grey08="#434343"
+grey09="#666570"
+grey10="#666666"
+grey11="#8C8C8C"
+grey12="#C2C2C2"
+grey13="#E2E2E2"
+
+pearl='#D9D9D9'
 pearl02="#F5F6F9"
 pearl03="#E1E5ED"
 pearl04="#9499A3"
@@ -104,7 +124,10 @@ def normalize(color):
 			color=color[1:]
 			return '#'+''.join([x*2 for x in list(color)])
 	else:
-		return normalize(eval(color))
+		try:
+			return normalize(eval(color))
+		except:
+			raise CufflinksError('Not a valid color')
 
 
 def rgb_to_hex(color):
