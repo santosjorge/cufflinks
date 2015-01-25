@@ -313,7 +313,7 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 			width=dimensions[0],height=dimensions[1])
 		return py.image.ishow(Figure(data=data,layout=layout))
 	else:
-		return py.iplot(Figure(data=data,layout=layout),world_readable=False,filename=filename)
+		return py.iplot(Figure(data=data,layout=layout),world_readable=world_readable,filename=filename)
 
 
 
