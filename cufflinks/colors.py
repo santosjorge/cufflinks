@@ -149,6 +149,7 @@ def rgba_to_rgb(color,bg='rgb(255,255,255)'):
 	def c_tup(c):
 		return eval(c[c.find('('):])
 	color=c_tup(color)
+	bg=hex_to_rgb(normalize(bg))
 	bg=c_tup(bg)
 	a=color[3]
 	r=[int((1-a)*bg[i]+a*color[i]) for i in range(3)]

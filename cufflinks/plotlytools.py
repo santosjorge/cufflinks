@@ -203,7 +203,8 @@ def _to_iplot(self,colors=None,kind='scatter',fill=False,sortbars=False,keys=Fal
 def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readable=False,
 			theme='pearl',xTitle='',yTitle='',colors=None,fill=False,kind='scatter',
 			barmode='',title='',annotations=None,asFigure=False,asImage=False,
-			dimensions=(1116,587),sortbars=False,keys=False,bestfit=False,bestfit_colors=None,**kwargs):
+			dimensions=(1116,587),sortbars=False,keys=False,bestfit=False,bestfit_colors=None,
+			asPlot=False,**kwargs):
 	"""
 	Returns a plotly chart either as inline chart, image of Figure object
 
@@ -312,6 +313,8 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 		py.image.save_as(Figure(data=data,layout=layout),filename=filename,format='png',
 			width=dimensions[0],height=dimensions[1])
 		return py.image.ishow(Figure(data=data,layout=layout))
+	elif asPlot:
+		return py.plot(Figure(data=data,layout=layout),world_readable=world_readable,filename=filename)
 	else:
 		return py.iplot(Figure(data=data,layout=layout),world_readable=world_readable,filename=filename)
 
