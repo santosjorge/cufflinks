@@ -8,5 +8,5 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 A full tutorial for Plotly integration can be seen [here](http://nbviewer.ipython.org/gist/santosjorge/cfaaf43b40db19d6127a).
 
-There is also an example for color management which can be found [here]()
+There is also an example for color management which can be found [here](http://nbviewer.ipython.org/gist/santosjorge/00ca17b121fa2463e18b)
 
