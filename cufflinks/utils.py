@@ -1,19 +1,39 @@
 
-def dictTabbed(el,preString=''):
+import colors
+
+			
+def pp(el,preString=''):
 	""" 
 	Formats (prettyprint) a concatenated dictionary
 	"""
-	if type(el)==dict:
-		for key,val in el.items():
-			if type(val) in (dict,list):
+	tab=' '*4
+	if isinstance(el,dict):
+		keys=el.keys()
+		keys.sort()
+		for key in keys:
+			val=el[key]
+			if isinstance(val,dict) or isinstance(val,list):
 				print '%s%s :' % (preString,key)
-				dictTabbed(val,preString+'    ')
+				pp(val,preString+tab)
 			else:
 				print '%s%s  =  %s' % (preString,key,val)
-	elif type(el)==list:
+	
+	elif isinstance(el,list):
+		print preString+tab+'['
+		preString+=tab	
 		for _ in el:
-			dictTabbed(_,preString+'      ')
-			print preString+'      '+str('-')*10            
+			if isinstance(_,dict):
+				print preString+tab+'{'
+				pp(_,preString+tab*2)
+				print preString+tab+'}'
+			elif isinstance(_,list):
+				print preString+tab+'['
+				pp(_,preString+tab)
+				print preString+tab+']'
+			else:
+				pp(_,preString+tab)
+			#print preString+'      '+str('-')*10            
+		print preString	+']'
 	else:
 		print preString+str(el)	
 

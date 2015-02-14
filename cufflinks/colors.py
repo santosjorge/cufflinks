@@ -1,7 +1,7 @@
 import collections
 import numpy as np
 import colorsys
-from IPython.display import HTML
+from IPython.display import HTML,display
 
 class CufflinksError(Exception):
 		pass
