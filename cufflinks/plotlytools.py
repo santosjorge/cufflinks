@@ -222,48 +222,34 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 			Filename to be saved as in plotly account
 		world_readable : bool
 			If False then it will be saved as a private file
+		theme : string
+			Layout Theme
+				solar
+				pearl
+				white
+		xTitle : string
+			X Axis Title
+		yTitle : string
+			Y Axis Title
 		colors : list or dict
 			{key:color} to specify the color for each column
 			[colors] to use the colors in the defined order
+		fill : bool
+			Filled Traces
 		kind : string
 			Kind of chart
 				scatter
 				bar
 				spread
 				ratio
-		fill : bool
-			Filled Traces
-		sortbars : bool
-			Sort bars in descending order
-			* Only valid when kind='bar'
-		keys : list of columns
-			List of columns to chart.
-			Also can be usded for custom sorting.
-		bestfit : boolean or list
-			If True then a best fit line will be generated for 
-			all columns. 
-			If list then a best fit line will be generated for 
-			each key on the list. 
-		bestfit_colors : list or dict
-			{key:color} to specify the color for each column
-			[colors] to use the colors in the defined order
-		theme : string
-			Layout Theme
-				solar
-				pearl
-				white
-		title : string
-			Chart Title
-		xTitle : string
-			X Axis Title
-		yTitle : string
-			Y Axis Title
-		barmode : string 
+		barmode : string
 			Mode when displaying bars
 				group
 				stack
 				overlay
 			* Only valid when kind='bar'
+		title : string
+			Chart Title
 		annotations : dictionary
 			Dictionary of annotations
 			{x_point : text}
@@ -271,11 +257,24 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 			If True returns plotly Figure
 		asImage : bool
 			If True it returns Image
-		dimensions : tuple(int,int)
-			Dimensions for image 
-				(width,height)
 			* Only valid when asImage=True
-
+		dimensions : tuple(int,int)
+			Dimensions for image
+				(width,height)
+		sortbars : bool
+			Sort bars in descending order
+			* Only valid when kind='bar'
+		keys : list of columns
+			List of columns to chart.
+			Also can be usded for custom sorting.
+		bestfit : boolean or list
+			If True then a best fit line will be generated for
+			all columns.
+			If list then a best fit line will be generated for
+			each key on the list.
+		bestfit_colors : list or dict
+			{key:color} to specify the color for each column
+			[colors] to use the colors in the defined order
 	"""
 	if not data:
 		data=self.to_iplot(colors,kind=kind,fill=fill,sortbars=sortbars,keys=keys,
