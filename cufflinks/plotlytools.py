@@ -201,9 +201,9 @@ def _to_iplot(self,colors=None,kind='scatter',fill=False,sortbars=False,keys=Fal
 	return Data(lines_plotly)
 
 def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readable=False,
-			theme='pearl',xTitle='',yTitle='',colors=None,fill=False,kind='scatter',
-			barmode='',title='',annotations=None,asFigure=False,asImage=False,
-			dimensions=(1116,587),sortbars=False,keys=False,bestfit=False,bestfit_colors=None,
+			kind='scatter',title='',xTitle='',yTitle='',theme='pearl',colors=None,fill=False,
+			barmode='',sortbars=False,annotations=None,asFigure=False,asImage=False,
+			dimensions=(1116,587),keys=False,bestfit=False,bestfit_colors=None,
 			asPlot=False,**kwargs):
 	"""
 	Returns a plotly chart either as inline chart, image of Figure object
@@ -222,34 +222,37 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 			Filename to be saved as in plotly account
 		world_readable : bool
 			If False then it will be saved as a private file
-		theme : string
-			Layout Theme
-				solar
-				pearl
-				white
-		xTitle : string
-			X Axis Title
-		yTitle : string
-			Y Axis Title
-		colors : list or dict
-			{key:color} to specify the color for each column
-			[colors] to use the colors in the defined order
-		fill : bool
-			Filled Traces
 		kind : string
 			Kind of chart
 				scatter
 				bar
 				spread
-				ratio
+				ratio		
+		title : string
+			Chart Title				
+		xTitle : string
+			X Axis Title
+		yTitle : string
+			Y Axis Title
+		theme : string
+			Layout Theme
+				solar
+				pearl
+				white			
+		colors : list or dict
+			{key:color} to specify the color for each column
+			[colors] to use the colors in the defined order
+		fill : bool
+			Filled Traces		
 		barmode : string
 			Mode when displaying bars
 				group
 				stack
 				overlay
 			* Only valid when kind='bar'
-		title : string
-			Chart Title
+		sortbars : bool
+			Sort bars in descending order
+			* Only valid when kind='bar'
 		annotations : dictionary
 			Dictionary of annotations
 			{x_point : text}
@@ -260,10 +263,7 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 			* Only valid when asImage=True
 		dimensions : tuple(int,int)
 			Dimensions for image
-				(width,height)
-		sortbars : bool
-			Sort bars in descending order
-			* Only valid when kind='bar'
+				(width,height)		
 		keys : list of columns
 			List of columns to chart.
 			Also can be usded for custom sorting.
