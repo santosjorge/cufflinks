@@ -113,7 +113,7 @@ def dict_to_iplot(d):
 
 
 def _to_iplot(self,colors=None,kind='scatter',fill=False,sortbars=False,keys=False,
-		bestfit=False,bestfit_colors=None,**kwargs):
+		bestfit=False,bestfit_colors=None,asDates=False,**kwargs):
 	"""
 	Generates a plotly Data object 
 
@@ -142,10 +142,14 @@ def _to_iplot(self,colors=None,kind='scatter',fill=False,sortbars=False,keys=Fal
 		bestfit_colors : list or dict
 			{key:color} to specify the color for each column
 			[colors] to use the colors in the defined order
+		asDates : bool
+			If true it forces truncates times from a DatetimeIndex
 		
 	""" 
 	df=self.copy()
 	if df.index.__class__.__name__ in ('PeriodIndex','DatetimeIndex'):
+		if asDates:
+			df.index=df.index.date
 		x=df.index.format()
 	else:
 		x = df.index.values
@@ -202,7 +206,7 @@ def _to_iplot(self,colors=None,kind='scatter',fill=False,sortbars=False,keys=Fal
 
 def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readable=False,
 			kind='scatter',title='',xTitle='',yTitle='',theme='pearl',colors=None,fill=False,
-			barmode='',sortbars=False,annotations=None,asFigure=False,asImage=False,
+			barmode='',sortbars=False,annotations=None,asDates=False,asFigure=False,asImage=False,
 			dimensions=(1116,587),keys=False,bestfit=False,bestfit_colors=None,
 			asPlot=False,**kwargs):
 	"""
@@ -256,6 +260,8 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 		annotations : dictionary
 			Dictionary of annotations
 			{x_point : text}
+		asDates : bool
+			If true it forces truncates times from a DatetimeIndex
 		asFigure : bool
 			If True returns plotly Figure
 		asImage : bool
@@ -278,7 +284,7 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 	"""
 	if not data:
 		data=self.to_iplot(colors,kind=kind,fill=fill,sortbars=sortbars,keys=keys,
-				bestfit=bestfit,bestfit_colors=bestfit_colors)
+				bestfit=bestfit,bestfit_colors=bestfit_colors,asDates=asDates)
 	if not layout:
 		if annotations:
 			annotations=getAnnotations(self.copy(),annotations)
