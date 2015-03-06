@@ -18,6 +18,14 @@ red='#db4052'
 purple='#6432AB'
 white="#FFFFFF"
 black="#000000"
+cyan='#8dd3c7'
+olive='#b3de69'
+yellow='#ffff65'
+salmon='#fb8072'
+teal='#008080'
+ligth_blue='#80b1d3'
+light_pink='#fccde5'
+light_purple='#bc80bd'
 
 
 charcoal="#151516"
@@ -273,7 +281,7 @@ def colorgen(colors=None):
 	if colors:
 		dq=collections.deque(colors)
 	else:
-		dq=collections.deque([orange,blue,green,purple,red])
+		dq=collections.deque([orange,blue,green,purple,red,cyan,yellow,olive,salmon,ligth_blue])
 	for i in np.arange(0,1,.2):
 		for y in dq:
 			yield to_rgba(y,1-i)
