@@ -112,7 +112,7 @@ def dict_to_iplot(d):
 	return Data(l)
 
 
-def _to_iplot(self,colors=None,kind='scatter',fill=False,sortbars=False,keys=False,
+def _to_iplot(self,colors=None,kind='scatter',fill=False,width=3,sortbars=False,keys=False,
 		bestfit=False,bestfit_colors=None,asDates=False,**kwargs):
 	"""
 	Generates a plotly Data object 
@@ -128,6 +128,8 @@ def _to_iplot(self,colors=None,kind='scatter',fill=False,sortbars=False,keys=Fal
 				bar
 		fill : bool
 			Filled Traces
+		width : int
+			Line width
 		sortbars : bool
 			Sort bars in descending order
 			* Only valid when kind='bar'
@@ -155,7 +157,7 @@ def _to_iplot(self,colors=None,kind='scatter',fill=False,sortbars=False,keys=Fal
 		x = df.index.values
 	lines={}
 	if type(df)==pd.core.series.Series:
-		df=pd.DataFrame({'Series1':df})
+		df=pd.DataFrame({df.name:df})
 	if not keys:		
 		if kind=='bar':
 			if sortbars:
@@ -177,7 +179,7 @@ def _to_iplot(self,colors=None,kind='scatter',fill=False,sortbars=False,keys=Fal
 		if kind=='bar':
 			lines[key]["marker"]={'color':to_rgba(colors[key],.6),'line':{'color':colors[key],'width':1}}
 		else:
-			lines[key]["line"]={'color':colors[key],'width':3}
+			lines[key]["line"]={'color':colors[key],'width':width}
 			if fill:
 				lines[key]["fill"]='tozeroy'
 				lines[key]["fillcolor"]=to_rgba(colors[key],.3		)
@@ -205,7 +207,7 @@ def _to_iplot(self,colors=None,kind='scatter',fill=False,sortbars=False,keys=Fal
 	return Data(lines_plotly)
 
 def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readable=False,
-			kind='scatter',title='',xTitle='',yTitle='',theme='pearl',colors=None,fill=False,
+			kind='scatter',title='',xTitle='',yTitle='',theme='pearl',colors=None,fill=False,width=3,
 			barmode='',sortbars=False,annotations=None,asDates=False,asFigure=False,asImage=False,
 			dimensions=(1116,587),keys=False,bestfit=False,bestfit_colors=None,
 			asPlot=False,**kwargs):
@@ -248,6 +250,8 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 			[colors] to use the colors in the defined order
 		fill : bool
 			Filled Traces		
+		width : int
+			Line width			
 		barmode : string
 			Mode when displaying bars
 				group
@@ -283,7 +287,7 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 			[colors] to use the colors in the defined order
 	"""
 	if not data:
-		data=self.to_iplot(colors,kind=kind,fill=fill,sortbars=sortbars,keys=keys,
+		data=self.to_iplot(colors,kind=kind,fill=fill,width=width,sortbars=sortbars,keys=keys,
 				bestfit=bestfit,bestfit_colors=bestfit_colors,asDates=asDates)
 	if not layout:
 		if annotations:
