@@ -4,6 +4,7 @@ from plotly.graph_objs import *
 import collections
 from colors import *
 import copy
+from IPython.display import Image,display
 
 
 
@@ -174,7 +175,7 @@ def _to_iplot(self,colors=None,kind='scatter',fill=False,width=3,sortbars=False,
 	for key in keys:
 		lines[key]={}
 		lines[key]["x"]=x
-		lines[key]["y"]=df[key].values
+		lines[key]["y"]=df[key].fillna('').values
 		lines[key]["name"]=key
 		if kind=='bar':
 			lines[key]["marker"]={'color':to_rgba(colors[key],.6),'line':{'color':colors[key],'width':1}}
@@ -208,9 +209,9 @@ def _to_iplot(self,colors=None,kind='scatter',fill=False,width=3,sortbars=False,
 
 def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readable=False,
 			kind='scatter',title='',xTitle='',yTitle='',theme='pearl',colors=None,fill=False,width=3,
-			barmode='',sortbars=False,annotations=None,asDates=False,asFigure=False,asImage=False,
-			dimensions=(1116,587),keys=False,bestfit=False,bestfit_colors=None,
-			asPlot=False,**kwargs):
+			barmode='',sortbars=False,annotations=None,keys=False,bestfit=False,bestfit_colors=None,
+			asDates=False,asFigure=False,asImage=False,dimensions=(1116,587),
+			asPlot=False,asUrl=False,**kwargs):
 	"""
 	Returns a plotly chart either as inline chart, image of Figure object
 
@@ -264,16 +265,6 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 		annotations : dictionary
 			Dictionary of annotations
 			{x_point : text}
-		asDates : bool
-			If true it forces truncates times from a DatetimeIndex
-		asFigure : bool
-			If True returns plotly Figure
-		asImage : bool
-			If True it returns Image
-			* Only valid when asImage=True
-		dimensions : tuple(int,int)
-			Dimensions for image
-				(width,height)		
 		keys : list of columns
 			List of columns to chart.
 			Also can be usded for custom sorting.
@@ -284,7 +275,21 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 			each key on the list.
 		bestfit_colors : list or dict
 			{key:color} to specify the color for each column
-			[colors] to use the colors in the defined order
+			[colors] to use the colors in the defined order			
+		asDates : bool
+			If true it truncates times from a DatetimeIndex
+		asFigure : bool
+			If True returns plotly Figure
+		asImage : bool
+			If True it returns Image
+			* Only valid when asImage=True
+		dimensions : tuple(int,int)
+			Dimensions for image
+				(width,height)		
+		asPlot : bool
+			If True the chart opens in browser
+		asUrl : bool
+			If True the chart url is returned. No chart is displayed. 
 	"""
 	if not data:
 		data=self.to_iplot(colors,kind=kind,fill=fill,width=width,sortbars=sortbars,keys=keys,
@@ -319,11 +324,13 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 	if asFigure:
 		return Figure(data=data,layout=layout)
 	elif asImage:
-		py.image.save_as(Figure(data=data,layout=layout),filename=filename,format='png',
+		py.image.save_as(Figure(data=data,layout=layout),filename='img/'+filename,format='png',
 			width=dimensions[0],height=dimensions[1])
-		return py.image.ishow(Figure(data=data,layout=layout))
+		return display(Image('img/'+filename+'.png'))
 	elif asPlot:
 		return py.plot(Figure(data=data,layout=layout),world_readable=world_readable,filename=filename)
+	elif asUrl:
+		return py.plot(Figure(data=data,layout=layout),world_readable=world_readable,filename=filename,auto_open=False)
 	else:
 		return py.iplot(Figure(data=data,layout=layout),world_readable=world_readable,filename=filename)
 

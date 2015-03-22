@@ -19,16 +19,11 @@ def _screen(self,include=True,**kwargs):
 	"""
 	df=self.copy()
 	for k,v in kwargs.items():
-		if type(v)==list:
-			if include:
-				df=df[df[k].str.contains('|'.join(v),flags=re.IGNORECASE).fillna(False)]
-			else:
-				df=df[df[k].str.contains('|'.join(v),flags=re.IGNORECASE).fillna(False)==False]
+		v=[v] if type(v)!=list else v
+		if include:
+			df=df[df[k].str.contains('|'.join(v),flags=re.IGNORECASE).fillna(False)]
 		else:
-			if include:
-				df=df[df[k]==v]
-			else:
-				df=df[df[k]!=v]
+			df=df[df[k].str.contains('|'.join(v),flags=re.IGNORECASE).fillna(False)==False]
 	return df
 
 def _swapcolumns(self):
