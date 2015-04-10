@@ -1,4 +1,4 @@
-import collections
+from collections import deque
 import numpy as np
 import colorsys
 import colorlover as cl
@@ -11,50 +11,50 @@ class CufflinksError(Exception):
 
 
 
-# Colour Definitions
-# ---------------------------------
+# # Colour Definitions
+# # ---------------------------------
 
 
-orange='#ff9933'
-blue='#3780bf'
-pink='#ff0088'
-green='#32ab60'
-red='#db4052'
-purple='#6432AB'
-white="#FFFFFF"
-black="#000000"
-cyan='#8dd3c7'
-olive='#b3de69'
-yellow='#ffff33'
-salmon='#fb8072'
-teal='#008080'
-ligth_blue='#80b1d3'
-light_pink='#fccde5'
-light_purple='#bc80bd'
+# orange='#ff9933'
+# blue='#3780bf'
+# pink='#ff0088'
+# green='#32ab60'
+# red='#db4052'
+# purple='#6432AB'
+# white="#FFFFFF"
+# black="#000000"
+# cyan='#8dd3c7'
+# olive='#b3de69'
+# yellow='#ffff33'
+# salmon='#fb8072'
+# teal='#008080'
+# ligth_blue='#80b1d3'
+# light_pink='#fccde5'
+# light_purple='#bc80bd'
 
 
-charcoal="#151516"
-grey01="#0A0A0A"
-grey02="#151516"
-grey03="#1A1A1C"
-grey04="#1E1E21"
-grey05="#252529"
-grey06="#36363C"
-grey07="#3C3C42"
-grey08="#434343"
-grey09="#666570"
-grey10="#666666"
-grey11="#8C8C8C"
-grey12="#C2C2C2"
-grey13="#E2E2E2"
+# charcoal="#151516"
+# grey01="#0A0A0A"
+# grey02="#151516"
+# grey03="#1A1A1C"
+# grey04="#1E1E21"
+# grey05="#252529"
+# grey06="#36363C"
+# grey07="#3C3C42"
+# grey08="#434343"
+# grey09="#666570"
+# grey10="#666666"
+# grey11="#8C8C8C"
+# grey12="#C2C2C2"
+# grey13="#E2E2E2"
 
-pearl='#D9D9D9'
-pearl02="#F5F6F9"
-pearl03="#E1E5ED"
-pearl04="#9499A3"
-pearl05="#6F7B8B"
-pearl06="#4D5663"
-seaborn="#EAE7E4"
+# pearl='#D9D9D9'
+# pearl02="#F5F6F9"
+# pearl03="#E1E5ED"
+# pearl04="#9499A3"
+# pearl05="#6F7B8B"
+# pearl06="#4D5663"
+# seaborn="#EAE7E4"
 
 def to_rgba(color,alpha):
 	"""
@@ -215,7 +215,7 @@ def color_range(color,N=20):
 	hex_out.sort()
 	return hex_out
 
-def color_table(color,N=1,sort=False,sort_values=False,inline=False):
+def color_table(color,N=1,sort=False,sort_values=False,inline=False,as_html=False):
 	"""
 	Generates a colour table 
 
@@ -234,10 +234,15 @@ def color_table(color,N=1,sort=False,sort_values=False,inline=False):
 		sort_values : bool 
 			if True then items are sorted by color values.
 			Only applies if color is a dictionary
+		inline : bool
+			if True it returns single line color blocks
+		as_html : bool
+			if True it returns the HTML code
 
 	Example:
-		color_range('#ff9933',20)
-
+		color_table('#ff9933')
+		color_table(cufflinks.cnames)
+		color_table(['pink','salmon','yellow'])
 	Note:
 		This function only works in iPython Notebook
 	"""		
@@ -249,11 +254,10 @@ def color_table(color,N=1,sort=False,sort_values=False,inline=False):
 	elif isinstance(color,dict):
 		c_=''
 		items=[(k,normalize(v),hex_to_hsv(normalize(v))) for k,v in color.items()]
-		if sort:
-			if sort_values:
-				items=sorted(items,key=operator.itemgetter(2))
-			else:
-				items=sorted(items,key=operator.itemgetter(0))
+		if sort_values:
+			items=sorted(items,key=operator.itemgetter(2))
+		elif sort:
+			items=sorted(items,key=operator.itemgetter(0))
 		rgb_tup=[(k,v) for k,v,_ in items]
 	else:
 		c_=normalize(color)
@@ -289,7 +293,9 @@ def color_table(color,N=1,sort=False,sort_values=False,inline=False):
 			<span style=" text-shadow:"""+shadow+"""; color:"""+color+""";">"""+k+c.upper()+"""</span>
 			</li>"""
 	s+='</ul>' if not inline else ''
-	return HTML(s)
+	if as_html:
+		return s
+	return display(HTML(s))
 
 
 
@@ -310,9 +316,9 @@ def colorgen(colors=None):
 		colorgen(['#f03','rgb(23,25,25)'])
 	"""
 	if colors:
-		dq=collections.deque(colors)
+		dq=deque(colors)
 	else:
-		dq=collections.deque([orange,blue,green,purple,red,cyan,yellow,olive,salmon,ligth_blue])
+		dq=deque(get_scales('dflt'))
 	for i in np.arange(0,1,.2):
 		for y in dq:
 			yield to_rgba(y,1-i)
@@ -320,52 +326,7 @@ def colorgen(colors=None):
 
 # NEW STUFF
 
-_scales=None
-_scales_titles=None
 
-def interp(colors,N):
-	def _interp(colors,N):
-		try:
-			return cl.interp(colors,N)
-		except:
-			return _interp(colors,N+1)
-	c=_interp(colors,N)
-	return map(rgb_to_hex,cl.to_rgb(c))
-
-def scales(key='dflt'):
-	display(HTML(cl.to_html(_scales)))
-
-# Scales Dictionary
-# ---------------------------------
-
-def reset_scales():
-	global _scales
-	global _scales_titles
-	scale_cpy=cl.scales.copy()
-	_scales={}
-	for k,v in scale_cpy.items():
-		for k_,v_ in v.items():
-			if k_ not in _scales:
-				_scales[k_]={}
-			for k__,v__ in v_.items():
-				if k__ not in _scales[k_]:
-					_scales[k_][k__]={}
-				_scales[k_][k__][k]=v__
-
-	_scales_titles={}
-	for k,v in scale_cpy.items():
-		for k_,v_ in v.items():
-			for k__,v__ in v_.items():
-				k__=k__.lower()
-				if k__ not in _scales_titles:
-					_scales_titles[k__]={}
-				_scales_titles[k__][k]=v__            
-
-	# dflt=[normalize(v) for v in ['orange','blue','grassgreen','purple',
-	# 											'red','teal','yellow','olive','salmon','lightblue2']]
-	# _scales_titles['dflt']={str(len(dflt)):dflt}
-
-reset_scales()
 
 # Color Names
 # ---------------------------------
@@ -549,3 +510,154 @@ cnames={'aliceblue': '#F0F8FF',
  'whitesmoke':		 '#F5F5F5',
  'yellow':			 '#ffff33',
  'yellowgreen':		 '#9ACD32'}		
+
+# Custom Color Scales
+# ---------------------------------
+
+_custom_scales={
+	'qual': {
+		'dflt':['orange','blue','grassgreen','purple','red','teal','yellow','olive','salmon','lightblue2']
+	},
+	'div': {
+
+	},
+	'seq': {
+
+	}
+
+}
+
+
+# ---------------------------------------------------------------
+#  The below functions are based in colorlover by Jack Parmer
+#  https://github.com/jackparmer/colorlover/
+# ---------------------------------------------------------------
+
+
+_scales=None
+_scales_names=None
+
+
+def interp(colors,N):
+	def _interp(colors,N):
+		try:
+			return cl.interp(colors,N)
+		except:
+			return _interp(colors,N+1)
+	c=_interp(colors,N)
+	return map(rgb_to_hex,cl.to_rgb(c))
+
+def scales(scale=None):
+	"""
+	Displays a color scale (HTML)
+
+	Parameters:
+	-----------
+		scale : str
+			Color scale name
+			If no scale name is provided then all scales are returned
+				(max number for each scale)
+			If scale='all' then all scale combinations available 
+				will be returned
+
+	Example:
+		scales('accent')
+		scales('all')
+		scales()
+	"""
+	if scale:
+		if scale=='all':
+			display(HTML(cl.to_html(_scales)))
+		else:	
+			display(HTML(cl.to_html(get_scales(scale))))	
+	else:
+		s=''
+		keys=_scales_names.keys()
+		keys.sort()
+		for k in keys:
+			scale=get_scales(k)
+			s+= '<div style="display:inline-block;padding:10px;"><div>{0}</div>{1}</div>'.format(k,cl.to_html(scale))
+		display(HTML(s))
+
+# Scales Dictionary
+# ---------------------------------
+
+def reset_scales():
+	global _scales
+	global _scales_names
+	scale_cpy=cl.scales.copy()
+
+	# Add custom scales
+	for k,v in _custom_scales.items():
+		if v:
+			for k_,v_ in v.items():
+				if str(len(v_)) not in scale_cpy:
+					scale_cpy[str(len(v_))]={}
+				scale_cpy[str(len(v_))][k][k_]=[hex_to_rgb(normalize(_)) for _ in v_]
+
+	# Dictionary by Type > Name > N
+	_scales={}
+	for k,v in scale_cpy.items():
+		for k_,v_ in v.items():
+			if k_ not in _scales:
+				_scales[k_]={}
+			for k__,v__ in v_.items():
+				if k__ not in _scales[k_]:
+					_scales[k_][k__]={}
+				_scales[k_][k__][k]=v__
+
+	# Dictionary by Name > N
+	_scales_names={}
+	for k,v in scale_cpy.items():
+		for k_,v_ in v.items():
+			for k__,v__ in v_.items():
+				k__=k__.lower()
+				if k__ not in _scales_names:
+					_scales_names[k__]={}
+				_scales_names[k__][k]=v__            
+
+
+def get_scales(scale=None,n=None):
+	"""
+	Returns a color scale 
+
+	Parameters:
+	-----------
+		scale : str
+			Color scale name
+		n : int
+			Number of colors 
+			If n < number of colors available for a given scale then 
+				the minimum number will be returned 
+			If n > number of colors available for a given scale then
+				the maximum number will be returned 
+
+	Example:
+		get_scales('accent',8)
+		get_scales('pastel1')
+	"""
+	if scale:
+		d=_scales_names[scale.lower()]
+		keys=map(int,d.keys())
+		if n:
+			if n in keys:
+				return d[str(n)]
+			elif n<min(keys):
+				return d[str(min(keys))]
+		return d[str(max(keys))]
+	else:
+		d={}
+		for k,v in _scales_names.items():
+			if isinstance(v,dict):
+				keys=map(int,v.keys())
+				d[k]=v[str(max(keys))]
+			else:
+				d[k]=v
+		return d
+
+
+
+reset_scales()
+
+
+

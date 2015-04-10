@@ -10,3 +10,14 @@ A full tutorial for Plotly integration can be seen [here](http://nbviewer.ipytho
 
 There is also an example for color management which can be found [here](http://nbviewer.ipython.org/gist/santosjorge/00ca17b121fa2463e18b)
 
+
+### Release Notes
+
+#### v0.3
+
+* Integration with [colorlover](https://github.com/jackparmer/colorlover/)
+** Support for scales `iplot(scale='accent')` to plot a chart using an *accent* color scale
+** cufflinks.scales() to see all available scales
+* Support for named colors
+** `iplot(colors=['pink','red','yellow'])`
+

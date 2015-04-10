@@ -1,5 +1,4 @@
-
-import colors
+import pickle
 
 			
 def pp(el,preString=''):
@@ -52,3 +51,23 @@ def inverseDict(d):
 		else:
 			dt[v]=k
 	return dt	
+
+
+def save_pickle(obj,filename):
+	"""
+	Serializes a given object
+	Parameters:
+	-----------
+		obj : object
+		filename : string
+	"""
+	return pickle.dump(obj,open(filename,'wb'))
+
+def load_pickle(filename):
+	"""
+	Loads a serialized object
+	Parameters:
+	-----------
+		filename : string
+	"""
+	return pickle.load(open(filename,'rb'))

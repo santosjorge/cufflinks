@@ -1,8 +1,8 @@
 import pandas as pd
 import plotly.plotly as py
 from plotly.graph_objs import *
-import collections
-from colors import *
+from collections import defaultdict
+from colors import normalize,get_scales,colorgen,to_rgba
 import copy
 from IPython.display import Image,display
 
@@ -35,38 +35,48 @@ def getLayout(theme='solar',title='',xTitle='',yTitle='',barmode='',annotations=
 			{x_point : text}
 	"""
 	if theme=='solar':
-		layout=Layout(legend=Legend(bgcolor=charcoal,font={'color':pearl}),
-						paper_bgcolor=charcoal,plot_bgcolor=charcoal,
-						yaxis=YAxis(tickfont={'color':grey12},gridcolor=grey08,title=yTitle,
-								 titlefont={'color':pearl}),
-						xaxis=XAxis(tickfont={'color':grey12},gridcolor=grey08,title=xTitle),
-								titlefont={'color':pearl})
+		layout=Layout(legend=Legend(bgcolor='charcoal',font={'color':'pearl'}),
+						paper_bgcolor='charcoal',plot_bgcolor='charcoal',
+						yaxis=YAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=yTitle,
+								 titlefont={'color':'pearl'}),
+						xaxis=XAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=xTitle),
+								titlefont={'color':'pearl'})
 		if annotations:
-			annotations.update({'arrowcolor':grey11,'font':{'color':pearl}})
+			annotations.update({'arrowcolor':'grey11','font':{'color':'pearl'}})
 
 	elif theme=='pearl':
-		layout=Layout(legend=Legend(bgcolor=pearl02,font={'color':pearl06}),
-						paper_bgcolor=pearl02,plot_bgcolor=pearl02,
-						yaxis=YAxis(tickfont={'color':pearl06},gridcolor=white,title=yTitle,
-								  titlefont={'color':pearl06},zeroline=False),
-						xaxis=XAxis(tickfont={'color':pearl06},gridcolor=white,title=xTitle))
+		layout=Layout(legend=Legend(bgcolor='pearl02',font={'color':'pearl06'}),
+						paper_bgcolor='pearl02',plot_bgcolor='pearl02',
+						yaxis=YAxis(tickfont={'color':'pearl06'},gridcolor='white',title=yTitle,
+								  titlefont={'color':'pearl06'},zeroline=False),
+						xaxis=XAxis(tickfont={'color':'pearl06'},gridcolor='white',title=xTitle))
 		if annotations:
-			annotations.update({'arrowcolor':pearl04,'font':{'color':pearl06}})
+			annotations.update({'arrowcolor':'pearl04','font':{'color':'pearl06'}})
 	elif theme=='white':
-		layout=Layout(legend=Legend(bgcolor=white,font={'color':pearl06}),
-						paper_bgcolor=white,plot_bgcolor=white,
-						yaxis=YAxis(tickfont={'color':pearl06},gridcolor=pearl03,title=yTitle,
-								  titlefont={'color':pearl06},zeroline=False),
-						xaxis=XAxis(tickfont={'color':pearl06},gridcolor=pearl03,title=xTitle))
+		layout=Layout(legend=Legend(bgcolor='white',font={'color':'pearl06'}),
+						paper_bgcolor='white',plot_bgcolor='white',
+						yaxis=YAxis(tickfont={'color':'pearl06'},gridcolor='pearl03',title=yTitle,
+								  titlefont={'color':'pearl06'},zeroline=False),
+						xaxis=XAxis(tickfont={'color':'pearl06'},gridcolor='pearl03',title=xTitle))
 		if annotations:
-			annotations.update({'arrowcolor':pearl04,'font':{'color':pearl06}})
+			annotations.update({'arrowcolor':'pearl04','font':{'color':'pearl06'}})
 	if barmode:
 		layout.update({'barmode':barmode})
 	if title:
 		layout.update({'title':title})
 	if annotations:
 		layout.update({'annotations':annotations})
-	return layout
+
+	def updateColors(layout):
+		for k,v in layout.items():
+			if isinstance(v,dict):
+				updateColors(v)
+			else:
+				if 'color' in k.lower():
+					layout[k]=normalize(v)
+		return layout
+	
+	return updateColors(layout)
 
 def getAnnotations(df,annotations):
 	"""
@@ -113,7 +123,7 @@ def dict_to_iplot(d):
 	return Data(l)
 
 
-def _to_iplot(self,colors=None,kind='scatter',fill=False,width=3,sortbars=False,keys=False,
+def _to_iplot(self,colors=None,color_scale=None,kind='scatter',fill=False,width=3,sortbars=False,keys=False,
 		bestfit=False,bestfit_colors=None,asDates=False,**kwargs):
 	"""
 	Generates a plotly Data object 
@@ -123,6 +133,10 @@ def _to_iplot(self,colors=None,kind='scatter',fill=False,width=3,sortbars=False,
 		colors : list or dict
 			{key:color} to specify the color for each column
 			[colors] to use the colors in the defined order
+		color_scale : str 
+			Color scale name
+			Only valid if 'colors' is null
+			See cufflinks.colors.scales() for available scales
 		kind : string
 			Kind of chart
 				scatter
@@ -168,6 +182,9 @@ def _to_iplot(self,colors=None,kind='scatter',fill=False,width=3,sortbars=False,
 		else:
 			keys=df.keys()
 	if type(colors)!=dict:
+		if not colors:
+			if color_scale:
+				colors=get_scales(color_scale,len(keys))
 		clrgen=colorgen(colors)
 		colors={}
 		for key in keys:
@@ -208,7 +225,7 @@ def _to_iplot(self,colors=None,kind='scatter',fill=False,width=3,sortbars=False,
 	return Data(lines_plotly)
 
 def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readable=False,
-			kind='scatter',title='',xTitle='',yTitle='',theme='pearl',colors=None,fill=False,width=3,
+			kind='scatter',title='',xTitle='',yTitle='',theme='pearl',colors=None,color_scale=None,fill=False,width=3,
 			barmode='',sortbars=False,annotations=None,keys=False,bestfit=False,bestfit_colors=None,
 			asDates=False,asFigure=False,asImage=False,dimensions=(1116,587),
 			asPlot=False,asUrl=False,**kwargs):
@@ -249,6 +266,10 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 		colors : list or dict
 			{key:color} to specify the color for each column
 			[colors] to use the colors in the defined order
+		color_scale : str 
+			Color scale name
+			Only valid if 'colors' is null
+			See cufflinks.colors.scales() for available scales
 		fill : bool
 			Filled Traces		
 		width : int
@@ -292,7 +313,7 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 			If True the chart url is returned. No chart is displayed. 
 	"""
 	if not data:
-		data=self.to_iplot(colors,kind=kind,fill=fill,width=width,sortbars=sortbars,keys=keys,
+		data=self.to_iplot(colors,color_scale=color_scale,kind=kind,fill=fill,width=width,sortbars=sortbars,keys=keys,
 				bestfit=bestfit,bestfit_colors=bestfit_colors,asDates=asDates)
 	if not layout:
 		if annotations:
