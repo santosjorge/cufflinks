@@ -10,52 +10,6 @@ class CufflinksError(Exception):
 		pass
 
 
-
-# # Colour Definitions
-# # ---------------------------------
-
-
-# orange='#ff9933'
-# blue='#3780bf'
-# pink='#ff0088'
-# green='#32ab60'
-# red='#db4052'
-# purple='#6432AB'
-# white="#FFFFFF"
-# black="#000000"
-# cyan='#8dd3c7'
-# olive='#b3de69'
-# yellow='#ffff33'
-# salmon='#fb8072'
-# teal='#008080'
-# ligth_blue='#80b1d3'
-# light_pink='#fccde5'
-# light_purple='#bc80bd'
-
-
-# charcoal="#151516"
-# grey01="#0A0A0A"
-# grey02="#151516"
-# grey03="#1A1A1C"
-# grey04="#1E1E21"
-# grey05="#252529"
-# grey06="#36363C"
-# grey07="#3C3C42"
-# grey08="#434343"
-# grey09="#666570"
-# grey10="#666666"
-# grey11="#8C8C8C"
-# grey12="#C2C2C2"
-# grey13="#E2E2E2"
-
-# pearl='#D9D9D9'
-# pearl02="#F5F6F9"
-# pearl03="#E1E5ED"
-# pearl04="#9499A3"
-# pearl05="#6F7B8B"
-# pearl06="#4D5663"
-# seaborn="#EAE7E4"
-
 def to_rgba(color,alpha):
 	"""
 	Converts from hex|rgb to rgba
