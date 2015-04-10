@@ -16,8 +16,8 @@ There is also an example for color management which can be found [here](http://n
 #### v0.3
 
 * Integration with [colorlover](https://github.com/jackparmer/colorlover/)
-** Support for scales `iplot(scale='accent')` to plot a chart using an *accent* color scale
-** cufflinks.scales() to see all available scales
+	* Support for scales `iplot(scale='accent')` to plot a chart using an *accent* color scale
+	* cufflinks.scales() to see all available scales
 * Support for named colors
-** `iplot(colors=['pink','red','yellow'])`
+	* `iplot(colors=['pink','red','yellow'])`
 
