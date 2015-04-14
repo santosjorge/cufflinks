@@ -333,10 +333,12 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 		layout['yaxis2'].update(domain=[0,.25],title=kind.capitalize())
 		layout['xaxis2'].update(anchor='y2',showticklabels=False)
 	elif kind=='bubble':
-		x=self[kwargs['x']]
-		y=self[kwargs['y']]
-		z=self[kwargs['z']]/kwargs['scale']
-		labels=self[kwargs['labels']]
+		x=self[kwargs['x']].values.tolist()
+		y=self[kwargs['y']].values.tolist()
+		rg=self[kwargs['z']].values
+		z=[int(100*(float(_)-rg.min())/(rg.max()-rg.min())) for _ in rg]
+		# z=self[kwargs['z']]/kwargs['scale']
+		labels=self[kwargs['labels']].values.tolist()	
 		gen=colorgen()
 		marker=Marker(color=[gen.next() for i in range(len(x))],size=z)
 		trace=Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
