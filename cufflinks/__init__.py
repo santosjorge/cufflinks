@@ -11,6 +11,7 @@ Author: @jorgesantos
 from plotlytools import *
 from pandastools import *
 from utils import pp
+from extract import to_df
 import colors
 import datetools
 import utils

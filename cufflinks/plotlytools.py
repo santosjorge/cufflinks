@@ -315,6 +315,7 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 			Kind of chart
 				scatter
 				bar
+				box
 				spread
 				ratio
 				heatmap
@@ -582,6 +583,7 @@ def get_colors(colors,colorscale,keys,asList=False):
 				for key in keys:
 					colors[key]=clrgen.next()
 	return colors
+
 
 
 pd.DataFrame.to_iplot=_to_iplot

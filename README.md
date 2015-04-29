@@ -34,6 +34,8 @@ This tutorial assumes that the plotly user credentials have already been configu
 	* `cufflinks.datagen.histogram(2).iplot(kind='histogram')`
 * Data generation for most common plot types
 	* `cufflinks.datagen`
+* Data extraction: Extract data from any Plotly chart. Data is delivered in DataFrame
+	* `cufflinks.to_df(Figure)`
 * Integration with [colorlover](https://github.com/jackparmer/colorlover/)
 	* Support for scales `iplot(colorscale='accent')` to plot a chart using an *accent* color scale
 	* cufflinks.scales() to see all available scales
