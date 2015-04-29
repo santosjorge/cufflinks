@@ -81,7 +81,7 @@ def normalize(color):
 		try:
 			return normalize(cnames[color.lower()])
 		except:
-			raise CufflinksError('Not a valid color')
+			raise CufflinksError('Not a valid color: '+color)
 
 
 def rgb_to_hex(color):
@@ -254,7 +254,7 @@ def color_table(color,N=1,sort=False,sort_values=False,inline=False,as_html=Fals
 
 
 
-def colorgen(colors=None):
+def colorgen(colors=None,n=None):
 	"""
 	Returns a generator with a list of colors
 	and gradients of those colors
@@ -269,13 +269,16 @@ def colorgen(colors=None):
 		colorgen(['blue','red','pink'])
 		colorgen(['#f03','rgb(23,25,25)'])
 	"""
+	step=.1
 	if colors:
 		dq=deque(colors)
 	else:
 		dq=deque(get_scales('dflt'))
-	for i in np.arange(0,1,.2):
+	if n:
+		step=len(dq)*0.8/n if len(dq)*8<n else .1
+	for i in np.arange(.2,1,step):
 		for y in dq:
-			yield to_rgba(y,1-i)
+			yield to_rgba(y,1-i+.2)
 		dq.rotate()
 
 # NEW STUFF
@@ -579,6 +582,8 @@ def get_scales(scale=None,n=None):
 	-----------
 		scale : str
 			Color scale name
+			If the color name is preceded by a minus (-) 
+			then the scale is inversed
 		n : int
 			Number of colors 
 			If n < number of colors available for a given scale then 
@@ -591,14 +596,21 @@ def get_scales(scale=None,n=None):
 		get_scales('pastel1')
 	"""
 	if scale:
+		is_reverse=False
+		if scale[0]=='-':
+			scale=scale[1:]
+			is_reverse=True
 		d=_scales_names[scale.lower()]
 		keys=map(int,d.keys())
 		if n:
 			if n in keys:
-				return d[str(n)]
+				cs=d[str(n)]
 			elif n<min(keys):
-				return d[str(min(keys))]
-		return d[str(max(keys))]
+				cs=d[str(min(keys))]
+		cs=d[str(max(keys))]
+		if is_reverse:
+			cs.reverse()
+		return cs
 	else:
 		d={}
 		for k,v in _scales_names.items():
