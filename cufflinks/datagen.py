@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import string
 
+
 def scatter3d(n_categories=5,n=10,prefix='category'):
 	"""
 	Returns a DataFrame with the required format for 
@@ -138,7 +139,7 @@ def box(n_traces=5,n=100):
 		n : int
 			Number of points for each trace
 	"""	
-	df=pd.DataFrame(np.random.randn(n,n_traces),
+	df=pd.DataFrame([np.random.chisquare(np.random.randint(2,10),n_traces) for _ in range(n)],
 		columns=getName(n_traces))
 	return df       
 

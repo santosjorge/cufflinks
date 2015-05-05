@@ -7,7 +7,6 @@ import copy
 from IPython.display import Image,display
 
 
-
 def getLayout(theme='solar',title='',xTitle='',yTitle='',zTitle='',barmode='',
 				gridcolor=None,zerolinecolor=None,margin=None,annotations=None,is3d=False):
 	"""
@@ -284,7 +283,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 		return data
 	return Data(lines_plotly)
 
-def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readable=False,
+def _iplot(self,data=None,layout=None,filename='',world_readable=False,
 			kind='scatter',title='',xTitle='',yTitle='',zTitle='',theme='pearl',colors=None,colorscale=None,fill=False,width=2,
 			mode='lines',symbol='dot',size=12,barmode='',sortbars=False,boxpoints=False,annotations=None,keys=False,bestfit=False,bestfit_colors=None,
 			categories='',x='',y='',z='',text='',gridcolor=None,zerolinecolor=None,margin=None,
@@ -442,6 +441,7 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 		colors=kwargs['color'] if 'color' in kwargs else colors
 	if isinstance(colors,str):
 		colors=[colors]
+	opacity=kwargs['opacity'] if 'opacity' in kwargs else 0.8
 
 	if not layout:
 		if annotations:
@@ -464,15 +464,15 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 				else:
 					_size=size
 				_data=Scatter3d(x=__[x].values,y=__[y].values,mode=mode,name=_,
-							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=.8,
+							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
 											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis']['titlefont'])
 				if '3d' in kind:
 					_data=Scatter3d(x=__[x].values,y=__[y].values,z=__[z].values,mode=mode,name=_,
-							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=.8,
+							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
 											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis']['titlefont'])
 				else:
 					_data=Scatter(x=__[x].values,y=__[y].values,mode=mode,name=_,
-							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=.8,
+							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
 											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis']['titlefont'])
 				if text:
 					_data.update(text=__[text].values.tolist())
@@ -526,7 +526,8 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 								line=Line(width=width),boxpoints=boxpoints)
 					else:
 						__=Histogram(x=self[_].values.tolist(),marker=Marker(color=clrs[_]),name=_,
-								line=Line(width=width),opacity=.8)
+								line=Line(width=width),
+								opacity=kwargs['opacity'] if 'opacity' in kwargs else .8)
 					data.append(__)
 			elif kind in ('heatmap','surface'):
 				x=self[x].values.tolist() if x else self.index.values.tolist()
@@ -555,6 +556,12 @@ def _iplot(self,data=None,layout=None,filename='Plotly Playground',world_readabl
 				if text:
 					_data.update(text=keys)
 				data.append(_data)
+
+	if not filename:
+		if title:
+			filename=title
+		else:
+			filename='Plotly Playground'
 
 	if asFigure:
 		return Figure(data=data,layout=layout)
