@@ -162,8 +162,8 @@ def color_range(color,N=20):
 	hex_out=[]
 	for c in HSV_tuples:
 		c = colorsys.hsv_to_rgb(*c)
-		c = map(lambda _: int(_*255.0),c)
-		hex_out.append("#"+"".join(map(lambda x: chr(x).encode('hex'),c)))
+		c = [int(_*255) for _ in c]
+		hex_out.append("#"+"".join([chr(x).encode('hex') for x in c]))
 	if org not in hex_out:
 		hex_out.append(org)
 	hex_out.sort()
