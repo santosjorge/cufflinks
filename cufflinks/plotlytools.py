@@ -58,6 +58,17 @@ def getLayout(theme='solar',title='',xTitle='',yTitle='',zTitle='',barmode='',
 		if annotations:
 			annotations.update({'arrowcolor':'grey11','font':{'color':'pearl'}})
 
+	elif theme=='space':
+		layout=Layout(legend=Legend(bgcolor='grey03',font={'color':'pearl'}),
+						paper_bgcolor='grey03',plot_bgcolor='grey03',
+						yaxis=YAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=yTitle,
+								 titlefont={'color':'pearl'},zerolinecolor='grey09'),
+						xaxis=XAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=xTitle,
+								titlefont={'color':'pearl'},zerolinecolor='grey09'),
+						titlefont={'color':'pearl'})
+		if annotations:
+			annotations.update({'arrowcolor':'grey11','font':{'color':'pearl'}})
+
 	elif theme=='pearl':
 		layout=Layout(legend=Legend(bgcolor='pearl02',font={'color':'pearl06'}),
 						paper_bgcolor='pearl02',plot_bgcolor='pearl02',
