@@ -513,7 +513,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=False,
 							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
 											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis']['titlefont'])
 				if '3d' in kind:
-					_data=Scatter3d(x=_x,y=_y,z=_z.values,mode=mode,name=_,
+					_data=Scatter3d(x=_x,y=_y,z=_z,mode=mode,name=_,
 							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
 											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis']['titlefont'])
 				else:
