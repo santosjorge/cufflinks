@@ -47,6 +47,12 @@ def getLayout(theme='solar',title='',xTitle='',yTitle='',zTitle='',barmode='',
 		is3d : bool
 			Indicates if the layout is for a 3D chart
 	"""
+	size=None
+	if annotations:
+		if 'font' in annotations:
+			if 'size' in annotations['font']:
+				size=annotations['font']['size']
+
 	if theme=='solar':
 		layout=Layout(legend=Legend(bgcolor='charcoal',font={'color':'pearl'}),
 						paper_bgcolor='charcoal',plot_bgcolor='charcoal',
@@ -67,7 +73,7 @@ def getLayout(theme='solar',title='',xTitle='',yTitle='',zTitle='',barmode='',
 								titlefont={'color':'pearl'},zerolinecolor='grey09'),
 						titlefont={'color':'pearl'})
 		if annotations:
-			annotations.update({'arrowcolor':'grey11','font':{'color':'pearl'}})
+			annotations.update({'arrowcolor':'red','font':{'color':'pearl'}})
 
 	elif theme=='pearl':
 		layout=Layout(legend=Legend(bgcolor='pearl02',font={'color':'pearl06'}),
@@ -92,6 +98,8 @@ def getLayout(theme='solar',title='',xTitle='',yTitle='',zTitle='',barmode='',
 	if title:
 		layout.update({'title':title})
 	if annotations:
+		if size:
+			annotations['font']['size']=size
 		layout.update({'annotations':annotations})
 	if gridcolor:
 		for k in layout:
@@ -122,6 +130,10 @@ def getLayout(theme='solar',title='',xTitle='',yTitle='',zTitle='',barmode='',
 			if isinstance(v,dict):
 				updateColors(v)
 			else:
+				if isinstance(v,list):
+					for _ in v:
+						if isinstance(_,dict):
+							updateColors(_)
 				if 'color' in k.lower():
 					layout[k]=normalize(v)
 		return layout
@@ -141,22 +153,35 @@ def getAnnotations(df,annotations):
 			{x_point : text}
 	"""
 	l=[]
-	for k,v in annotations.items():
-		maxv=df.ix[k].sum() if k in df.index else 0
+	if 'title' in annotations:
 		l.append(
-				 Annotation(
-							x=k,
-							y=maxv,
-							xref='x',
-							yref='y',
-							text=v,
-							showarrow=True,
-							arrowhead=7,
-							ax=0,
-							ay=-100,
-							textangle=-90
-							)
-				 )
+				Annotation(
+						text=annotations['title'],
+						showarrow=False,
+						x=0,
+						y=1,
+						xref='paper',
+						yref='paper',
+						font={'size':24}
+					)
+			)
+	else:
+		for k,v in annotations.items():
+			maxv=df.ix[k].sum() if k in df.index else 0
+			l.append(
+					 Annotation(
+								x=k,
+								y=maxv,
+								xref='x',
+								yref='y',
+								text=v,
+								showarrow=True,
+								arrowhead=7,
+								ax=0,
+								ay=-100,
+								textangle=-90
+								)
+					 )
 	return Annotations(l)
 
 def iplot_to_dict(data):
@@ -298,7 +323,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=False,
 			kind='scatter',title='',xTitle='',yTitle='',zTitle='',theme='pearl',colors=None,colorscale=None,fill=False,width=2,
 			mode='lines',symbol='dot',size=12,barmode='',sortbars=False,boxpoints=False,annotations=None,keys=False,bestfit=False,bestfit_colors=None,
 			categories='',x='',y='',z='',text='',gridcolor=None,zerolinecolor=None,margin=None,
-			asDates=False,asFigure=False,asImage=False,dimensions=(1116,587),
+			asFrame=False,asDates=False,asFigure=False,asImage=False,dimensions=(1116,587),
 			asPlot=False,asUrl=False,**kwargs):
 	"""
 	Returns a plotly chart either as inline chart, image of Figure object
@@ -432,6 +457,10 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=False,
 			Dictionary (l,r,b,t) or
 			Tuple containing the left,
 			right, bottom and top margins
+		asFrame : bool
+			If true then the data component of Figure will
+			be of Pandas form (Series) otherwise they will 
+			be index values
 		asDates : bool
 			If true it truncates times from a DatetimeIndex
 		asFigure : bool
@@ -468,25 +497,31 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=False,
 			mode='markers' if 'markers' not in mode else mode 
 			for _ in _keys:
 				__=self[self[categories]==_].copy()
+				if text:
+					_text=__[text] if asFrame else __[text].values
+				_x=__[x] if asFrame else __[x].values
+				_y=__[y] if asFrame else __[y].values
+				if z:
+					_z=__[z] if asFrame else __[z].values
 				if 'bubble' in kind:
 					rg=__[size].values
 					rgo=self[size].values
 					_size=[int(100*(float(i)-rgo.min())/(rgo.max()-rgo.min()))+12 for i in rg]	
 				else:
 					_size=size
-				_data=Scatter3d(x=__[x].values,y=__[y].values,mode=mode,name=_,
+				_data=Scatter3d(x=_x,y=_y,mode=mode,name=_,
 							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
 											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis']['titlefont'])
 				if '3d' in kind:
-					_data=Scatter3d(x=__[x].values,y=__[y].values,z=__[z].values,mode=mode,name=_,
+					_data=Scatter3d(x=_x,y=_y,z=_z.values,mode=mode,name=_,
 							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
 											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis']['titlefont'])
 				else:
-					_data=Scatter(x=__[x].values,y=__[y].values,mode=mode,name=_,
+					_data=Scatter(x=_x,y=_y,mode=mode,name=_,
 							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
 											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis']['titlefont'])
 				if text:
-					_data.update(text=__[text].values.tolist())
+					_data.update(text=_text)
 				data.append(_data)
 		else:
 			if kind in ('scatter','spread','ratio','bar'):
