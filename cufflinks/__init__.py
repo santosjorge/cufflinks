@@ -16,3 +16,5 @@ import colors
 import datetools
 import utils
 import datagen
+from auth import set_config_file,get_config_file
+from version import __version__

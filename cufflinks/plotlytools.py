@@ -4,8 +4,10 @@ from plotly.graph_objs import *
 from collections import defaultdict
 from colors import normalize,get_scales,colorgen,to_rgba
 import copy
+import auth
 from IPython.display import Image,display
 
+WORLD_READABLE = False
 
 def getLayout(theme='solar',title='',xTitle='',yTitle='',zTitle='',barmode='',
 				gridcolor=None,zerolinecolor=None,margin=None,annotations=None,is3d=False):
@@ -319,7 +321,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 		return data
 	return Data(lines_plotly)
 
-def _iplot(self,data=None,layout=None,filename='',world_readable=False,
+def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			kind='scatter',title='',xTitle='',yTitle='',zTitle='',theme='pearl',colors=None,colorscale=None,fill=False,width=2,
 			mode='lines',symbol='dot',size=12,barmode='',sortbars=False,boxpoints=False,annotations=None,keys=False,bestfit=False,bestfit_colors=None,
 			categories='',x='',y='',z='',text='',gridcolor=None,zerolinecolor=None,margin=None,
@@ -477,11 +479,13 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=False,
 			If True the chart url is returned. No chart is displayed. 
 	"""
 
+	
 	if not colors:
 		colors=kwargs['color'] if 'color' in kwargs else colors
 	if isinstance(colors,str):
 		colors=[colors]
 	opacity=kwargs['opacity'] if 'opacity' in kwargs else 0.8
+
 
 	if not layout:
 		if annotations:
@@ -525,7 +529,12 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=False,
 				data.append(_data)
 		else:
 			if kind in ('scatter','spread','ratio','bar'):
-				data=self.to_iplot(colors=colors,colorscale=colorscale,kind=kind,fill=fill,width=width,sortbars=sortbars,keys=keys,
+				df=self.copy()
+				if x:
+					df=df.set_index(x)
+				if y:
+					df=df[y]
+				data=df.to_iplot(colors=colors,colorscale=colorscale,kind=kind,fill=fill,width=width,sortbars=sortbars,keys=keys,
 						bestfit=bestfit,bestfit_colors=bestfit_colors,asDates=asDates,mode=mode,symbol=symbol,size=size)				
 				if kind in ('spread','ratio'):
 						if kind=='spread':
@@ -602,6 +611,10 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=False,
 				if text:
 					_data.update(text=keys)
 				data.append(_data)
+
+
+	if world_readable is None:
+			world_readable = auth.get_config_file()['world_readable']
 
 	if not filename:
 		if title:
