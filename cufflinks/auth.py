@@ -50,7 +50,9 @@ def check_file_permissions():
 	return _file_permissions
 
 def ensure_local_files():
-	"""Ensure that filesystem is setup/filled out in a valid way"""
+	"""
+	Ensure that filesystem is setup/filled out in a valid way
+	"""
 	if _file_permissions:
 		if not os.path.isdir(AUTH_DIR):
 			os.mkdir(AUTH_DIR)
@@ -70,7 +72,8 @@ def ensure_local_files():
 
 
 def set_config_file(world_readable=False):
-	"""Set the keyword-value pairs in `~/.config`.
+	"""
+	Set the keyword-value pairs in `~/.config`.
 
 	"""
 	if not _file_permissions:
@@ -83,16 +86,16 @@ def set_config_file(world_readable=False):
 
 
 def get_config_file(*args):
-    """Return specified args from `~/.credentials`. as dict.
-
+    """
+    Return specified args from `~/.confg`. as dict.
     Returns all if no arguments are specified.
 
     Example:
-        get_credentials_file('username')
+        get_config_file('world_readable')
 
     """
     if _file_permissions:
-        ensure_local_files()  # make sure what's there is OK
+        ensure_local_files()  
         return load_json_dict(CONFIG_FILE, *args)
     else:
         return _FILE_CONTENT[CONFIG_FILE]
