@@ -15,6 +15,11 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 ### Release Notes
 
+### v0.3.2
+
+* Global setting for public charts
+	* `cufflinks.set_config_file(world_readable=True)`
+
 #### v0.3
 
 * Enhanced Spread charts
