@@ -8,12 +8,31 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 ###Tutorials:
 * [Chart Gallery](http://nbviewer.ipython.org/gist/santosjorge/b278ce0ae2448f47c31d)
+* [Pandas Like Visualization](http://nbviewer.ipython.org/gist/santosjorge/aba934a0d20023a136c2)
 * [The Basics](http://nbviewer.ipython.org/gist/santosjorge/cfaaf43b40db19d6127a)
 * [Color Management](http://nbviewer.ipython.org/gist/santosjorge/00ca17b121fa2463e18b)
 
 ![3D Charts](img/ukswaps.gif)
 
 ### Release Notes
+
+### v0.4
+
+* Support for global theme setting
+	* `cufflinks.set_config_file(theme='pearl')`
+* New theme *ggplot*
+	* `cufflinks.datagen.lines(5).iplot(theme='ggplot')`
+* Support for horizontal bar charts *barh*
+	* `cufflinks.datagen.lines(2).iplot(kind='barh',barmode='stack',bargap=.1)`
+* Support for histogram orientation and normalization
+	* `cufflinks.datagen.histogram().iplot(kind='histogram',orientation='h',norm='probability')`
+* Support for *area* plots
+	* `cufflinks.datagen.lines(4).iplot(kind='area',fill=True,opacity=1)`
+* Support for *subplots*
+	* `cufflinks.datagen.histogram(4).iplot(kind='histogram',subplots=True,bins=50)`
+	* `cufflinks.datagen.lines(4).iplot(subplots=True,shape=(4,1),shared_xaxes=True,vertical_spacing=.02,fill=True)`
+* Support for *scatter matrix* to display the distribution amongst every series in the DataFrame
+	* `cufflinks.datagen.lines(4,1000).scatter_matrix()`
 
 ### v0.3.2
 

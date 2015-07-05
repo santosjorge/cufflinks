@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import string
 
+class CufflinksError(Exception):
+		pass
 
 def scatter3d(n_categories=5,n=10,prefix='category'):
 	"""
@@ -111,7 +113,7 @@ def heatmap(n_x=5,n_y=10):
 	y=['y_'+str(_) for _ in range(n_y)]
 	return pd.DataFrame(surface(n_x-1,n_y-1).values,index=x,columns=y)
 
-def lines(n_traces=5,n=100):
+def lines(n_traces=5,n=100,columns=None,dateIndex=True):
 	"""
 	Returns a DataFrame with the required format for 
 	a scatter (lines) plot
@@ -122,9 +124,15 @@ def lines(n_traces=5,n=100):
 			Number of traces 
 		n : int
 			Number of points for each trace
+		columns : [str]
+			List of column names
+		dateIndex : bool
+			If True it will return a datetime index
+			if False it will return a enumerated index
 	"""	
-	df=pd.DataFrame(np.random.randn(n,n_traces),index=pd.date_range('1/1/15',periods=n),
-		columns=getName(n_traces))
+	index=pd.date_range('1/1/15',periods=n) if dateIndex else list(range(n))
+	df=pd.DataFrame(np.random.randn(n,n_traces),index=index,
+		columns=getName(n_traces,columns=columns))
 	return df.cumsum()  
 
 def box(n_traces=5,n=100):
@@ -155,7 +163,7 @@ def histogram(n_traces=1,n=500):
 		n : int
 			Number of points for each trace
 	"""	
-	df=pd.DataFrame(np.random.randn(n,n_traces),
+	df=pd.DataFrame(np.random.randn(n,n_traces)+np.random.randint(-1,2),
 		columns=getName(n_traces))                     
 	return df
 
@@ -198,5 +206,13 @@ def sinwave(n=4,inc=.25):
 	Z = np.sin(R)/(.5*R)
 	return pd.DataFrame(Z,index=x,columns=y)
 
-def getName(n=1,name=3,exchange=2):
-	return [''.join(np.random.choice(list(string.uppercase),name)) + '.' + ''.join(np.random.choice(list(string.uppercase),exchange)) for _ in range(n)]
+def getName(n=1,name=3,exchange=2,columns=None):
+	if columns:
+		if isinstance(columns,str):
+			columns=[columns]
+		if n != len(columns):
+			raise CufflinksError("Length of column names needs to be the \n"
+				  "same length of traces")
+	else:
+		columns=[''.join(np.random.choice(list(string.uppercase),name)) + '.' + ''.join(np.random.choice(list(string.uppercase),exchange)) for _ in range(n)]
+	return columns

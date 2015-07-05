@@ -22,7 +22,9 @@ TEST_FILE = os.path.join(AUTH_DIR, ".permission_test")
 
 _FILE_CONTENT = {
 				 CONFIG_FILE: {
-				 		"world_readable" : False
+				 		"world_readable" : False,
+				 		"theme" : "pearl",
+				 		"colorscale" : "dflt"
 						}
 				 }
 
@@ -71,7 +73,7 @@ def ensure_local_files():
 					  "your 'home' ('~') directory")
 
 
-def set_config_file(world_readable=False):
+def set_config_file(world_readable=None,theme=None,colorscale=None):
 	"""
 	Set the keyword-value pairs in `~/.config`.
 
@@ -80,7 +82,12 @@ def set_config_file(world_readable=False):
 		raise Exception("You don't have proper file permissions "
 									 "to run this function.")
 	config = get_config_file()
-	config['world_readable'] = world_readable
+	if world_readable is not None:
+		config['world_readable'] = world_readable
+	if theme:
+		config['theme']=theme
+	if colorscale:
+		config['colorscale']=colorscale
 	save_json_dict(CONFIG_FILE, config)
 	ensure_local_files()  
 

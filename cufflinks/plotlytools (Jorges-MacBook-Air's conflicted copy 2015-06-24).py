@@ -1,23 +1,31 @@
 import pandas as pd
 import plotly.plotly as py
-import tools 
 from plotly.graph_objs import *
 from collections import defaultdict
 from colors import normalize,get_scales,colorgen,to_rgba
-from themes import THEMES
-import time
 import copy
 import auth
+from IPython.display import Image,display
 
-
+WORLD_READABLE = False
 
 def getTheme(theme):
-	return THEMES[theme]
+	themes = {
+		'ggplot' : {
+			'layout':'ggplot',
+			'colorscale':'ggplot',
+			'linewidth':'1.3',
+			'bargap':.01
+		}
+	}
+	return themes[theme]
 
-def getThemes():
-	return THEMES.keys()
+@property
+def available(self):
+    return getTheme('ggplot')
 
-def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
+
+def getLayout(theme='solar',title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,
 				gridcolor=None,zerolinecolor=None,margin=None,annotations=None,is3d=False):
 	"""
 	Generates a plotly Layout
@@ -43,14 +51,6 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 				group
 				stack
 				overlay
-		bargap : float
-			Sets the gap between bars
-				[0,1)
-			Applicabe for bar and histogram plots
-		bargroupgap : float
-			Set the gap between groups
-				[0,1)
-			Applicabe for bar and histogram plots			
 		gridcolor : string
 				grid color
 		zerolinecolor : string
@@ -65,10 +65,6 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 		is3d : bool
 			Indicates if the layout is for a 3D chart
 	"""
-	
-	if not theme:
-		theme = auth.get_config_file()['theme']
-
 	size=None
 	if annotations:
 		if 'font' in annotations:
@@ -81,7 +77,7 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 						yaxis=YAxis(tickfont={'color':'grey10'},gridcolor='#F6F6F6',title=yTitle,
 								 titlefont={'color':'#F9F9F9'},zerolinecolor='#F6F6F6'),
 						xaxis=XAxis(tickfont={'color':'grey10'},gridcolor='#F6F6F6',title=xTitle,
-								titlefont={'color':'#F9F9F9'},zerolinecolor='#F6F6F6',showgrid=True),
+								titlefont={'color':'#F9F9F9'},zerolinecolor='#F6F6F6'),
 						titlefont={'color':'#F9F9F9'})
 		if annotations:
 			annotations.update({'arrowcolor':'grey11','font':{'color':'pearl'}})
@@ -118,7 +114,6 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'))
 		if annotations:
 			annotations.update({'arrowcolor':'pearl04','font':{'color':'pearl06'}})
-	
 	elif theme=='white':
 		layout=Layout(legend=Legend(bgcolor='white',font={'color':'pearl06'}),
 						paper_bgcolor='white',plot_bgcolor='white',
@@ -128,11 +123,8 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'))
 		if annotations:
 			annotations.update({'arrowcolor':'pearl04','font':{'color':'pearl06'}})
-	
 	if barmode:
 		layout.update({'barmode':barmode})
-	if bargroupgap:
-		layout.update({'bargroupgap':bargroupgap})
 	if bargap:
 		layout.update(bargap=bargap)
 	if title:
@@ -334,8 +326,10 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 			if 'marker' in mode:
 				lines[key]["marker"]=Marker(symbol=symbol,size=size)
 			if fill:
-				lines[key]["fill"]='tonexty' if kind=='area' else 'tozeroy'
-				lines[key]["fillcolor"]=to_rgba(colors[key],kwargs['opacity'] if 'opacity' in kwargs else .3		)
+				lines[key]["fill"]='tozeroy'
+				lines[key]["fillcolor"]=to_rgba(colors[key],.3		)
+		for k,v in kwargs.items():
+			lines[key][k]=v
 	if 'bar' in kind:
 		lines_plotly=[Bar(lines[key]) for key in keys]
 	else:
@@ -363,11 +357,11 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 
 def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			kind='scatter',title='',xTitle='',yTitle='',zTitle='',theme=None,colors=None,colorscale=None,fill=False,width=None,
-			mode='lines',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,norm='',
+			mode='lines',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bins=None,norm='',
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
 			bestfit_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,zerolinecolor=None,margin=None,
-			subplots=False,shape=None,asFrame=False,asDates=False,asFigure=False,asImage=False,
-			dimensions=(1116,587),asPlot=False,asUrl=False,**kwargs):
+			asFrame=False,asDates=False,asFigure=False,asImage=False,dimensions=(1116,587),
+			asPlot=False,asUrl=False,**kwargs):
 	"""
 	Returns a plotly chart either as inline chart, image of Figure object
 
@@ -416,9 +410,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			Layout Theme
 				solar
 				pearl
-				white		
-			see cufflinks.getThemes() for all 
-			available themes
+				white			
 		colors : list or dict
 			{key:color} to specify the color for each column
 			[colors] to use the colors in the defined order
@@ -465,13 +457,8 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			Sort bars in descending order
 			* Only valid when kind='bar'
 		bargap : float
-			Sets the gap between bars
-				[0,1)
+			Gab between bars
 			* Only valid when kind is 'histogram' or 'bar'
-		bargroupgap : float
-			Set the gap between groups
-				[0,1)
-			* Only valid when kind is 'histogram' or 'bar'		
 		bins : int
 			Specifies the number of bins 
 			* Only valid when kind='histogram'
@@ -482,36 +469,36 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 				density
 				probability density
 			Sets the type of normalization for an histogram trace. By default
-			the height of each bar displays the frequency of occurrence, i.e., 
-			the number of times this value was found in the
-			corresponding bin. If set to 'percent', the height of each bar
-			displays the percentage of total occurrences found within the
-			corresponding bin. If set to 'probability', the height of each bar
-			displays the probability that an event will fall into the
-			corresponding bin. If set to 'density', the height of each bar is
-			equal to the number of occurrences in a bin divided by the size of
-			the bin interval such that summing the area of all bins will yield
-			the total number of occurrences. If set to 'probability density',
-			the height of each bar is equal to the number of probability that an
-			event will fall into the corresponding bin divided by the size of
-			the bin interval such that summing the area of all bins will yield
-			1.
-			* Only valid when kind='histogram'
-		histfunc : string
-				count
-				sum
-				avg
-				min
-				max
-		   Sets the binning function used for an histogram trace. 
-			* Only valid when kind='histogram'           
-		orientation : string
-				h 
-				v
-			Sets the orientation of the bars. If set to 'v', the length of each
+            the height of each bar displays the frequency of occurrence, i.e., 
+            the number of times this value was found in the
+            corresponding bin. If set to 'percent', the height of each bar
+            displays the percentage of total occurrences found within the
+ 			corresponding bin. If set to 'probability', the height of each bar
+            displays the probability that an event will fall into the
+            corresponding bin. If set to 'density', the height of each bar is
+            equal to the number of occurrences in a bin divided by the size of
+            the bin interval such that summing the area of all bins will yield
+            the total number of occurrences. If set to 'probability density',
+            the height of each bar is equal to the number of probability that an
+            event will fall into the corresponding bin divided by the size of
+            the bin interval such that summing the area of all bins will yield
+            1.
+            * Only valid when kind='histogram'
+        histfunc : string
+        		count
+        		sum
+        		avg
+        		min
+        		max
+           Sets the binning function used for an histogram trace. 
+            * Only valid when kind='histogram'           
+        orientation : string
+        		h 
+        		v
+        	Sets the orientation of the bars. If set to 'v', the length of each
  |          bar will run vertically. If set to 'h', the length of each bar will
  |          run horizontally
-			* Only valid when kind is 'histogram','bar' or 'box'
+            * Only valid when kind is 'histogram','bar' or 'box'
 		boxpoints : string
 			Displays data points in a box plot
 				outliers
@@ -550,13 +537,6 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			Dictionary (l,r,b,t) or
 			Tuple containing the left,
 			right, bottom and top margins
-		subplots : bool
-			If true then each trace is placed in 
-			subplot layout
-		shape : (rows,cols)
-			Tuple indicating the size of rows and columns
-			If omitted then the layout is automatically set
-			* Only valid when subplots=True
 		asFrame : bool
 			If true then the data component of Figure will
 			be of Pandas form (Series) otherwise they will 
@@ -576,13 +556,6 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 		asUrl : bool
 			If True the chart url is returned. No chart is displayed. 
 	"""
-
-	# Look for invalid kwargs
-	valid_kwargs = ['color','opacity','column','columns','labels','text','horizontal_spacing', 'vertical_spacing',
-					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes']
-	for key in kwargs.keys():
-		if key not in valid_kwargs:
-			raise Exception("Invalid keyword : '{0}'".format(key))
 
 	# Setting default values
 	if not colors:
@@ -607,14 +580,13 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 		keys=[kwargs['column']] if isinstance(kwargs['column'],str) else kwargs['column']
 	if 'columns' in kwargs:
 		keys=[kwargs['columns']] if isinstance(kwargs['columns'],str) else kwargs['columns']
-	kind='line' if kind=='lines' else kind
 	
 
 	if not layout:
 		if annotations:
 				annotations=getAnnotations(self.copy(),annotations)
 		layout=getLayout(theme=theme,xTitle=xTitle,yTitle=yTitle,zTitle=zTitle,title=title,barmode=barmode,
-								bargap=bargap,bargroupgap=bargroupgap,annotations=annotations,gridcolor=gridcolor,
+								bargap=bargap,annotations=annotations,gridcolor=gridcolor,
 								zerolinecolor=zerolinecolor,margin=margin,is3d='3d' in kind)
 
 	if not data:
@@ -652,19 +624,14 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 					_data.update(text=_text)
 				data.append(_data)
 		else:
-			if kind in ('scatter','spread','ratio','bar','barh','area','line'):
-
+			if kind in ('scatter','spread','ratio','bar','barh'):
 				df=self.copy()
-				if type(df)==pd.core.series.Series:
-					df=pd.DataFrame({df.name:df})
 				if x:
 					df=df.set_index(x)
 				if y:
 					df=df[y]
-				if kind=='area':
-					df=df.transpose().fillna(0).cumsum().transpose()
 				data=df.to_iplot(colors=colors,colorscale=colorscale,kind=kind,fill=fill,width=width,sortbars=sortbars,keys=keys,
-						bestfit=bestfit,bestfit_colors=bestfit_colors,asDates=asDates,mode=mode,symbol=symbol,size=size,**kwargs)				
+						bestfit=bestfit,bestfit_colors=bestfit_colors,asDates=asDates,mode=mode,symbol=symbol,size=size)				
 				if kind in ('spread','ratio'):
 						if kind=='spread':
 							trace=self.apply(lambda x:x[0]-x[1],axis=1)
@@ -701,7 +668,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 				rg=self[z].values
 				z=[int(100*(float(_)-rg.min())/(rg.max()-rg.min()))+12 for _ in rg]
 				text=kwargs['labels'] if 'labels' in kwargs else text
-				labels=self[text].values.tolist() if text else ''
+				labels=self[text].values.tolist()
 				clrs=get_colors(colors,colorscale,x).values()
 				gen=colorgen()
 				marker=Marker(color=clrs,size=z,symbol=symbol,
@@ -709,33 +676,24 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 				trace=Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
 				data=Data([trace])
 			elif kind in ('box','histogram','hist'):
-				if isinstance(self,pd.core.series.Series):
-					df=pd.DataFrame({self.name:self})
-				else:
-					df=self.copy()
 				data=Data()
-				clrs=get_colors(colors,colorscale,df.columns)
+				clrs=get_colors(colors,colorscale,self.columns)
+				# bins=None,norm='',histfunc='count',orientation='v'
 				if 'hist' in kind:
 					barmode = 'overlay' if barmode=='' else	 barmode 
 					layout.update(barmode=barmode) 
-				columns=keys if keys else df.columns
+				columns=keys if keys else self.columns
 				for _ in columns:
 					if kind=='box':
-						__=Box(y=df[_].values.tolist(),marker=Marker(color=clrs[_]),name=_,
-								line=Line(width=width),boxpoints=boxpoints)
+						__=Box(y=self[_].values.tolist(),marker=Marker(color=clrs[_]),name=_,
+								line=Line(width=width),boxpoints=boxpoints,orientation=orientation)
 					else:
-						__=Histogram(x=df[_].values.tolist(),marker=Marker(color=clrs[_]),name=_,
+						__=Histogram(x=self[_].values.tolist(),marker=Marker(color=clrs[_]),name=_,
 								line=Line(width=width),orientation=orientation,
 								opacity=kwargs['opacity'] if 'opacity' in kwargs else .8, histfunc=histfunc, 
 								histnorm=norm) 
-						if orientation=='h':
-							__['y']=__['x']
-							del __['x']
 						if bins:
-							if orientation=='h':
-								__.update(nbinsy=bins)	
-							else:
-								__.update(nbinsx=bins)
+							__.update(nbinsx=bins)
 					data.append(__)
 			elif kind in ('heatmap','surface'):
 				x=self[x].values.tolist() if x else self.index.values.tolist()
@@ -773,40 +731,20 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 		if title:
 			filename=title
 		else:
-			filename='Plotly Playground {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
-
-	figure=Figure(data=data,layout=layout)
-
-	if subplots:
-		fig=tools.strip_figures(figure)
-		kw={}
-		if 'horizontal_spacing' in kwargs:
-			kw['horizontal_spacing']=kwargs['horizontal_spacing']
-		if 'vertical_spacing' in kwargs:
-			kw['vertical_spacing']=kwargs['vertical_spacing']
-		if 'specs' in kwargs:
-			kw['specs']=kwargs['specs']	
-		if 'shared_xaxes' in kwargs:
-			kw['shared_xaxes']=kwargs['shared_xaxes']	
-		if 'shared_yaxes' in kwargs:
-			kw['shared_yaxes']=kwargs['shared_yaxes']	
-		if 'start_cell' in kwargs:
-			kw['start_cell']=kwargs['start_cell']	
-		figure=tools.subplots(fig,shape,base_layout=layout,**kw)
-
+			filename='Plotly Playground'
 
 	if asFigure:
-		return figure
+		return Figure(data=data,layout=layout)
 	elif asImage:
-		py.image.save_as(figure,filename='img/'+filename,format='png',
+		py.image.save_as(Figure(data=data,layout=layout),filename='img/'+filename,format='png',
 			width=dimensions[0],height=dimensions[1])
 		return display(Image('img/'+filename+'.png'))
 	elif asPlot:
-		return py.plot(figure,world_readable=world_readable,filename=filename)
+		return py.plot(Figure(data=data,layout=layout),world_readable=world_readable,filename=filename)
 	elif asUrl:
-		return py.plot(figure,world_readable=world_readable,filename=filename,auto_open=False)
+		return py.plot(Figure(data=data,layout=layout),world_readable=world_readable,filename=filename,auto_open=False)
 	else:
-		return py.iplot(figure,world_readable=world_readable,filename=filename)
+		return py.iplot(Figure(data=data,layout=layout),world_readable=world_readable,filename=filename)
 
 
 def get_colors(colors,colorscale,keys,asList=False):
@@ -824,43 +762,8 @@ def get_colors(colors,colorscale,keys,asList=False):
 	return colors
 
 
-def _scatter_matrix(self,theme=None,bins=10,color='grey',size=2):
-	"""
-	Displays a matrix with scatter plot for each pair of 
-	Series in the DataFrame.
-	The diagonal shows a histogram for each of the Series
-
-	Parameters:
-	-----------
-		df : DataFrame
-			Pandas DataFrame
-		theme : string
-			Theme to be used (if not the default)
-		bins : int
-			Number of bins to use for histogram
-		color : string
-			Color to be used for each scatter plot
-		size : int
-			Size for each marker on the scatter plot
-	"""
-	return py.iplot(tools.scatter_matrix(self,theme=theme,bins=bins,color=color,size=size))
-
-def _figure(self,**kwargs):
-	"""
-	Generates a Plotly figure for the given DataFrame
-
-	Parameters:
-	-----------
-			All properties avaialbe can be seen with
-			help(cufflinks.pd.DataFrame.iplot)
-	"""
-	kwargs['asFigure']=True
-	return self.iplot(**kwargs)
-
 
 pd.DataFrame.to_iplot=_to_iplot
-pd.DataFrame.scatter_matrix=_scatter_matrix
-pd.DataFrame.figure=_figure
 # pd.DataFrame.iplot_bubble=_iplot_bubble
 pd.DataFrame.iplot=_iplot
 pd.Series.to_iplot=_to_iplot

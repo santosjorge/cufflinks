@@ -57,6 +57,31 @@ def bestfit(self):
 	best_fit.formula='%.2f*x+%.2f' % (model.beta.x,model.beta.intercept)
 	return best_fit
 
+def normalize(self,asOf=None,multiplier=100):
+	"""
+	Returns a normalized series or DataFrame
+	
+	Example:
+		Series.normalize()
+
+	Returns: series of DataFrame
+	
+	Parameters:
+	-----------
+		asOf : string
+			Date format
+			'2015-02-29'
+		multiplier : int
+			Factor by which the results will be adjusted
+	"""
+	if not asOf:
+		x0=self.ix[0]
+	else:
+		x0=self.ix[asOf]
+	return self/x0*multiplier
+
 pd.DataFrame.screen=_screen
 pd.DataFrame.swapcolumns=_swapcolumns
+pd.DataFrame.normalize=normalize
+pd.Series.normalize=normalize
 pd.Series.bestfit=bestfit
