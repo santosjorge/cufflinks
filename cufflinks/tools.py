@@ -94,10 +94,6 @@ def subplots(figures,shape=None,
 			Space between subplot columns.
 		vertical_spacing : float
 			Space between subplot rows.
-		subplot_titles : list(string)
-			Title of each subplot.
-			"" can be included in the list if no subplot title is desired in
-			that space so that the titles are properly indexed.
 		specs : list of dicts
 			Subplot specifications.
 				ex1: specs=[[{}, {}], [{'colspan': 2}, None]]
@@ -230,10 +226,6 @@ def get_subplots(rows=1,cols=1,
 			Space between subplot columns.
 		vertical_spacing : float
 			Space between subplot rows.
-		subplot_titles : list(string)
-			Title of each subplot.
-			"" can be included in the list if no subplot title is desired in
-			that space so that the titles are properly indexed.
 		specs : list of dicts
 			Subplot specifications.
 				ex1: specs=[[{}, {}], [{'colspan': 2}, None]]
@@ -348,3 +340,30 @@ def scatter_matrix(df,theme=None,bins=10,color='grey',size=2):
 					  horizontal_spacing=.05,vertical_spacing=.07,base_layout=layout)
 	sm['layout'].update(bargap=.02,showlegend=False)
 	return sm
+
+def get_ref(figure):
+    d={}
+    for trace in figure['data']:
+        name = '{0}_'.format(trace['name']) if trace['name'] in d else trace['name']
+        x = trace['xaxis'] if 'xaxis' in trace else 'x1'
+        y = trace['yaxis'] if 'yaxis' in trace else 'y1'
+        d[name]=(x,y)
+    return d
+
+def get_def(figure):
+    d={}
+    items=figure['layout']['scene'].items() if 'scene' in figure['layout'] else figure['layout'].items()
+    for k,v in items:
+        if 'axis' in k:
+            d['{0}{1}'.format(k[0],1 if k[-1]=='s' else k[-1])]=v
+    return d
+
+def get_len(figure):
+    d={}
+    keys=figure['layout']['scene'].keys() if 'scene' in figure['layout'] else figure['layout'].keys()
+    for k in keys:
+        if 'axis' in k:
+            d[k[0]] = d[k[0]]+1 if k[0] in d else 1
+    return d
+
+       

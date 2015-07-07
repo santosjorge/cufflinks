@@ -866,4 +866,5 @@ pd.DataFrame.figure=_figure
 pd.DataFrame.iplot=_iplot
 pd.Series.to_iplot=_to_iplot
 pd.Series.iplot=_iplot
+Figure.axis=tools.axis
 
