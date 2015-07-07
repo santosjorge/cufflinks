@@ -579,7 +579,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 
 	# Look for invalid kwargs
 	valid_kwargs = ['color','opacity','column','columns','labels','text','horizontal_spacing', 'vertical_spacing',
-					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes']
+					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles']
 	for key in kwargs.keys():
 		if key not in valid_kwargs:
 			raise Exception("Invalid keyword : '{0}'".format(key))
@@ -790,6 +790,8 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			kw['shared_xaxes']=kwargs['shared_xaxes']	
 		if 'shared_yaxes' in kwargs:
 			kw['shared_yaxes']=kwargs['shared_yaxes']	
+		if 'subplot_titles' in kwargs:
+			kw['subplot_titles']=kwargs['subplot_titles']	
 		if 'start_cell' in kwargs:
 			kw['start_cell']=kwargs['start_cell']	
 		figure=tools.subplots(fig,shape,base_layout=layout,**kw)
@@ -861,7 +863,6 @@ def _figure(self,**kwargs):
 pd.DataFrame.to_iplot=_to_iplot
 pd.DataFrame.scatter_matrix=_scatter_matrix
 pd.DataFrame.figure=_figure
-# pd.DataFrame.iplot_bubble=_iplot_bubble
 pd.DataFrame.iplot=_iplot
 pd.Series.to_iplot=_to_iplot
 pd.Series.iplot=_iplot

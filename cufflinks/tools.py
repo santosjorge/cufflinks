@@ -94,6 +94,10 @@ def subplots(figures,shape=None,
 			Space between subplot columns.
 		vertical_spacing : float
 			Space between subplot rows.
+		subplot_titles : list(string)
+			Title of each subplot.
+			"" can be included in the list if no subplot title is desired in
+			that space so that the titles are properly indexed.
 		specs : list of dicts
 			Subplot specifications.
 				ex1: specs=[[{}, {}], [{'colspan': 2}, None]]
@@ -226,6 +230,10 @@ def get_subplots(rows=1,cols=1,
 			Space between subplot columns.
 		vertical_spacing : float
 			Space between subplot rows.
+		subplot_titles : list(string)
+			Title of each subplot.
+			"" can be included in the list if no subplot title is desired in
+			that space so that the titles are properly indexed.
 		specs : list of dicts
 			Subplot specifications.
 				ex1: specs=[[{}, {}], [{'colspan': 2}, None]]
