@@ -1,5 +1,5 @@
 import plotly.plotly as py
-from plotly.graph_objs import Figure,XAxis,YAxis
+from plotly.graph_objs import Figure,XAxis,YAxis,Annotation
 from plotlytools import getLayout
 import auth
 
@@ -56,7 +56,7 @@ def figures(df,specs):
 
 def subplots(figures,shape=None,
 				  shared_xaxes=False, shared_yaxes=False,
-				  start_cell='top-left', theme='pearl',base_layout=None,
+				  start_cell='top-left', theme=None,base_layout=None,
 				  **kwargs):
 	"""
 	Generates a subplot view for a set of figures
@@ -189,7 +189,7 @@ def subplots(figures,shape=None,
 
 def get_subplots(rows=1,cols=1,
 				  shared_xaxes=False, shared_yaxes=False,
-				  start_cell='top-left', theme='pearl',base_layout=None,
+				  start_cell='top-left', theme=None,base_layout=None,
 				  **kwargs):
 
 	"""
@@ -281,6 +281,10 @@ def get_subplots(rows=1,cols=1,
 				* h (float or 'to_end', default='to_end') inset height
 					  in fraction of cell height ('to_end': to cell top edge)
 	"""
+
+	if not theme:
+		theme = auth.get_config_file()['theme']
+
 	layout= base_layout if base_layout else getLayout(theme)
 	sp=py.plotly.tools.make_subplots(rows=rows,cols=cols,shared_xaxes=shared_xaxes,
 										   shared_yaxes=shared_yaxes,print_grid=False,
@@ -289,6 +293,14 @@ def get_subplots(rows=1,cols=1,
 		if not isinstance(v,XAxis) and not isinstance(v,YAxis):
 			sp['layout'].update({k:v})
 			
+	if 'subplot_titles' in kwargs:
+		if 'annotations' in layout:
+			annotation=sp['layout']['annotations'][0]
+		else:
+			annotation=getLayout(theme,annotations=Annotation(text=''))['annotations']
+		for ann in sp['layout']['annotations']:
+			ann['font'].update(color=annotation['font']['color'])
+
 	def update_items(sp_item,layout,axis):
 		for k,v in layout[axis].items():
 			sp_item.update({k:v})
@@ -341,29 +353,49 @@ def scatter_matrix(df,theme=None,bins=10,color='grey',size=2):
 	sm['layout'].update(bargap=.02,showlegend=False)
 	return sm
 
+## Axis Definition
+
 def get_ref(figure):
-    d={}
-    for trace in figure['data']:
-        name = '{0}_'.format(trace['name']) if trace['name'] in d else trace['name']
-        x = trace['xaxis'] if 'xaxis' in trace else 'x1'
-        y = trace['yaxis'] if 'yaxis' in trace else 'y1'
-        d[name]=(x,y)
-    return d
+	d={}
+	for trace in figure['data']:
+		name = '{0}_'.format(trace['name']) if trace['name'] in d else trace['name']
+		x = trace['xaxis'] if 'xaxis' in trace else 'x1'
+		y = trace['yaxis'] if 'yaxis' in trace else 'y1'
+		d[name]=(x,y)
+	return d
 
 def get_def(figure):
-    d={}
-    items=figure['layout']['scene'].items() if 'scene' in figure['layout'] else figure['layout'].items()
-    for k,v in items:
-        if 'axis' in k:
-            d['{0}{1}'.format(k[0],1 if k[-1]=='s' else k[-1])]=v
-    return d
+	d={}
+	items=figure['layout']['scene'].items() if 'scene' in figure['layout'] else figure['layout'].items()
+	for k,v in items:
+		if 'axis' in k:
+			d['{0}{1}'.format(k[0],1 if k[-1]=='s' else k[-1])]=v
+	return d
 
 def get_len(figure):
-    d={}
-    keys=figure['layout']['scene'].keys() if 'scene' in figure['layout'] else figure['layout'].keys()
-    for k in keys:
-        if 'axis' in k:
-            d[k[0]] = d[k[0]]+1 if k[0] in d else 1
-    return d
+	d={}
+	keys=figure['layout']['scene'].keys() if 'scene' in figure['layout'] else figure['layout'].keys()
+	for k in keys:
+		if 'axis' in k:
+			d[k[0]] = d[k[0]]+1 if k[0] in d else 1
+	return d
 
-       
+def get_which(figure):
+	d={}
+	keys=figure['layout']['scene'].keys() if 'scene' in figure['layout'] else figure['layout'].keys()
+	for k in keys:
+		if 'axis' in k:
+			if k[0] in d:
+				d[k[0]].append('{0}{1}'.format(k[0],k[-1]))
+			else:
+				d[k[0]]=['{0}{1}'.format(k[0],'1' if k[-1]=='s' else k[-1])]
+	return d
+
+@property
+def axis(self):
+	return {'ref':get_ref(self),
+			'def':get_def(self),
+			'len':get_len(self),
+			'which':get_which(self)}        
+
+Figure.axis=axis	   

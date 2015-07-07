@@ -79,12 +79,13 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 		layout=Layout(legend=Legend(bgcolor='white',font={'color':'grey10'}),
 						paper_bgcolor='white',plot_bgcolor='#E5E5E5',
 						yaxis=YAxis(tickfont={'color':'grey10'},gridcolor='#F6F6F6',title=yTitle,
-								 titlefont={'color':'#F9F9F9'},zerolinecolor='#F6F6F6'),
+								 titlefont={'color':'grey10'},zerolinecolor='#F6F6F6'),
 						xaxis=XAxis(tickfont={'color':'grey10'},gridcolor='#F6F6F6',title=xTitle,
-								titlefont={'color':'#F9F9F9'},zerolinecolor='#F6F6F6',showgrid=True),
+								titlefont={'color':'grey10'},zerolinecolor='#F6F6F6',showgrid=True),
 						titlefont={'color':'#F9F9F9'})
 		if annotations:
-			annotations.update({'arrowcolor':'grey11','font':{'color':'pearl'}})
+			for i in annotations:
+				i.update({'arrowcolor':'grey11','font':{'color':'grey10'}})
 
 
 	if theme=='solar':
@@ -96,7 +97,8 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 								titlefont={'color':'pearl'},zerolinecolor='grey09'),
 						titlefont={'color':'pearl'})
 		if annotations:
-			annotations.update({'arrowcolor':'grey11','font':{'color':'pearl'}})
+			for i in annotations:
+				i.update({'arrowcolor':'grey11','font':{'color':'pearl'}})
 
 	elif theme=='space':
 		layout=Layout(legend=Legend(bgcolor='grey03',font={'color':'pearl'}),
@@ -107,7 +109,8 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 								titlefont={'color':'pearl'},zerolinecolor='grey09'),
 						titlefont={'color':'pearl'})
 		if annotations:
-			annotations.update({'arrowcolor':'red','font':{'color':'pearl'}})
+			for i in annotations:
+				i.update({'arrowcolor':'red','font':{'color':'pearl'}})
 
 	elif theme=='pearl':
 		layout=Layout(legend=Legend(bgcolor='pearl02',font={'color':'pearl06'}),
@@ -117,7 +120,8 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 						xaxis=XAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=xTitle,
 								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'))
 		if annotations:
-			annotations.update({'arrowcolor':'pearl04','font':{'color':'pearl06'}})
+			for i in annotations:
+				i.update({'arrowcolor':'pearl04','font':{'color':'pearl06'}})
 	
 	elif theme=='white':
 		layout=Layout(legend=Legend(bgcolor='white',font={'color':'pearl06'}),
@@ -127,7 +131,8 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 						xaxis=XAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=xTitle,
 								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'))
 		if annotations:
-			annotations.update({'arrowcolor':'pearl04','font':{'color':'pearl06'}})
+			for i in annotations:
+				i.update({'arrowcolor':'pearl04','font':{'color':'pearl06'}})
 	
 	if barmode:
 		layout.update({'barmode':barmode})
@@ -579,7 +584,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 
 	# Look for invalid kwargs
 	valid_kwargs = ['color','opacity','column','columns','labels','text','horizontal_spacing', 'vertical_spacing',
-					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles']
+					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles','legend']
 	for key in kwargs.keys():
 		if key not in valid_kwargs:
 			raise Exception("Invalid keyword : '{0}'".format(key))
@@ -775,6 +780,9 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 		else:
 			filename='Plotly Playground {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
 
+	if 'legend' in kwargs:
+		layout['showlegend']=kwargs['legend']
+
 	figure=Figure(data=data,layout=layout)
 
 	if subplots:
@@ -791,10 +799,13 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 		if 'shared_yaxes' in kwargs:
 			kw['shared_yaxes']=kwargs['shared_yaxes']	
 		if 'subplot_titles' in kwargs:
-			kw['subplot_titles']=kwargs['subplot_titles']	
+			if kwargs['subplot_titles']==True:
+				kw['subplot_titles']=[d['name'] for d in data]
+			else:
+				kw['subplot_titles']=kwargs['subplot_titles']	
 		if 'start_cell' in kwargs:
 			kw['start_cell']=kwargs['start_cell']	
-		figure=tools.subplots(fig,shape,base_layout=layout,**kw)
+		figure=tools.subplots(fig,shape,base_layout=layout,theme=theme,**kw)
 
 
 	if asFigure:
@@ -866,5 +877,5 @@ pd.DataFrame.figure=_figure
 pd.DataFrame.iplot=_iplot
 pd.Series.to_iplot=_to_iplot
 pd.Series.iplot=_iplot
-Figure.axis=tools.axis
+
 
