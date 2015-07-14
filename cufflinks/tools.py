@@ -1,6 +1,7 @@
 import plotly.plotly as py
 from plotly.graph_objs import Figure,XAxis,YAxis,Annotation
 from plotlytools import getLayout
+from colors import normalize,to_rgba
 import auth
 
 
@@ -396,6 +397,65 @@ def axis(self):
 	return {'ref':get_ref(self),
 			'def':get_def(self),
 			'len':get_len(self),
-			'which':get_which(self)}        
+			'which':get_which(self)}    
+
+### Shapes
+
+def get_shape(kind='line',x=None,y=None,x0=None,y0=None,x1=None,y1=None,span=0,color='red',dash='solid',width=1,
+				fillcolor=None,fill=False,opacity=1,xref='x',yref='y'):
+	
+	if not x1:
+		if not x0:
+			if not x:
+				xref='paper'
+				x0=0
+				x1=1
+			else:
+				x0=x1=x
+		else:
+			x1=x0
+	if not y1:
+		if not y0:
+			if not y:
+				yref='paper'
+				y0=0
+				y1=1
+			else:
+				y0=y1=y
+		else:
+			y1=y0
+
+	shape = {	'x0':x0,
+				'y0':y0,
+				'x1':x1,
+				'y1':y1,
+				'line' : {
+					'color':normalize(color),
+					'width':width,
+					'dash':dash				
+					},
+				'xref':xref,
+				'yref':yref
+				}
+
+	if kind=='line':	
+		shape['type']='line'
+
+	elif kind=='circle':
+		shape['type']='circle'
+		
+	elif kind=='rect':
+		shape['type']='rect'
+	else:
+		raise Exception("Invalid or unkown shape type : {0}".format(kind))
+
+	if (fill or fillcolor) and kind!='line':
+				fillcolor = color if not fillcolor else fillcolor
+				if 'rgba' not in fillcolor:
+					fillcolor=to_rgba(normalize(fillcolor),opacity)
+				shape['fillcolor']=fillcolor
+
+	return shape
+
 
 Figure.axis=axis	   

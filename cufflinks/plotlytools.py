@@ -584,7 +584,8 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 
 	# Look for invalid kwargs
 	valid_kwargs = ['color','opacity','column','columns','labels','text','horizontal_spacing', 'vertical_spacing',
-					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles','legend']
+					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles','legend',
+					'vline','hline','vspan','hspan','shapes']
 	for key in kwargs.keys():
 		if key not in valid_kwargs:
 			raise Exception("Invalid keyword : '{0}'".format(key))
@@ -785,6 +786,8 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 
 	figure=Figure(data=data,layout=layout)
 
+## Subplots 
+
 	if subplots:
 		fig=tools.strip_figures(figure)
 		kw={}
@@ -807,6 +810,85 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			kw['start_cell']=kwargs['start_cell']	
 		figure=tools.subplots(fig,shape,base_layout=layout,theme=theme,**kw)
 
+## Shapes 
+
+	if 'hline' or 'vline' or 'shapes' in kwargs:
+		shapes=[]
+
+		def get_shapes(xline):
+			orientation=xline[0]
+			xline=kwargs[xline]
+			if isinstance(xline,list):
+				for x_i in xline:
+					if isinstance(x_i,dict):
+						x_i['kind']='line'
+						shapes.append(tools.get_shape(**x_i))
+					else:						
+						if orientation=='h':
+							shapes.append(tools.get_shape(kind='line',y=x_i))
+						else:
+							shapes.append(tools.get_shape(kind='line',x=x_i))
+			elif isinstance(xline,dict):
+				shapes.append(tools.get_shape(**xline))
+			else:
+				if orientation=='h':
+					shapes.append(tools.get_shape(kind='line',y=xline))			
+				else:
+					shapes.append(tools.get_shape(kind='line',x=xline))			
+
+		def get_span(xspan):
+			orientation=xspan[0]
+			xspan=kwargs[xspan]
+			if isinstance(xspan,list):
+				for x_i in xspan:
+					if isinstance(x_i,dict):
+						x_i['kind']='rect'
+						shapes.append(tools.get_shape(**x_i))
+					else:
+						v0,v1=x_i
+						if orientation=='h':
+							shapes.append(tools.get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
+						else:
+							shapes.append(tools.get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
+			elif isinstance(xspan,dict):
+				xspan['kind']='rect'
+				shapes.append(tools.get_shape(**xspan))
+			elif isinstance(xspan,tuple):
+				v0,v1=xspan
+				if orientation=='h':
+					shapes.append(tools.get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
+				else:
+					shapes.append(tools.get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
+			else:
+				raise Exception('Invalid value for {0}span: {1}'.format(orientation,xspan))
+
+		if 'hline' in kwargs:
+			get_shapes('hline')
+		if 'vline' in kwargs:
+			get_shapes('vline')
+		if 'hspan' in kwargs:
+			get_span('hspan')
+		if 'vspan' in kwargs:
+			get_span('vspan')
+		if 'shapes' in kwargs:
+			shapes_=kwargs['shapes']
+			if isinstance(shapes_,list):
+				for i in shapes_:
+					shp=i if 'type' in i else tools.get_shape(**i)
+					shapes.append(shp)
+			elif isinstance(shapes_,dict):
+					shp=shapes_ if 'type' in shapes_ else tools.get_shape(**shapes_)
+					shapes.append(shp)
+			else:
+				raise Exception("Shapes need to be either a dict or list of dicts")
+
+
+		layout['shapes']=shapes
+
+
+	validate = False if 'shapes' in layout else True
+
+## Exports 
 
 	if asFigure:
 		return figure
@@ -815,11 +897,11 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			width=dimensions[0],height=dimensions[1])
 		return display(Image('img/'+filename+'.png'))
 	elif asPlot:
-		return py.plot(figure,world_readable=world_readable,filename=filename)
+		return py.plot(figure,world_readable=world_readable,filename=filename,validate=validate)
 	elif asUrl:
-		return py.plot(figure,world_readable=world_readable,filename=filename,auto_open=False)
+		return py.plot(figure,world_readable=world_readable,filename=filename,validate=validate,auto_open=False)
 	else:
-		return py.iplot(figure,world_readable=world_readable,filename=filename)
+		return py.iplot(figure,world_readable=world_readable,filename=filename,validate=validate)
 
 
 def get_colors(colors,colorscale,keys,asList=False):
