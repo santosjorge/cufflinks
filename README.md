@@ -33,6 +33,13 @@ This tutorial assumes that the plotly user credentials have already been configu
 	* `cufflinks.datagen.lines(4).iplot(subplots=True,shape=(4,1),shared_xaxes=True,vertical_spacing=.02,fill=True)`
 * Support for *scatter matrix* to display the distribution amongst every series in the DataFrame
 	* `cufflinks.datagen.lines(4,1000).scatter_matrix()`
+* Support for *vline* and *hline* for horizontal and vertical lines
+	* `cufflinks.datagen.lines(3).iplot(hline=[2,3])`
+	* `cufflinks.datagen.lines(3).iplot(hline=dict(y=2,color='blue',width=3))`
+* Support for *vspan* and *hspan* for horizontal and vertical areas
+	* `cufflinks.datagen.lines(3).iplot(hspan=(-1,2))`
+	* `cufflinks.datagen.lines(3).iplot(hspan=dict(y0=-1,y1=2,color='orange',fill=True,opacity=.4))`
+
 
 ### v0.3.2
 

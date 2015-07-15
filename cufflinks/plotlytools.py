@@ -18,7 +18,7 @@ def getThemes():
 	return THEMES.keys()
 
 def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
-				gridcolor=None,zerolinecolor=None,margin=None,annotations=None,is3d=False):
+				gridcolor=None,zerolinecolor=None,margin=None,annotations=False,is3d=False):
 	"""
 	Generates a plotly Layout
 
@@ -75,6 +75,13 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 			if 'size' in annotations['font']:
 				size=annotations['font']['size']
 
+	def update_annotations(annotations,font_color,arrow_color):
+		if annotations:
+			if isinstance(annotations,dict):
+				annotations=[annotations]
+			for i in annotations:
+				i.update(dict(arrowcolor=arrow_color,font={'color':font_color}))
+
 	if theme=='ggplot':
 		layout=Layout(legend=Legend(bgcolor='white',font={'color':'grey10'}),
 						paper_bgcolor='white',plot_bgcolor='#E5E5E5',
@@ -83,9 +90,11 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 						xaxis=XAxis(tickfont={'color':'grey10'},gridcolor='#F6F6F6',title=xTitle,
 								titlefont={'color':'grey10'},zerolinecolor='#F6F6F6',showgrid=True),
 						titlefont={'color':'#F9F9F9'})
-		if annotations:
-			for i in annotations:
-				i.update({'arrowcolor':'grey11','font':{'color':'grey10'}})
+		update_annotations(annotations,'grey10','grey10')
+		# if annotations:
+		# 	print annotations
+		# 	for i in annotations:
+		# 		i.update({'arrowcolor':'grey11','font':{'color':'grey10'}})
 
 
 	if theme=='solar':
@@ -96,9 +105,10 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 						xaxis=XAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=xTitle,
 								titlefont={'color':'pearl'},zerolinecolor='grey09'),
 						titlefont={'color':'pearl'})
-		if annotations:
-			for i in annotations:
-				i.update({'arrowcolor':'grey11','font':{'color':'pearl'}})
+		update_annotations(annotations,'pearl','grey11')
+		# if annotations:
+		# 	for i in annotations:
+		# 		i.update({'arrowcolor':'grey11','font':{'color':'pearl'}})
 
 	elif theme=='space':
 		layout=Layout(legend=Legend(bgcolor='grey03',font={'color':'pearl'}),
@@ -108,9 +118,10 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 						xaxis=XAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=xTitle,
 								titlefont={'color':'pearl'},zerolinecolor='grey09'),
 						titlefont={'color':'pearl'})
-		if annotations:
-			for i in annotations:
-				i.update({'arrowcolor':'red','font':{'color':'pearl'}})
+		update_annotations(annotations,'pearl','red')
+		# if annotations:
+		# 	for i in annotations:
+		# 		i.update({'arrowcolor':'red','font':{'color':'pearl'}})
 
 	elif theme=='pearl':
 		layout=Layout(legend=Legend(bgcolor='pearl02',font={'color':'pearl06'}),
@@ -119,9 +130,10 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 								  titlefont={'color':'pearl06'},zeroline=False,zerolinecolor='pearl04' if is3d else 'pearl03'),
 						xaxis=XAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=xTitle,
 								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'))
-		if annotations:
-			for i in annotations:
-				i.update({'arrowcolor':'pearl04','font':{'color':'pearl06'}})
+		update_annotations(annotations,'pearl06','pearl04')
+		# if annotations:
+		# 	for i in annotations:
+		# 		i.update({'arrowcolor':'pearl04','font':{'color':'pearl06'}})
 	
 	elif theme=='white':
 		layout=Layout(legend=Legend(bgcolor='white',font={'color':'pearl06'}),
@@ -130,9 +142,10 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'),
 						xaxis=XAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=xTitle,
 								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'))
-		if annotations:
-			for i in annotations:
-				i.update({'arrowcolor':'pearl04','font':{'color':'pearl06'}})
+		update_annotations(annotations,'pearl06','pearl04')
+		# if annotations:
+		# 	for i in annotations:
+		# 		i.update({'arrowcolor':'pearl04','font':{'color':'pearl06'}})
 	
 	if barmode:
 		layout.update({'barmode':barmode})
@@ -812,7 +825,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 
 ## Shapes 
 
-	if 'hline' or 'vline' or 'shapes' in kwargs:
+	if any(k in kwargs for k in ['vline','hline','shapes','hspan','vspan']):
 		shapes=[]
 
 		def get_shapes(xline):
