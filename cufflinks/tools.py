@@ -403,7 +403,61 @@ def axis(self):
 
 def get_shape(kind='line',x=None,y=None,x0=None,y0=None,x1=None,y1=None,span=0,color='red',dash='solid',width=1,
 				fillcolor=None,fill=False,opacity=1,xref='x',yref='y'):
-	
+	"""
+	Returns a plotly shape
+
+	Parameters:
+	-----------
+		kind : string
+			Shape kind
+				line
+				rect
+				circle
+		x : float 
+			x values for the shape. 
+			This assumes x0=x1
+		x0 : float
+			x0 value for the shape
+		x1 : float
+			x1 value for the shape
+		y : float 
+			y values for the shape. 
+			This assumes y0=y1
+		y0 : float
+			y0 value for the shape
+		y1 : float
+			y1 value for the shape
+		color : string
+			color for shape line
+		dash : string
+			line style
+				solid
+				dash
+				dashdot
+				dot 
+		width : int
+			line width
+		fillcolor : string
+			shape fill color
+		fill : bool
+			If True then fill shape 
+			If not fillcolor then the 
+			line color will be used
+		opacity : float [0,1]
+			opacity of the fill 
+		xref : string
+			Sets the x coordinate system 
+			which this object refers to
+				'x'
+				'paper'
+				'x2' etc
+		yref : string
+			Sets the y coordinate system 
+			which this object refers to
+				'y'
+				'paper'
+				'y2' etc
+	"""
 	if not x1:
 		if not x0:
 			if not x:

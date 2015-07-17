@@ -17,8 +17,10 @@ def getTheme(theme):
 def getThemes():
 	return THEMES.keys()
 
+layout_kwargs = ['legend','vline','hline','vspan','hspan','shapes']
+
 def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
-				gridcolor=None,zerolinecolor=None,margin=None,annotations=False,is3d=False):
+				gridcolor=None,zerolinecolor=None,margin=None,annotations=False,is3d=False,**kwargs):
 	"""
 	Generates a plotly Layout
 
@@ -65,6 +67,10 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 		is3d : bool
 			Indicates if the layout is for a 3D chart
 	"""
+
+	for key in kwargs.keys():
+		if key not in layout_kwargs:
+			raise Exception("Invalid keyword : '{0}'".format(key))
 	
 	if not theme:
 		theme = auth.get_config_file()['theme']
@@ -91,11 +97,6 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 								titlefont={'color':'grey10'},zerolinecolor='#F6F6F6',showgrid=True),
 						titlefont={'color':'#F9F9F9'})
 		update_annotations(annotations,'grey10','grey10')
-		# if annotations:
-		# 	print annotations
-		# 	for i in annotations:
-		# 		i.update({'arrowcolor':'grey11','font':{'color':'grey10'}})
-
 
 	if theme=='solar':
 		layout=Layout(legend=Legend(bgcolor='charcoal',font={'color':'pearl'}),
@@ -106,9 +107,6 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 								titlefont={'color':'pearl'},zerolinecolor='grey09'),
 						titlefont={'color':'pearl'})
 		update_annotations(annotations,'pearl','grey11')
-		# if annotations:
-		# 	for i in annotations:
-		# 		i.update({'arrowcolor':'grey11','font':{'color':'pearl'}})
 
 	elif theme=='space':
 		layout=Layout(legend=Legend(bgcolor='grey03',font={'color':'pearl'}),
@@ -119,9 +117,6 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 								titlefont={'color':'pearl'},zerolinecolor='grey09'),
 						titlefont={'color':'pearl'})
 		update_annotations(annotations,'pearl','red')
-		# if annotations:
-		# 	for i in annotations:
-		# 		i.update({'arrowcolor':'red','font':{'color':'pearl'}})
 
 	elif theme=='pearl':
 		layout=Layout(legend=Legend(bgcolor='pearl02',font={'color':'pearl06'}),
@@ -131,10 +126,7 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 						xaxis=XAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=xTitle,
 								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'))
 		update_annotations(annotations,'pearl06','pearl04')
-		# if annotations:
-		# 	for i in annotations:
-		# 		i.update({'arrowcolor':'pearl04','font':{'color':'pearl06'}})
-	
+
 	elif theme=='white':
 		layout=Layout(legend=Legend(bgcolor='white',font={'color':'pearl06'}),
 						paper_bgcolor='white',plot_bgcolor='white',
@@ -143,9 +135,6 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 						xaxis=XAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=xTitle,
 								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'))
 		update_annotations(annotations,'pearl06','pearl04')
-		# if annotations:
-		# 	for i in annotations:
-		# 		i.update({'arrowcolor':'pearl04','font':{'color':'pearl06'}})
 	
 	if barmode:
 		layout.update({'barmode':barmode})
@@ -182,6 +171,11 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 		del layout['xaxis']
 		del layout['yaxis']
 
+
+	## Kwargs
+
+	if 'legend' in kwargs:
+		layout['showlegend']=kwargs['legend']
 
 	def updateColors(layout):
 		for k,v in layout.items():
@@ -381,7 +375,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 
 def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			kind='scatter',title='',xTitle='',yTitle='',zTitle='',theme=None,colors=None,colorscale=None,fill=False,width=None,
-			mode='lines',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,norm='',
+			mode='lines',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
 			bestfit_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,zerolinecolor=None,margin=None,
 			subplots=False,shape=None,asFrame=False,asDates=False,asFigure=False,asImage=False,
@@ -493,7 +487,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 		bins : int
 			Specifies the number of bins 
 			* Only valid when kind='histogram'
-		norm : string
+		histnorm : string
 				'' (frequency)
 				percent
 				probability
@@ -597,8 +591,9 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 
 	# Look for invalid kwargs
 	valid_kwargs = ['color','opacity','column','columns','labels','text','horizontal_spacing', 'vertical_spacing',
-					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles','legend',
-					'vline','hline','vspan','hspan','shapes']
+					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles']
+	valid_kwargs.extend(layout_kwargs)
+
 	for key in kwargs.keys():
 		if key not in valid_kwargs:
 			raise Exception("Invalid keyword : '{0}'".format(key))
@@ -630,11 +625,12 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 	
 
 	if not layout:
+		l_kwargs=dict([(k,kwargs[k]) for k in layouts_kwargs if k in kwargs])
 		if annotations:
 				annotations=getAnnotations(self.copy(),annotations)
 		layout=getLayout(theme=theme,xTitle=xTitle,yTitle=yTitle,zTitle=zTitle,title=title,barmode=barmode,
 								bargap=bargap,bargroupgap=bargroupgap,annotations=annotations,gridcolor=gridcolor,
-								zerolinecolor=zerolinecolor,margin=margin,is3d='3d' in kind)
+								zerolinecolor=zerolinecolor,margin=margin,is3d='3d' in kind,**l_kwargs)
 
 	if not data:
 		if categories:
@@ -746,7 +742,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 						__=Histogram(x=df[_].values.tolist(),marker=Marker(color=clrs[_]),name=_,
 								line=Line(width=width),orientation=orientation,
 								opacity=kwargs['opacity'] if 'opacity' in kwargs else .8, histfunc=histfunc, 
-								histnorm=norm) 
+								histnorm=histnorm) 
 						if orientation=='h':
 							__['y']=__['x']
 							del __['x']
@@ -794,34 +790,10 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 		else:
 			filename='Plotly Playground {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
 
-	if 'legend' in kwargs:
-		layout['showlegend']=kwargs['legend']
+	
 
+## Figure defintion
 	figure=Figure(data=data,layout=layout)
-
-## Subplots 
-
-	if subplots:
-		fig=tools.strip_figures(figure)
-		kw={}
-		if 'horizontal_spacing' in kwargs:
-			kw['horizontal_spacing']=kwargs['horizontal_spacing']
-		if 'vertical_spacing' in kwargs:
-			kw['vertical_spacing']=kwargs['vertical_spacing']
-		if 'specs' in kwargs:
-			kw['specs']=kwargs['specs']	
-		if 'shared_xaxes' in kwargs:
-			kw['shared_xaxes']=kwargs['shared_xaxes']	
-		if 'shared_yaxes' in kwargs:
-			kw['shared_yaxes']=kwargs['shared_yaxes']	
-		if 'subplot_titles' in kwargs:
-			if kwargs['subplot_titles']==True:
-				kw['subplot_titles']=[d['name'] for d in data]
-			else:
-				kw['subplot_titles']=kwargs['subplot_titles']	
-		if 'start_cell' in kwargs:
-			kw['start_cell']=kwargs['start_cell']	
-		figure=tools.subplots(fig,shape,base_layout=layout,theme=theme,**kw)
 
 ## Shapes 
 
@@ -899,9 +871,34 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 		layout['shapes']=shapes
 
 
-	validate = False if 'shapes' in layout else True
+
+## Subplots 
+
+	if subplots:
+		fig=tools.strip_figures(figure)
+		kw={}
+		if 'horizontal_spacing' in kwargs:
+			kw['horizontal_spacing']=kwargs['horizontal_spacing']
+		if 'vertical_spacing' in kwargs:
+			kw['vertical_spacing']=kwargs['vertical_spacing']
+		if 'specs' in kwargs:
+			kw['specs']=kwargs['specs']	
+		if 'shared_xaxes' in kwargs:
+			kw['shared_xaxes']=kwargs['shared_xaxes']	
+		if 'shared_yaxes' in kwargs:
+			kw['shared_yaxes']=kwargs['shared_yaxes']	
+		if 'subplot_titles' in kwargs:
+			if kwargs['subplot_titles']==True:
+				kw['subplot_titles']=[d['name'] for d in data]
+			else:
+				kw['subplot_titles']=kwargs['subplot_titles']	
+		if 'start_cell' in kwargs:
+			kw['start_cell']=kwargs['start_cell']	
+		figure=tools.subplots(fig,shape,base_layout=layout,theme=theme,**kw)
+
 
 ## Exports 
+	validate = False if 'shapes' in layout else True
 
 	if asFigure:
 		return figure
