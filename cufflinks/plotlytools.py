@@ -17,7 +17,7 @@ def getTheme(theme):
 def getThemes():
 	return THEMES.keys()
 
-layout_kwargs = ['legend','vline','hline','vspan','hspan','shapes']
+__LAYOUT_KWARGS = ['legend','vline','hline','vspan','hspan','shapes']
 
 def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
 				gridcolor=None,zerolinecolor=None,margin=None,annotations=False,is3d=False,**kwargs):
@@ -68,8 +68,9 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 			Indicates if the layout is for a 3D chart
 	"""
 
+
 	for key in kwargs.keys():
-		if key not in layout_kwargs:
+		if key not in __LAYOUT_KWARGS:
 			raise Exception("Invalid keyword : '{0}'".format(key))
 	
 	if not theme:
@@ -95,7 +96,7 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 								 titlefont={'color':'grey10'},zerolinecolor='#F6F6F6'),
 						xaxis=XAxis(tickfont={'color':'grey10'},gridcolor='#F6F6F6',title=xTitle,
 								titlefont={'color':'grey10'},zerolinecolor='#F6F6F6',showgrid=True),
-						titlefont={'color':'#F9F9F9'})
+						titlefont={'color':'charcoal'})
 		update_annotations(annotations,'grey10','grey10')
 
 	if theme=='solar':
@@ -177,6 +178,82 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 	if 'legend' in kwargs:
 		layout['showlegend']=kwargs['legend']
 
+
+	# Shapes 
+
+	if any(k in kwargs for k in ['vline','hline','shapes','hspan','vspan']):
+		shapes=[]
+
+		def get_shapes(xline):
+			orientation=xline[0]
+			xline=kwargs[xline]
+			if isinstance(xline,list):
+				for x_i in xline:
+					if isinstance(x_i,dict):
+						x_i['kind']='line'
+						shapes.append(tools.get_shape(**x_i))
+					else:						
+						if orientation=='h':
+							shapes.append(tools.get_shape(kind='line',y=x_i))
+						else:
+							shapes.append(tools.get_shape(kind='line',x=x_i))
+			elif isinstance(xline,dict):
+				shapes.append(tools.get_shape(**xline))
+			else:
+				if orientation=='h':
+					shapes.append(tools.get_shape(kind='line',y=xline))			
+				else:
+					shapes.append(tools.get_shape(kind='line',x=xline))			
+
+		def get_span(xspan):
+			orientation=xspan[0]
+			xspan=kwargs[xspan]
+			if isinstance(xspan,list):
+				for x_i in xspan:
+					if isinstance(x_i,dict):
+						x_i['kind']='rect'
+						shapes.append(tools.get_shape(**x_i))
+					else:
+						v0,v1=x_i
+						if orientation=='h':
+							shapes.append(tools.get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
+						else:
+							shapes.append(tools.get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
+			elif isinstance(xspan,dict):
+				xspan['kind']='rect'
+				shapes.append(tools.get_shape(**xspan))
+			elif isinstance(xspan,tuple):
+				v0,v1=xspan
+				if orientation=='h':
+					shapes.append(tools.get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
+				else:
+					shapes.append(tools.get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
+			else:
+				raise Exception('Invalid value for {0}span: {1}'.format(orientation,xspan))
+
+		if 'hline' in kwargs:
+			get_shapes('hline')
+		if 'vline' in kwargs:
+			get_shapes('vline')
+		if 'hspan' in kwargs:
+			get_span('hspan')
+		if 'vspan' in kwargs:
+			get_span('vspan')
+		if 'shapes' in kwargs:
+			shapes_=kwargs['shapes']
+			if isinstance(shapes_,list):
+				for i in shapes_:
+					shp=i if 'type' in i else tools.get_shape(**i)
+					shapes.append(shp)
+			elif isinstance(shapes_,dict):
+					shp=shapes_ if 'type' in shapes_ else tools.get_shape(**shapes_)
+					shapes.append(shp)
+			else:
+				raise Exception("Shapes need to be either a dict or list of dicts")
+
+
+		layout['shapes']=shapes
+
 	def updateColors(layout):
 		for k,v in layout.items():
 			if isinstance(v,dict):
@@ -187,7 +264,8 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 						if isinstance(_,dict):
 							updateColors(_)
 				if 'color' in k.lower():
-					layout[k]=normalize(v)
+					if 'rgba' not in v:
+						layout[k]=normalize(v)
 		return layout
 	
 	return updateColors(layout)
@@ -592,7 +670,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 	# Look for invalid kwargs
 	valid_kwargs = ['color','opacity','column','columns','labels','text','horizontal_spacing', 'vertical_spacing',
 					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles']
-	valid_kwargs.extend(layout_kwargs)
+	valid_kwargs.extend(__LAYOUT_KWARGS)
 
 	for key in kwargs.keys():
 		if key not in valid_kwargs:
@@ -625,7 +703,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 	
 
 	if not layout:
-		l_kwargs=dict([(k,kwargs[k]) for k in layouts_kwargs if k in kwargs])
+		l_kwargs=dict([(k,kwargs[k]) for k in __LAYOUT_KWARGS if k in kwargs])
 		if annotations:
 				annotations=getAnnotations(self.copy(),annotations)
 		layout=getLayout(theme=theme,xTitle=xTitle,yTitle=yTitle,zTitle=zTitle,title=title,barmode=barmode,
@@ -793,82 +871,84 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 	
 
 ## Figure defintion
-	figure=Figure(data=data,layout=layout)
+	figure=Figure()
+	figure['data']=data
+	figure['layout']=layout
 
-## Shapes 
+# ## Shapes 
 
-	if any(k in kwargs for k in ['vline','hline','shapes','hspan','vspan']):
-		shapes=[]
+# 	if any(k in kwargs for k in ['vline','hline','shapes','hspan','vspan']):
+# 		shapes=[]
 
-		def get_shapes(xline):
-			orientation=xline[0]
-			xline=kwargs[xline]
-			if isinstance(xline,list):
-				for x_i in xline:
-					if isinstance(x_i,dict):
-						x_i['kind']='line'
-						shapes.append(tools.get_shape(**x_i))
-					else:						
-						if orientation=='h':
-							shapes.append(tools.get_shape(kind='line',y=x_i))
-						else:
-							shapes.append(tools.get_shape(kind='line',x=x_i))
-			elif isinstance(xline,dict):
-				shapes.append(tools.get_shape(**xline))
-			else:
-				if orientation=='h':
-					shapes.append(tools.get_shape(kind='line',y=xline))			
-				else:
-					shapes.append(tools.get_shape(kind='line',x=xline))			
+# 		def get_shapes(xline):
+# 			orientation=xline[0]
+# 			xline=kwargs[xline]
+# 			if isinstance(xline,list):
+# 				for x_i in xline:
+# 					if isinstance(x_i,dict):
+# 						x_i['kind']='line'
+# 						shapes.append(tools.get_shape(**x_i))
+# 					else:						
+# 						if orientation=='h':
+# 							shapes.append(tools.get_shape(kind='line',y=x_i))
+# 						else:
+# 							shapes.append(tools.get_shape(kind='line',x=x_i))
+# 			elif isinstance(xline,dict):
+# 				shapes.append(tools.get_shape(**xline))
+# 			else:
+# 				if orientation=='h':
+# 					shapes.append(tools.get_shape(kind='line',y=xline))			
+# 				else:
+# 					shapes.append(tools.get_shape(kind='line',x=xline))			
 
-		def get_span(xspan):
-			orientation=xspan[0]
-			xspan=kwargs[xspan]
-			if isinstance(xspan,list):
-				for x_i in xspan:
-					if isinstance(x_i,dict):
-						x_i['kind']='rect'
-						shapes.append(tools.get_shape(**x_i))
-					else:
-						v0,v1=x_i
-						if orientation=='h':
-							shapes.append(tools.get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
-						else:
-							shapes.append(tools.get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
-			elif isinstance(xspan,dict):
-				xspan['kind']='rect'
-				shapes.append(tools.get_shape(**xspan))
-			elif isinstance(xspan,tuple):
-				v0,v1=xspan
-				if orientation=='h':
-					shapes.append(tools.get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
-				else:
-					shapes.append(tools.get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
-			else:
-				raise Exception('Invalid value for {0}span: {1}'.format(orientation,xspan))
+# 		def get_span(xspan):
+# 			orientation=xspan[0]
+# 			xspan=kwargs[xspan]
+# 			if isinstance(xspan,list):
+# 				for x_i in xspan:
+# 					if isinstance(x_i,dict):
+# 						x_i['kind']='rect'
+# 						shapes.append(tools.get_shape(**x_i))
+# 					else:
+# 						v0,v1=x_i
+# 						if orientation=='h':
+# 							shapes.append(tools.get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
+# 						else:
+# 							shapes.append(tools.get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
+# 			elif isinstance(xspan,dict):
+# 				xspan['kind']='rect'
+# 				shapes.append(tools.get_shape(**xspan))
+# 			elif isinstance(xspan,tuple):
+# 				v0,v1=xspan
+# 				if orientation=='h':
+# 					shapes.append(tools.get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
+# 				else:
+# 					shapes.append(tools.get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
+# 			else:
+# 				raise Exception('Invalid value for {0}span: {1}'.format(orientation,xspan))
 
-		if 'hline' in kwargs:
-			get_shapes('hline')
-		if 'vline' in kwargs:
-			get_shapes('vline')
-		if 'hspan' in kwargs:
-			get_span('hspan')
-		if 'vspan' in kwargs:
-			get_span('vspan')
-		if 'shapes' in kwargs:
-			shapes_=kwargs['shapes']
-			if isinstance(shapes_,list):
-				for i in shapes_:
-					shp=i if 'type' in i else tools.get_shape(**i)
-					shapes.append(shp)
-			elif isinstance(shapes_,dict):
-					shp=shapes_ if 'type' in shapes_ else tools.get_shape(**shapes_)
-					shapes.append(shp)
-			else:
-				raise Exception("Shapes need to be either a dict or list of dicts")
+# 		if 'hline' in kwargs:
+# 			get_shapes('hline')
+# 		if 'vline' in kwargs:
+# 			get_shapes('vline')
+# 		if 'hspan' in kwargs:
+# 			get_span('hspan')
+# 		if 'vspan' in kwargs:
+# 			get_span('vspan')
+# 		if 'shapes' in kwargs:
+# 			shapes_=kwargs['shapes']
+# 			if isinstance(shapes_,list):
+# 				for i in shapes_:
+# 					shp=i if 'type' in i else tools.get_shape(**i)
+# 					shapes.append(shp)
+# 			elif isinstance(shapes_,dict):
+# 					shp=shapes_ if 'type' in shapes_ else tools.get_shape(**shapes_)
+# 					shapes.append(shp)
+# 			else:
+# 				raise Exception("Shapes need to be either a dict or list of dicts")
 
 
-		layout['shapes']=shapes
+# 		layout['shapes']=shapes
 
 
 

@@ -504,10 +504,9 @@ def get_shape(kind='line',x=None,y=None,x0=None,y0=None,x1=None,y1=None,span=0,c
 		raise Exception("Invalid or unkown shape type : {0}".format(kind))
 
 	if (fill or fillcolor) and kind!='line':
-				fillcolor = color if not fillcolor else fillcolor
-				if 'rgba' not in fillcolor:
-					fillcolor=to_rgba(normalize(fillcolor),opacity)
-				shape['fillcolor']=fillcolor
+		fillcolor = color if not fillcolor else fillcolor
+		fillcolor=to_rgba(normalize(fillcolor),opacity)
+		shape['fillcolor']=fillcolor
 
 	return shape
 

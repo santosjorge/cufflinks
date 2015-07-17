@@ -1,9 +1,11 @@
 from collections import deque
 import numpy as np
 import colorsys
+import auth
 import colorlover as cl
 from utils import inverseDict
 import operator
+import themes
 from IPython.display import HTML,display
 
 class CufflinksError(Exception):
@@ -254,7 +256,7 @@ def color_table(color,N=1,sort=False,sort_values=False,inline=False,as_html=Fals
 
 
 
-def colorgen(colors=None,n=None):
+def colorgen(colors=None,n=None,scale=None,theme=None):
 	"""
 	Returns a generator with a list of colors
 	and gradients of those colors
@@ -270,10 +272,14 @@ def colorgen(colors=None,n=None):
 		colorgen(['#f03','rgb(23,25,25)'])
 	"""
 	step=.1
-	if colors:
-		dq=deque(colors)
-	else:
-		dq=deque(get_scales('dflt'))
+	if not colors:
+		if not scale:
+			if not theme:
+				scale = auth.get_config_file()['colorscale']
+			else:
+				scale = themes.THEMES[theme]['colorscale']
+		colors=get_scales(scale)
+	dq=deque(colors)
 	if n:
 		step=len(dq)*0.8/n if len(dq)*8<n else .1
 	for i in np.arange(.2,1,step):
