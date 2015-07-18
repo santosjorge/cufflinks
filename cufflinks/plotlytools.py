@@ -5,6 +5,7 @@ from plotly.graph_objs import *
 from collections import defaultdict
 from colors import normalize,get_scales,colorgen,to_rgba
 from themes import THEMES
+from IPython.display import display,Image
 import time
 import copy
 import auth
@@ -691,8 +692,8 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 		colorscale=theme_config['colorscale'] if 'colorscale' in theme_config else 'dflt'
 	if width is None:
 		width=theme_config['linewidth'] if 'linewidth' in theme_config else 2
-	if bargap is None:
-		bargap=theme_config['bargap'] if 'bargap' in theme_config else 0
+	# if bargap is None:
+	# 	bargap=theme_config['bargap'] if 'bargap' in theme_config else 0
 
 	# In case column was used instead of keys
 	if 'column' in kwargs:
@@ -764,9 +765,9 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 							positive=trace.apply(lambda x:x if x>=0 else pd.np.nan)
 							negative=trace.apply(lambda x:x if x<0 else pd.np.nan)
 							trace=pd.DataFrame({'positive':positive,'negative':negative})
-							trace=trace.to_iplot(colors={'positive':'green','negative':'red'},width=0)
+							trace=trace.to_iplot(colors={'positive':'green','negative':'red'},width=0.5)
 						else:
-							trace=self.apply(lambda x:x[0]*1.0/x[1],axis=1).to_iplot()
+							trace=self.apply(lambda x:x[0]*1.0/x[1],axis=1).to_iplot(colors=['green'],width=1)
 						trace.update({'xaxis':'x2','yaxis':'y2','fill':'tozeroy',
 										'name':kind.capitalize(),'connectgaps':False,'showlegend':False})
 						data.append(Scatter(trace[0]))
@@ -777,6 +778,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 						layout['xaxis2']=copy.deepcopy(layout['xaxis'])
 						layout['yaxis2'].update(domain=[0,.25],title=kind.capitalize())
 						layout['xaxis2'].update(anchor='y2',showticklabels=False)
+						layout['hovermode']='x'
 				if 'bar' in kind:
 					if 'stack' in barmode:
 						layout['legend'].update(traceorder='normal')
@@ -874,81 +876,6 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 	figure=Figure()
 	figure['data']=data
 	figure['layout']=layout
-
-# ## Shapes 
-
-# 	if any(k in kwargs for k in ['vline','hline','shapes','hspan','vspan']):
-# 		shapes=[]
-
-# 		def get_shapes(xline):
-# 			orientation=xline[0]
-# 			xline=kwargs[xline]
-# 			if isinstance(xline,list):
-# 				for x_i in xline:
-# 					if isinstance(x_i,dict):
-# 						x_i['kind']='line'
-# 						shapes.append(tools.get_shape(**x_i))
-# 					else:						
-# 						if orientation=='h':
-# 							shapes.append(tools.get_shape(kind='line',y=x_i))
-# 						else:
-# 							shapes.append(tools.get_shape(kind='line',x=x_i))
-# 			elif isinstance(xline,dict):
-# 				shapes.append(tools.get_shape(**xline))
-# 			else:
-# 				if orientation=='h':
-# 					shapes.append(tools.get_shape(kind='line',y=xline))			
-# 				else:
-# 					shapes.append(tools.get_shape(kind='line',x=xline))			
-
-# 		def get_span(xspan):
-# 			orientation=xspan[0]
-# 			xspan=kwargs[xspan]
-# 			if isinstance(xspan,list):
-# 				for x_i in xspan:
-# 					if isinstance(x_i,dict):
-# 						x_i['kind']='rect'
-# 						shapes.append(tools.get_shape(**x_i))
-# 					else:
-# 						v0,v1=x_i
-# 						if orientation=='h':
-# 							shapes.append(tools.get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
-# 						else:
-# 							shapes.append(tools.get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
-# 			elif isinstance(xspan,dict):
-# 				xspan['kind']='rect'
-# 				shapes.append(tools.get_shape(**xspan))
-# 			elif isinstance(xspan,tuple):
-# 				v0,v1=xspan
-# 				if orientation=='h':
-# 					shapes.append(tools.get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
-# 				else:
-# 					shapes.append(tools.get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
-# 			else:
-# 				raise Exception('Invalid value for {0}span: {1}'.format(orientation,xspan))
-
-# 		if 'hline' in kwargs:
-# 			get_shapes('hline')
-# 		if 'vline' in kwargs:
-# 			get_shapes('vline')
-# 		if 'hspan' in kwargs:
-# 			get_span('hspan')
-# 		if 'vspan' in kwargs:
-# 			get_span('vspan')
-# 		if 'shapes' in kwargs:
-# 			shapes_=kwargs['shapes']
-# 			if isinstance(shapes_,list):
-# 				for i in shapes_:
-# 					shp=i if 'type' in i else tools.get_shape(**i)
-# 					shapes.append(shp)
-# 			elif isinstance(shapes_,dict):
-# 					shp=shapes_ if 'type' in shapes_ else tools.get_shape(**shapes_)
-# 					shapes.append(shp)
-# 			else:
-# 				raise Exception("Shapes need to be either a dict or list of dicts")
-
-
-# 		layout['shapes']=shapes
 
 
 

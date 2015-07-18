@@ -9,7 +9,7 @@ This tutorial assumes that the plotly user credentials have already been configu
 ###Tutorials:
 * [Chart Gallery](http://nbviewer.ipython.org/gist/santosjorge/b278ce0ae2448f47c31d)
 * [Pandas Like Visualization](http://nbviewer.ipython.org/gist/santosjorge/aba934a0d20023a136c2)
-* [The Basics](http://nbviewer.ipython.org/gist/santosjorge/cfaaf43b40db19d6127a)
+* [The Basics](http://nbviewer.ipython.org/gist/santosjorge/f3b07b2be8094deea8c6)
 * [Color Management](http://nbviewer.ipython.org/gist/santosjorge/00ca17b121fa2463e18b)
 
 ![3D Charts](img/ukswaps.gif)
