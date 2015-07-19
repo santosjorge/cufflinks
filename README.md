@@ -19,8 +19,13 @@ This tutorial assumes that the plotly user credentials have already been configu
 ### v0.5
 
 * Support of offline charts
-	* cf.go_offline()
-	* cf.iplot(figure,online=True)
+	* `cf.go_offline()`
+	* `cf.iplot(figure,online=True)`
+* Support for secondary axis
+	* `fig=cf.datagen.lines(3,columns=['a','b','c']).figure()`  
+	  `fig.set_axis('b',side='right')`  
+	  `cf.iplot(fig)`  
+
 
 ### v0.4
 

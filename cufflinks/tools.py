@@ -355,6 +355,16 @@ def scatter_matrix(df,theme=None,bins=10,color='grey',size=2):
 	sm['layout'].update(bargap=.02,showlegend=False)
 	return sm
 
+## Trace dictionary
+
+@property
+def trace_dict(self):
+	d={}
+	for trace in range(len(self['data'])):
+		d[self['data'][trace]['name']]=trace
+	return d
+
+
 ## Axis Definition
 
 def get_ref(figure):
@@ -393,12 +403,65 @@ def get_which(figure):
 				d[k[0]]=['{0}{1}'.format(k[0],'1' if k[-1]=='s' else k[-1])]
 	return d
 
+def get_ref_axis(figure):
+	d={}
+	for k,v in get_ref(figure).items():
+		for i in v:
+			if i not in d:
+				d[i]=[]
+			d[i].append(k)
+	return d
+
 @property
 def axis(self):
 	return {'ref':get_ref(self),
+			'ref_axis':get_ref_axis(self),
 			'def':get_def(self),
 			'len':get_len(self),
 			'which':get_which(self)}    
+
+### Set Axis
+
+def _set_axis(self,traces,on=None,side='right',title=''):
+	"""
+	Sets the axis in which each trace should appear
+	If the axis doesn't exist then a new axis is created
+
+	Parameters:
+	-----------
+		traces : list(str)
+			List of trace names 
+		on : string
+			The axis in which the traces should be placed. 
+			If this is not indicated then a new axis will be
+			created
+		side : string
+			Side where the axis will be placed
+				'left'
+				'right'
+		title : string
+			Sets the title of the axis
+			Applies only to new axis
+	"""
+	if not isinstance(traces,list):
+		traces=[traces]
+	if not on:
+		yaxis=getLayout()['yaxis']
+		yaxis.update(title=title,overlaying='y1',side=side,anchor='x1')
+		self['layout']['yaxis{0}'.format(self.axis['len']['y']+1)]=yaxis
+		on=self.axis['len']['y']
+	for c in traces:
+		idx=self.trace_dict[c] if isinstance(c,str) else c
+		self['data'][idx]['xaxis']='x1'
+		self['data'][idx]['yaxis']='y{0}'.format(on)
+	d=self.axis
+	for k in d['def'].keys():
+		id='{0}axis{1}'.format(k[0],k[-1:])
+		if k not in d['ref_axis']:
+			try:
+				del self['layout'][id]
+			except KeyError:
+				pass			
 
 ### Shapes
 
@@ -522,4 +585,6 @@ def is_offline():
 	return py_offline.__PLOTLY_OFFLINE_INITIALIZED
 
 
-Figure.axis=axis	   
+Figure.axis=axis
+Figure.trace_dict=trace_dict	  
+Figure.set_axis=_set_axis 
