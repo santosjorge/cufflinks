@@ -1,6 +1,7 @@
 import pandas as pd
 import plotly.plotly as py
 import tools 
+import offline
 from plotly.graph_objs import *
 from collections import defaultdict
 from colors import normalize,get_scales,colorgen,to_rgba
@@ -458,7 +459,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
 			bestfit_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,zerolinecolor=None,margin=None,
 			subplots=False,shape=None,asFrame=False,asDates=False,asFigure=False,asImage=False,
-			dimensions=(1116,587),asPlot=False,asUrl=False,**kwargs):
+			dimensions=(1116,587),asPlot=False,asUrl=False,online=None,**kwargs):
 	"""
 	Returns a plotly chart either as inline chart, image of Figure object
 
@@ -666,6 +667,9 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			If True the chart opens in browser
 		asUrl : bool
 			If True the chart url is returned. No chart is displayed. 
+		online : bool
+			If True then the chart is rendered on the server 
+			even when running in offline mode. 
 	"""
 
 	# Look for invalid kwargs
@@ -747,7 +751,6 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 				data.append(_data)
 		else:
 			if kind in ('scatter','spread','ratio','bar','barh','area','line'):
-
 				df=self.copy()
 				if type(df)==pd.core.series.Series:
 					df=pd.DataFrame({df.name:df})
@@ -918,7 +921,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 	elif asUrl:
 		return py.plot(figure,world_readable=world_readable,filename=filename,validate=validate,auto_open=False)
 	else:
-		return py.iplot(figure,world_readable=world_readable,filename=filename,validate=validate)
+		return iplot(figure,world_readable=world_readable,filename=filename,validate=validate,online=online)
 
 
 def get_colors(colors,colorscale,keys,asList=False):
@@ -955,7 +958,7 @@ def _scatter_matrix(self,theme=None,bins=10,color='grey',size=2):
 		size : int
 			Size for each marker on the scatter plot
 	"""
-	return py.iplot(tools.scatter_matrix(self,theme=theme,bins=bins,color=color,size=size))
+	return iplot(tools.scatter_matrix(self,theme=theme,bins=bins,color=color,size=size))
 
 def _figure(self,**kwargs):
 	"""
@@ -968,6 +971,17 @@ def _figure(self,**kwargs):
 	"""
 	kwargs['asFigure']=True
 	return self.iplot(**kwargs)
+
+def iplot(data_or_figure,validate=True,world_readable=False,filename='',online=None):
+	if offline.is_offline() and not online:
+		show_link = auth.get_config_file()['offline_show_link']
+		link_text = auth.get_config_file()['offline_link_text']
+		return offline.py_offline.iplot(data_or_figure,show_link=show_link,link_text=link_text)
+	else:
+		if 'layout' in data_or_figure:
+			validate = False if 'shapes' in data_or_figure['layout'] else True
+		return py.iplot(data_or_figure,validate=validate,world_readable=world_readable,
+						filename=filename)
 
 
 pd.DataFrame.to_iplot=_to_iplot

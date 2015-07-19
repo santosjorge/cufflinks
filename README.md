@@ -16,6 +16,12 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 ### Release Notes
 
+### v0.5
+
+* Support of offline charts
+	* cf.go_offline()
+	* cf.iplot(figure,online=True)
+
 ### v0.4
 
 * Support for global theme setting

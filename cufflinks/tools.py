@@ -1,4 +1,5 @@
 import plotly.plotly as py
+import plotly.offline as py_offline
 from plotly.graph_objs import Figure,XAxis,YAxis,Annotation
 from plotlytools import getLayout
 from colors import normalize,to_rgba
@@ -509,6 +510,16 @@ def get_shape(kind='line',x=None,y=None,x0=None,y0=None,x1=None,y1=None,span=0,c
 		shape['fillcolor']=fillcolor
 
 	return shape
+
+def go_offline(offline=True):
+	if offline:
+		py_offline.init_notebook_mode()
+		py_offline.__PLOTLY_OFFLINE_INITIALIZED=True
+	else:
+		py_offline.__PLOTLY_OFFLINE_INITIALIZED=False
+
+def is_offline():
+	return py_offline.__PLOTLY_OFFLINE_INITIALIZED
 
 
 Figure.axis=axis	   

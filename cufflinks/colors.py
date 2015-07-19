@@ -1,7 +1,7 @@
 from collections import deque
+from auth import get_config_file
 import numpy as np
 import colorsys
-import auth
 import colorlover as cl
 from utils import inverseDict
 import operator
@@ -275,7 +275,7 @@ def colorgen(colors=None,n=None,scale=None,theme=None):
 	if not colors:
 		if not scale:
 			if not theme:
-				scale = auth.get_config_file()['colorscale']
+				scale = get_config_file()['colorscale']
 			else:
 				scale = themes.THEMES[theme]['colorscale']
 		colors=get_scales(scale)
