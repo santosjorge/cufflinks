@@ -361,7 +361,9 @@ def scatter_matrix(df,theme=None,bins=10,color='grey',size=2):
 def trace_dict(self):
 	d={}
 	for trace in range(len(self['data'])):
-		d[self['data'][trace]['name']]=trace
+		trace_=self['data'][trace]
+		name = '{0}_'.format(trace_['name']) if trace_['name'] in d else trace_['name']
+		d[name]=trace
 	return d
 
 
@@ -422,7 +424,7 @@ def axis(self):
 
 ### Set Axis
 
-def _set_axis(self,traces,on=None,side='right',title=''):
+def _set_axis(self,traces,on=None,side='right',title='',anchor=None):
 	"""
 	Sets the axis in which each trace should appear
 	If the axis doesn't exist then a new axis is created
@@ -446,13 +448,15 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 	if not isinstance(traces,list):
 		traces=[traces]
 	if not on:
+		anchor=anchor if anchor else self.axis['ref'][traces[0]][0]
 		yaxis=getLayout()['yaxis']
-		yaxis.update(title=title,overlaying='y1',side=side,anchor='x1')
+		yaxis.update(title=title,overlaying='y1',side=side,anchor=anchor)
 		self['layout']['yaxis{0}'.format(self.axis['len']['y']+1)]=yaxis
 		on=self.axis['len']['y']
 	for c in traces:
+		anchor=anchor if anchor else self.axis['ref'][c][0]
 		idx=self.trace_dict[c] if isinstance(c,str) else c
-		self['data'][idx]['xaxis']='x1'
+		self['data'][idx]['xaxis']=anchor
 		self['data'][idx]['yaxis']='y{0}'.format(on)
 	d=self.axis
 	for k in d['def'].keys():
