@@ -22,8 +22,10 @@ from utils import pp
 from tools import subplots,scatter_matrix,figures
 from extract import to_df
 from auth import set_config_file,get_config_file
-from offline import is_offline,go_offline
+from offline import is_offline,go_offline,go_online
 from version import __version__
 
 if get_config_file()['offline']:
 	go_offline()
+else:
+	go_online()

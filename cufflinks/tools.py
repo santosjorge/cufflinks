@@ -309,9 +309,9 @@ def get_subplots(rows=1,cols=1,
 
 	for k,v in sp['layout'].items():
 		if isinstance(v,XAxis):
-			update_items(v,layout,'xaxis')
+			update_items(v,layout,'xaxis1')
 		elif isinstance(v,YAxis):
-			update_items(v,layout,'xaxis')
+			update_items(v,layout,'xaxis1')
 			
 	return sp
 
@@ -348,8 +348,8 @@ def scatter_matrix(df,theme=None,bins=10,color='grey',size=2):
 			else:
 				figs.append(df.iplot(kind='scatter',mode='markers',x=j,y=i,asFigure=True,size=size,colors=[color]))
 	layout=getLayout(theme)
-	layout['xaxis'].update(showgrid=False)
-	layout['yaxis'].update(showgrid=False)
+	layout['xaxis1'].update(showgrid=False)
+	layout['yaxis1'].update(showgrid=False)
 	sm=subplots(figs,shape=(len(df.columns),len(df.columns)),shared_xaxes=False,shared_yaxes=False,
 					  horizontal_spacing=.05,vertical_spacing=.07,base_layout=layout)
 	sm['layout'].update(bargap=.02,showlegend=False)
@@ -414,17 +414,35 @@ def get_ref_axis(figure):
 			d[i].append(k)
 	return d
 
+def get_dom(figure):
+	d={}
+	which=get_which(figure)
+	axis_def=get_def(figure)
+	for k in ('x','y'):
+		d[k]={}
+		for y in which[k]:
+			item=axis_def[y]
+			domain='[0.0, 1.0]' if 'domain' not in item else str(item['domain'])
+			if domain not in d[k]:
+				d[k][domain]={}
+			s='left' if k=='y' else 'bottom'
+			side=s if 'side' not in item else item['side']
+			d[k][domain][side]=y
+	return d
+
 @property
 def axis(self):
 	return {'ref':get_ref(self),
 			'ref_axis':get_ref_axis(self),
 			'def':get_def(self),
 			'len':get_len(self),
-			'which':get_which(self)}    
+			'which':get_which(self),
+			'dom':get_dom(self)}    
 
 ### Set Axis
 
-def _set_axis(self,traces,on=None,side='right',title='',anchor=None):
+
+def _set_axis(self,traces,on=None,side='right',title=''):
 	"""
 	Sets the axis in which each trace should appear
 	If the axis doesn't exist then a new axis is created
@@ -445,27 +463,45 @@ def _set_axis(self,traces,on=None,side='right',title='',anchor=None):
 			Sets the title of the axis
 			Applies only to new axis
 	"""
+	fig=Figure(self.copy())
 	if not isinstance(traces,list):
 		traces=[traces]
-	if not on:
-		anchor=anchor if anchor else self.axis['ref'][traces[0]][0]
-		yaxis=getLayout()['yaxis']
-		yaxis.update(title=title,overlaying='y1',side=side,anchor=anchor)
-		self['layout']['yaxis{0}'.format(self.axis['len']['y']+1)]=yaxis
-		on=self.axis['len']['y']
-	for c in traces:
-		anchor=anchor if anchor else self.axis['ref'][c][0]
-		idx=self.trace_dict[c] if isinstance(c,str) else c
-		self['data'][idx]['xaxis']=anchor
-		self['data'][idx]['yaxis']='y{0}'.format(on)
-	d=self.axis
-	for k in d['def'].keys():
-		id='{0}axis{1}'.format(k[0],k[-1:])
-		if k not in d['ref_axis']:
+
+	def update_data(trace,y):
+		anchor=fig.axis['def'][y]['anchor'] if 'anchor' in fig.axis['def'][y] else 'x1'
+		idx=fig.trace_dict[trace] if isinstance(trace,str) else trace
+		fig['data'][idx]['xaxis']=anchor
+		fig['data'][idx]['yaxis']=y
+
+	for trace in traces:
+		if on:
+			if on not in fig.axis['def']:
+				raise Exception('"on" axis does not exists: {0}'.format(on))
+			update_data(trace,y=on)
+		else:
+			curr_x,curr_y=fig.axis['ref'][trace]
+			domain='[0.0, 1.0]' if 'domain' not in fig.axis['def'][curr_y] else str(fig.axis['def'][curr_y]['domain'])
 			try:
-				del self['layout'][id]
+				new_axis=fig.axis['dom']['y'][domain][side]
 			except KeyError:
-				pass			
+				axis=YAxis(fig.axis['def'][curr_y].copy())
+				### check overlaying values
+				axis.update(title=title,overlaying=curr_y,side=side,anchor=curr_x)
+				axis_idx=str(fig.axis['len']['y']+1)
+				fig['layout']['yaxis{0}'.format(axis_idx)]=axis
+				new_axis='y{0}'.format(axis_idx)
+			update_data(trace,y=new_axis)
+
+
+	for k in fig.axis['def'].keys():
+		id='{0}axis{1}'.format(k[0],k[-1:])
+		if k not in fig.axis['ref_axis']:
+			try:
+				del fig['layout'][id]
+			except KeyError:
+				pass
+
+	return fig
 
 ### Shapes
 

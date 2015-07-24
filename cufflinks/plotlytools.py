@@ -94,9 +94,9 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 	if theme=='ggplot':
 		layout=Layout(legend=Legend(bgcolor='white',font={'color':'grey10'}),
 						paper_bgcolor='white',plot_bgcolor='#E5E5E5',
-						yaxis=YAxis(tickfont={'color':'grey10'},gridcolor='#F6F6F6',title=yTitle,
+						yaxis1=YAxis(tickfont={'color':'grey10'},gridcolor='#F6F6F6',title=yTitle,
 								 titlefont={'color':'grey10'},zerolinecolor='#F6F6F6'),
-						xaxis=XAxis(tickfont={'color':'grey10'},gridcolor='#F6F6F6',title=xTitle,
+						xaxis1=XAxis(tickfont={'color':'grey10'},gridcolor='#F6F6F6',title=xTitle,
 								titlefont={'color':'grey10'},zerolinecolor='#F6F6F6',showgrid=True),
 						titlefont={'color':'charcoal'})
 		update_annotations(annotations,'grey10','grey10')
@@ -104,9 +104,9 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 	if theme=='solar':
 		layout=Layout(legend=Legend(bgcolor='charcoal',font={'color':'pearl'}),
 						paper_bgcolor='charcoal',plot_bgcolor='charcoal',
-						yaxis=YAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=yTitle,
+						yaxis1=YAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=yTitle,
 								 titlefont={'color':'pearl'},zerolinecolor='grey09'),
-						xaxis=XAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=xTitle,
+						xaxis1=XAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=xTitle,
 								titlefont={'color':'pearl'},zerolinecolor='grey09'),
 						titlefont={'color':'pearl'})
 		update_annotations(annotations,'pearl','grey11')
@@ -114,9 +114,9 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 	elif theme=='space':
 		layout=Layout(legend=Legend(bgcolor='grey03',font={'color':'pearl'}),
 						paper_bgcolor='grey03',plot_bgcolor='grey03',
-						yaxis=YAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=yTitle,
+						yaxis1=YAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=yTitle,
 								 titlefont={'color':'pearl'},zerolinecolor='grey09'),
-						xaxis=XAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=xTitle,
+						xaxis1=XAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=xTitle,
 								titlefont={'color':'pearl'},zerolinecolor='grey09'),
 						titlefont={'color':'pearl'})
 		update_annotations(annotations,'pearl','red')
@@ -124,18 +124,18 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 	elif theme=='pearl':
 		layout=Layout(legend=Legend(bgcolor='pearl02',font={'color':'pearl06'}),
 						paper_bgcolor='pearl02',plot_bgcolor='pearl02',
-						yaxis=YAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=yTitle,
+						yaxis1=YAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=yTitle,
 								  titlefont={'color':'pearl06'},zeroline=False,zerolinecolor='pearl04' if is3d else 'pearl03'),
-						xaxis=XAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=xTitle,
+						xaxis1=XAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=xTitle,
 								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'))
 		update_annotations(annotations,'pearl06','pearl04')
 
 	elif theme=='white':
 		layout=Layout(legend=Legend(bgcolor='white',font={'color':'pearl06'}),
 						paper_bgcolor='white',plot_bgcolor='white',
-						yaxis=YAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=yTitle,
+						yaxis1=YAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=yTitle,
 								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'),
-						xaxis=XAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=xTitle,
+						xaxis1=XAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=xTitle,
 								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'))
 		update_annotations(annotations,'pearl06','pearl04')
 	
@@ -167,12 +167,12 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 		layout.update(margin=margin)
 
 	if is3d:
-		zaxis=layout['xaxis'].copy()
+		zaxis=layout['xaxis1'].copy()
 		zaxis.update(title=zTitle)
-		scene=Scene(xaxis=layout['xaxis'],yaxis=layout['yaxis'],zaxis=zaxis)
+		scene=Scene(xaxis1=layout['xaxis1'],yaxis1=layout['yaxis1'],zaxis=zaxis)
 		layout.update(scene=scene)
-		del layout['xaxis']
-		del layout['yaxis']
+		del layout['xaxis1']
+		del layout['yaxis1']
 
 
 	## Kwargs
@@ -737,15 +737,15 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 					_size=size
 				_data=Scatter3d(x=_x,y=_y,mode=mode,name=_,
 							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis']['titlefont'])
+											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis1']['titlefont'])
 				if '3d' in kind:
 					_data=Scatter3d(x=_x,y=_y,z=_z,mode=mode,name=_,
 							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis']['titlefont'])
+											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis1']['titlefont'])
 				else:
 					_data=Scatter(x=_x,y=_y,mode=mode,name=_,
 							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis']['titlefont'])
+											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis1']['titlefont'])
 				if text:
 					_data.update(text=_text)
 				data.append(_data)
@@ -776,9 +776,9 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 						data.append(Scatter(trace[0]))
 						if kind=='spread':
 							data.append(Scatter(trace[1]))
-						layout['yaxis'].update({'domain':[.3,1]})
-						layout['yaxis2']=copy.deepcopy(layout['yaxis'])
-						layout['xaxis2']=copy.deepcopy(layout['xaxis'])
+						layout['yaxis1'].update({'domain':[.3,1]})
+						layout['yaxis2']=copy.deepcopy(layout['yaxis1'])
+						layout['xaxis2']=copy.deepcopy(layout['xaxis1'])
 						layout['yaxis2'].update(domain=[0,.25],title=kind.capitalize())
 						layout['xaxis2'].update(anchor='y2',showticklabels=False)
 						layout['hovermode']='x'
@@ -803,7 +803,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 				clrs=get_colors(colors,colorscale,x).values()
 				gen=colorgen()
 				marker=Marker(color=clrs,size=z,symbol=symbol,
-								line=Line(width=width),textfont=getLayout(theme=theme)['xaxis']['titlefont'])
+								line=Line(width=width),textfont=getLayout(theme=theme)['xaxis1']['titlefont'])
 				trace=Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
 				data=Data([trace])
 			elif kind in ('box','histogram','hist'):
@@ -987,6 +987,7 @@ def iplot(data_or_figure,validate=True,world_readable=False,filename='',online=N
 pd.DataFrame.to_iplot=_to_iplot
 pd.DataFrame.scatter_matrix=_scatter_matrix
 pd.DataFrame.figure=_figure
+pd.Series.figure=_figure
 pd.DataFrame.iplot=_iplot
 pd.Series.to_iplot=_to_iplot
 pd.Series.iplot=_iplot

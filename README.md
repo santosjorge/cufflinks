@@ -11,6 +11,7 @@ This tutorial assumes that the plotly user credentials have already been configu
 * [Pandas Like Visualization](http://nbviewer.ipython.org/gist/santosjorge/aba934a0d20023a136c2)
 * [The Basics](http://nbviewer.ipython.org/gist/santosjorge/f3b07b2be8094deea8c6)
 * [Color Management](http://nbviewer.ipython.org/gist/santosjorge/00ca17b121fa2463e18b)
+* [Offline Mode](http://nbviewer.ipython.org/gist/santosjorge/5fdbe947496faf7af5e6)
 
 ![3D Charts](img/ukswaps.gif)
 
@@ -20,10 +21,11 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 * Support of offline charts
 	* `cf.go_offline()`
-	* `cf.iplot(figure,online=True)`
+	* `cf.go_online()`
+	* `cf.iplot(figure,online=True)` (To force online whilst on offline mode)
 * Support for secondary axis
 	* `fig=cf.datagen.lines(3,columns=['a','b','c']).figure()`  
-	  `fig.set_axis('b',side='right')`  
+	  `fig=fig.set_axis('b',side='right')`  
 	  `cf.iplot(fig)`  
 
 
