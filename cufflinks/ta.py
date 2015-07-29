@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 def _make_list(val):
-	return val if isinstance(val,list) else list(val)
+	return val if isinstance(val,list) else [val]
 
 def get_column_name(name,study=None,str=None,period=None,column=None):
 	if str:
