@@ -1,6 +1,6 @@
 import plotly.plotly as py
 import plotly.offline as py_offline
-from plotly.graph_objs import Figure,XAxis,YAxis,Annotation
+from plotly.graph_objs import Figure,XAxis,YAxis,Annotation,Layout,Data
 from plotlytools import getLayout
 from colors import normalize,to_rgba
 import auth
@@ -55,6 +55,17 @@ def figures(df,specs):
 	for spec in specs:
 		figs.append(df.figure(**spec))
 	return figs
+
+def merge_figures(figures):
+	figure=Figure()
+	data=Data()
+	for fig in figures:
+		for trace in fig['data']:
+			data.append(trace)
+	layout=get_base_layout(figures)
+	figure['data']=data
+	figure['layout']=layout
+	return figure
 
 def subplots(figures,shape=None,
 				  shared_xaxes=False, shared_yaxes=False,

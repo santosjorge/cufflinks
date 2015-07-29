@@ -15,6 +15,7 @@ import datagen
 import tools
 import colors
 import pandastools
+import ta
 
 from plotlytools import *
 from plotly.plotly import plot
