@@ -939,7 +939,7 @@ def get_colors(colors,colorscale,keys,asList=False):
 	return colors
 
 
-def _scatter_matrix(self,theme=None,bins=10,color='grey',size=2):
+def _scatter_matrix(self,theme=None,bins=10,color='grey',size=2, **iplot_kwargs):
 	"""
 	Displays a matrix with scatter plot for each pair of 
 	Series in the DataFrame.
@@ -957,8 +957,10 @@ def _scatter_matrix(self,theme=None,bins=10,color='grey',size=2):
 			Color to be used for each scatter plot
 		size : int
 			Size for each marker on the scatter plot
+		iplot_kwargs : key-value pairs
+			Keyword arguments to pass through to `iplot`
 	"""
-	return iplot(tools.scatter_matrix(self,theme=theme,bins=bins,color=color,size=size))
+	return iplot(tools.scatter_matrix(self,theme=theme,bins=bins,color=color,size=size), **iplot_kwargs)
 
 def _figure(self,**kwargs):
 	"""
