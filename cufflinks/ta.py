@@ -62,11 +62,12 @@ def rsi(df,periods=14,column=None,include=True,str=None,detail=False):
 		return __df
 
 
-def sma(df,periods=21,column=None,include=True,str=None,detail=False):
-	def _sma(df,periods=21,column=None,include=True,str=None,detail=False):
+
+def sma(df,periods=21,column=None,include=True,str=None,detail=False,**sma_kwargs):
+	def _sma(df,periods=21,column=None,include=True,str=None,detail=False,**sma_kwargs):
 		study='SMA'
 		df,_df,column=validate(df,column)
-		_df['SMA']=pd.rolling_mean(df[column],periods)
+		_df['SMA']=pd.rolling_mean(df[column],periods,**sma_kwargs)
 		str=str if str else '{name}({period})'
 		return rename(df,_df,study,periods,column,include,str,detail)
 	column=_make_list(column)
