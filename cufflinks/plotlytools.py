@@ -802,8 +802,9 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 				z=[int(100*(float(_)-rg.min())/(rg.max()-rg.min()))+12 for _ in rg]
 				text=kwargs['labels'] if 'labels' in kwargs else text
 				labels=self[text].values.tolist() if text else ''
-				clrs=get_colors(colors,colorscale,x).values()
-				gen=colorgen()
+				clrs=colors if colors else get_scales(colorscale)
+				clrs=[clrs] if not isinstance(clrs,list) else clrs
+				clrs=[clrs[0]]*len(x)
 				marker=Marker(color=clrs,size=z,symbol=symbol,
 								line=Line(width=width),textfont=getLayout(theme=theme)['xaxis1']['titlefont'])
 				trace=Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
