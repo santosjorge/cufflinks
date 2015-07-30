@@ -10,6 +10,7 @@ from IPython.display import display,Image
 import time
 import copy
 import auth
+import ta
 
 
 
@@ -20,6 +21,7 @@ def getThemes():
 	return THEMES.keys()
 
 __LAYOUT_KWARGS = ['legend','vline','hline','vspan','hspan','shapes']
+__TA_KWARGS = ['min_period','center','freq','how']
 
 def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
 				gridcolor=None,zerolinecolor=None,margin=None,annotations=False,is3d=False,**kwargs):
@@ -981,16 +983,50 @@ def iplot(data_or_figure,validate=True,world_readable=False,filename='',online=N
 		return offline.py_offline.iplot(data_or_figure,show_link=show_link,link_text=link_text)
 	else:
 		if 'layout' in data_or_figure:
-			validate = False if 'shapes' in data_or_figure['layout'] else True
+			validate = False if 'shapes' in data_or_figure['layout'] else validate
 		return py.iplot(data_or_figure,validate=validate,world_readable=world_readable,
 						filename=filename)
 
+def _ta_figure(self,**kwargs):
+	"""
+	Generates a Plotly figure for the given DataFrame
+
+	Parameters:
+	-----------
+			All properties avaialbe can be seen with
+			help(cufflinks.pd.DataFrame.iplot)
+	"""
+	kwargs['asFigure']=True
+	return self.ta_plot(**kwargs)
+
+def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=False,**iplot_kwargs):
+	if 'columns' in iplot_kwargs:
+		column=iplot_kwargs['columns']
+		del iplot_kwargs['columns']
+	if 'period' in iplot_kwargs:
+		periods=iplot_kwargs['period']
+		del iplot_kwargs['periods']
+
+	study_kwargs={}
+	for k in __TA_KWARGS:
+		if k in iplot_kwargs:
+			study_kwargs[k]=iplot_kwargs[k]
+			del iplot_kwargs[k]
+	if study=='rsi':
+		df=ta.rsi(self,periods=periods,column=column,include=include,str=str,detail=detail,**study_kwargs)
+	if study=='sma':
+		df=ta.sma(self,periods=periods,column=column,include=include,str=str,detail=detail,**study_kwargs)	
+	return df.iplot(**iplot_kwargs)
 
 pd.DataFrame.to_iplot=_to_iplot
 pd.DataFrame.scatter_matrix=_scatter_matrix
 pd.DataFrame.figure=_figure
-pd.Series.figure=_figure
+pd.DataFrame.ta_plot=_ta_plot
 pd.DataFrame.iplot=_iplot
+pd.DataFrame.ta_figure=_ta_figure
+pd.Series.ta_figure=_ta_figure
+pd.Series.ta_plot=_ta_plot
+pd.Series.figure=_figure
 pd.Series.to_iplot=_to_iplot
 pd.Series.iplot=_iplot
 

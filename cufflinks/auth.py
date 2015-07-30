@@ -29,7 +29,8 @@ _FILE_CONTENT = {
 				 		"offline" : False,
 				 		"offline_url":'',
 				 		"offline_show_link" : True,
-				 		"offline_link_text" : 'Export to plot.ly'
+				 		"offline_link_text" : 'Export to plot.ly',
+				 		"datagen_mode" : 'stocks'
 						}
 				 }
 
@@ -79,7 +80,8 @@ def ensure_local_files():
 
 
 def set_config_file(world_readable=None,theme=None,colorscale=None,offline=None,
-					offline_url=None,offline_show_link=None,offline_link_text=None):
+					offline_url=None,offline_show_link=None,offline_link_text=None,
+					datagen_mode=None):
 	"""
 	Set the keyword-value pairs in `~/.config`.
 
@@ -98,6 +100,8 @@ def set_config_file(world_readable=None,theme=None,colorscale=None,offline=None,
 		config['offline']=offline
 		if offline:
 			go_offline()
+	if datagen_mode:
+		config['datagen_mode']=datagen_mode
 	if offline_url:
 		config['offline_url']=offline_url
 	if offline_show_link is not None:
