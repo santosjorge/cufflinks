@@ -333,7 +333,7 @@ def dict_to_iplot(d):
 
 
 def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbol='dot',size='12',fill=False,
-		width=3,sortbars=False,keys=False,bestfit=False,bestfit_colors=None,asDates=False,**kwargs):
+		width=3,sortbars=False,keys=False,bestfit=False,bestfit_colors=None,asDates=False,text=None,**kwargs):
 	"""
 	Generates a plotly Data object 
 
@@ -420,6 +420,8 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 		lines[key]["x"]=x
 		lines[key]["y"]=df[key].fillna('').values
 		lines[key]["name"]=key
+		if text is not None:
+			lines[key]["text"]=text
 		if 'bar' in kind:
 			lines[key]["marker"]={'color':to_rgba(colors[key],.6),'line':{'color':colors[key],'width':1}}
 		else:
@@ -762,8 +764,11 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 					df=df[y]
 				if kind=='area':
 					df=df.transpose().fillna(0).cumsum().transpose()
+				if text:
+					text=self[text].values
 				data=df.to_iplot(colors=colors,colorscale=colorscale,kind=kind,fill=fill,width=width,sortbars=sortbars,keys=keys,
-						bestfit=bestfit,bestfit_colors=bestfit_colors,asDates=asDates,mode=mode,symbol=symbol,size=size,**kwargs)				
+						bestfit=bestfit,bestfit_colors=bestfit_colors,asDates=asDates,mode=mode,symbol=symbol,size=size,
+						text=text,**kwargs)				
 				if kind in ('spread','ratio'):
 						if kind=='spread':
 							trace=self.apply(lambda x:x[0]-x[1],axis=1)
