@@ -173,6 +173,34 @@ def lines(n_traces=5,n=100,columns=None,dateIndex=True,mode=None):
 		columns=getName(n_traces,columns=columns,mode=mode))
 	return df.cumsum()  
 
+def bars(n=3,n_categories=3,prefix='category',columns=None,mode='abc'):
+	"""
+	Returns a DataFrame with the required format for 
+	a bar plot
+
+	Parameters:
+	-----------
+		n : int
+			Number of points for each trace
+		n_categories : int
+			Number of categories for each point
+		prefix : string
+			Name for each category
+		columns : [str]
+			List of column names
+		mode : string
+			Format for each item
+				'abc' for alphabet columns
+				'stocks' for random stock names
+	"""		
+	categories=[]
+	if not columns:
+		columns=getName(n,mode=mode)
+	for i in range(n_categories):
+		categories.extend([prefix+str(i+1)])
+	data=dict([(x,np.random.randint(1,100,n_categories)) for x in columns])
+	return pd.DataFrame(data,index=categories)
+
 def ohlc(n=100):
 	"""
 	Returns a DataFrame with the required format for 

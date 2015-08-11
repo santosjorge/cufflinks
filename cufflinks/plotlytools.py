@@ -767,37 +767,44 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 	if not data:
 		if categories:
 			data=Data()
-			_keys=pd.unique(self[categories])
-			colors=get_colors(colors,colorscale,_keys)	
-			mode='markers' if 'markers' not in mode else mode 
-			for _ in _keys:
-				__=self[self[categories]==_].copy()
-				if text:
-					_text=__[text] if asFrame else __[text].values
-				_x=__[x] if asFrame else __[x].values
-				_y=__[y] if asFrame else __[y].values
-				if z:
-					_z=__[z] if asFrame else __[z].values
-				if 'bubble' in kind:
-					rg=__[size].values
-					rgo=self[size].values
-					_size=[int(100*(float(i)-rgo.min())/(rgo.max()-rgo.min()))+12 for i in rg]		
-				else:
-					_size=size
-				_data=Scatter3d(x=_x,y=_y,mode=mode,name=_,
-							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis1']['titlefont'])
-				if '3d' in kind:
-					_data=Scatter3d(x=_x,y=_y,z=_z,mode=mode,name=_,
-							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis1']['titlefont'])
-				else:
-					_data=Scatter(x=_x,y=_y,mode=mode,name=_,
-							marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-											line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis1']['titlefont'])
-				if text:
-					_data.update(text=_text)
-				data.append(_data)
+			if 'bar' in kind:
+				df=self.copy()
+				df=df.set_index(categories)
+				fig=df.figure(kind=kind,colors=colors,colorscale=colorscale,fill=fill,width=width,sortbars=sortbars,
+						asDates=asDates,mode=mode,symbol=symbol,size=size,text=text,barmode=barmode,orientation=orientation)
+				data=fig['data']			
+			else:
+				_keys=pd.unique(self[categories])
+				colors=get_colors(colors,colorscale,_keys)	
+				mode='markers' if 'markers' not in mode else mode 
+				for _ in _keys:
+					__=self[self[categories]==_].copy()
+					if text:
+						_text=__[text] if asFrame else __[text].values
+					_x=__[x] if asFrame else __[x].values
+					_y=__[y] if asFrame else __[y].values
+					if z:
+						_z=__[z] if asFrame else __[z].values
+					if 'bubble' in kind:
+						rg=__[size].values
+						rgo=self[size].values
+						_size=[int(100*(float(i)-rgo.min())/(rgo.max()-rgo.min()))+12 for i in rg]		
+					else:
+						_size=size
+					_data=Scatter3d(x=_x,y=_y,mode=mode,name=_,
+								marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
+												line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis1']['titlefont'])
+					if '3d' in kind:
+						_data=Scatter3d(x=_x,y=_y,z=_z,mode=mode,name=_,
+								marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
+												line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis1']['titlefont'])
+					else:
+						_data=Scatter(x=_x,y=_y,mode=mode,name=_,
+								marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
+												line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis1']['titlefont'])
+					if text:
+						_data.update(text=_text)
+					data.append(_data)
 		else:
 			if kind in ('scatter','spread','ratio','bar','barh','area','line'):
 				df=self.copy()
@@ -810,7 +817,8 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 				if kind=='area':
 					df=df.transpose().fillna(0).cumsum().transpose()
 				if text:
-					text=self[text].values
+					if not isinstance(text,list):
+						text=self[text].values
 				data=df.to_iplot(colors=colors,colorscale=colorscale,kind=kind,fill=fill,width=width,sortbars=sortbars,keys=keys,
 						bestfit=bestfit,bestfit_colors=bestfit_colors,asDates=asDates,mode=mode,symbol=symbol,size=size,
 						text=text,**kwargs)				
