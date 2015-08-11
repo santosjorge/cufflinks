@@ -6,6 +6,7 @@ from plotly.graph_objs import *
 from collections import defaultdict
 from colors import normalize,get_scales,colorgen,to_rgba
 from themes import THEMES
+from utils import check_kwargs
 from IPython.display import display,Image
 import time
 import copy
@@ -333,7 +334,8 @@ def dict_to_iplot(d):
 
 
 def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbol='dot',size='12',fill=False,
-		width=3,sortbars=False,keys=False,bestfit=False,bestfit_colors=None,asDates=False,text=None,**kwargs):
+		width=3,sortbars=False,keys=False,bestfit=False,bestfit_colors=None,asDates=False,
+		asTimestamp=False,text=None,**kwargs):
 	"""
 	Generates a plotly Data object 
 
@@ -396,7 +398,9 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 		
 	""" 
 	df=self.copy()
-	if df.index.__class__.__name__ in ('PeriodIndex','DatetimeIndex'):
+	if asTimestamp:
+		x=[_ for _ in df.index]
+	elif df.index.__class__.__name__ in ('PeriodIndex','DatetimeIndex'):
 		if asDates:
 			df.index=df.index.date
 		x=df.index.format()
@@ -447,7 +451,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 		for key in keys:
 			bestfit=df[key].bestfit()
 			d[bestfit.formula]=bestfit
-		bestfit_lines=pd.DataFrame(d).to_iplot(bestfit=False,colors=bestfit_colors,kind='scatter')
+		bestfit_lines=pd.DataFrame(d).to_iplot(bestfit=False,colors=bestfit_colors,kind='scatter',asTimestamp=asTimestamp)
 		for line in bestfit_lines:
 			line['line']['dash']='dash'
 			if not bestfit_colors:
@@ -462,7 +466,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			mode='lines',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
 			bestfit_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,zerolinecolor=None,margin=None,
-			subplots=False,shape=None,asFrame=False,asDates=False,asFigure=False,asImage=False,
+			labels=None,values=None,subplots=False,shape=None,asFrame=False,asDates=False,asFigure=False,asImage=False,
 			dimensions=(1116,587),asPlot=False,asUrl=False,online=None,**kwargs):
 	"""
 	Returns a plotly chart either as inline chart, image of Figure object
@@ -646,6 +650,12 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			Dictionary (l,r,b,t) or
 			Tuple containing the left,
 			right, bottom and top margins
+		labels : string
+			Name of the column that contains the labels.
+			* Only valid when kind='pie' 
+		values : string
+			Name of the column that contains the values.
+			* Only valid when kind='pie'
 		subplots : bool
 			If true then each trace is placed in 
 			subplot layout
@@ -674,12 +684,43 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 		online : bool
 			If True then the chart is rendered on the server 
 			even when running in offline mode. 
+
+		Other Kwargs
+		============
+		
+		Pie charts
+			sort : bool
+				If True it sorts the labels by value
+			pull : float [0-1]
+				Pulls the slices from the centre 
+			hole : float [0-1]
+				Sets the size of the inner hole
+			textposition : string 
+				Sets the position of the legends for each slice
+					outside
+					inner
+			textinfo : string 
+				Sets the information to be displayed on 
+				the legends 
+					label
+					percent
+					value
+					* or ony combination of the above using 
+					  '+' between each item
+					  ie 'label+percent'
+
 	"""
 
 	# Look for invalid kwargs
-	valid_kwargs = ['color','opacity','column','columns','labels','text','horizontal_spacing', 'vertical_spacing',
+	valid_kwargs = ['color','opacity','column','columns','labels','text']
+	PIE_KWARGS=['sort','pull','hole','textposition','textinfo','linecolor']
+	OHLC_KWARGS=['up_color','down_color']
+	SUBPLOT_KWARGS=['horizontal_spacing', 'vertical_spacing',
 					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles']
 	valid_kwargs.extend(__LAYOUT_KWARGS)
+	valid_kwargs.extend(OHLC_KWARGS)
+	valid_kwargs.extend(PIE_KWARGS)
+	valid_kwargs.extend(SUBPLOT_KWARGS)
 
 	for key in kwargs.keys():
 		if key not in valid_kwargs:
@@ -699,7 +740,8 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 	if colorscale is None:
 		colorscale=theme_config['colorscale'] if 'colorscale' in theme_config else 'dflt'
 	if width is None:
-		width=theme_config['linewidth'] if 'linewidth' in theme_config else 2
+		if kind != 'pie':
+			width=theme_config['linewidth'] if 'linewidth' in theme_config else 2
 	# if bargap is None:
 	# 	bargap=theme_config['bargap'] if 'bargap' in theme_config else 0
 
@@ -736,7 +778,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 				if 'bubble' in kind:
 					rg=__[size].values
 					rgo=self[size].values
-					_size=[int(100*(float(i)-rgo.min())/(rgo.max()-rgo.min()))+12 for i in rg]	
+					_size=[int(100*(float(i)-rgo.min())/(rgo.max()-rgo.min()))+12 for i in rg]		
 				else:
 					_size=size
 				_data=Scatter3d(x=_x,y=_y,mode=mode,name=_,
@@ -870,8 +912,43 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 				if text:
 					_data.update(text=keys)
 				data.append(_data)
-
-
+			elif kind=='pie':
+				labels=self[labels].values.tolist()
+				values=self[values].values.tolist()
+				marker={'colors':get_colors(colors,colorscale,labels,asList=True)}
+				line={}
+				if 'linecolor' in kwargs:
+					line['color']=kwargs['linecolor'] 
+				if width:
+					line['width']=width 
+				if line:
+					marker['line']=line
+				pie={'type':'pie','values':values,'labels':labels,'name':'',
+					 'marker':marker}
+				for kw in ['sort','pull','hole','textposition','textinfo']:
+					if kw in kwargs:
+						pie[kw]=kwargs[kw]
+				data=Data()
+				data.append(pie)
+				validate=False
+			elif kind in ['candle','ohlc']:
+				d=tools._ohlc_dict(self)
+				if len(d.keys())!=4:
+					raise Exception("OHLC type of charts require an Open, High, Low and Close column")				
+				ohlc_kwargs=check_kwargs(kwargs,OHLC_KWARGS)
+				if kind=='candle':					
+					fig=tools.get_candle(self,theme=theme,**ohlc_kwargs)
+				else:
+					fig=tools.get_ohlc(self,theme=theme,**ohlc_kwargs)
+				if bestfit:
+					##here
+					df=self.copy()
+					bf=_to_iplot(self[d['close']],bestfit=True,bestfit_colors=bestfit_colors,asTimestamp=True)
+					# bf[1]['x']=df.index.values
+					# return df,bf
+					fig['data'].append(bf[1])
+				data=fig['data']
+				layout=fig['layout']
 	if world_readable is None:
 			world_readable = auth.get_config_file()['world_readable']
 
@@ -894,24 +971,24 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 
 	if subplots:
 		fig=tools.strip_figures(figure)
-		kw={}
-		if 'horizontal_spacing' in kwargs:
-			kw['horizontal_spacing']=kwargs['horizontal_spacing']
-		if 'vertical_spacing' in kwargs:
-			kw['vertical_spacing']=kwargs['vertical_spacing']
-		if 'specs' in kwargs:
-			kw['specs']=kwargs['specs']	
-		if 'shared_xaxes' in kwargs:
-			kw['shared_xaxes']=kwargs['shared_xaxes']	
-		if 'shared_yaxes' in kwargs:
-			kw['shared_yaxes']=kwargs['shared_yaxes']	
+		kw=check_kwargs(kwargs,SUBPLOT_KWARGS)
+		# if 'horizontal_spacing' in kwargs:
+		# 	kw['horizontal_spacing']=kwargs['horizontal_spacing']
+		# if 'vertical_spacing' in kwargs:
+		# 	kw['vertical_spacing']=kwargs['vertical_spacing']
+		# if 'specs' in kwargs:
+		# 	kw['specs']=kwargs['specs']	
+		# if 'shared_xaxes' in kwargs:
+		# 	kw['shared_xaxes']=kwargs['shared_xaxes']	
+		# if 'shared_yaxes' in kwargs:
+		# 	kw['shared_yaxes']=kwargs['shared_yaxes']	
 		if 'subplot_titles' in kwargs:
 			if kwargs['subplot_titles']==True:
 				kw['subplot_titles']=[d['name'] for d in data]
 			else:
 				kw['subplot_titles']=kwargs['subplot_titles']	
-		if 'start_cell' in kwargs:
-			kw['start_cell']=kwargs['start_cell']	
+		# if 'start_cell' in kwargs:
+		# 	kw['start_cell']=kwargs['start_cell']	
 		figure=tools.subplots(fig,shape,base_layout=layout,theme=theme,**kw)
 
 
@@ -1006,6 +1083,43 @@ def _ta_figure(self,**kwargs):
 	return self.ta_plot(**kwargs)
 
 def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=False,**iplot_kwargs):
+	"""
+	Generates a Technical Study Chart
+
+	Parameters:
+	-----------
+			study : string
+				Technical Study to be charted
+					sma - 'Simple Moving Average'
+					rsi - 'R Strength Indicator'
+			periods : int
+				Number of periods
+			column : string
+				Name of the column on which the
+				study will be done
+			include : bool
+				Indicates if the input column(s)
+				should be included in the chart
+			str : string
+				Label factory for studies
+				The following wildcards can be used:
+					{name} : Name of the column
+					{study} : Name of the study
+					{period} : Period used
+				Examples:
+					'study: {study} - period: {period}'
+			detail : bool
+				If True the supporting data/calculations
+				are included in the chart 
+
+		Study Specific Parameters
+		-------------------------
+		RSI 
+			rsi_upper : int (0,100]
+				Level for the upper rsi band
+			rsi_lower : int (0,100]
+				Level for the lower rsi band
+	"""
 	if 'columns' in iplot_kwargs:
 		column=iplot_kwargs['columns']
 		del iplot_kwargs['columns']
@@ -1019,8 +1133,27 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 			study_kwargs[k]=iplot_kwargs[k]
 			del iplot_kwargs[k]
 	if study=='rsi':
+		rsi_upper=iplot_kwargs['rsi_upper'] if 'rsi_upper' in iplot_kwargs else 70
+		rsi_lower=iplot_kwargs['rsi_lower'] if 'rsi_lower' in iplot_kwargs else 30
 		df=ta.rsi(self,periods=periods,column=column,include=include,str=str,detail=detail,**study_kwargs)
+		fig=df.figure(**iplot_kwargs)
+		figures=tools.strip_figures(fig)
+		subplots=tools.subplots(figures,shape=(2,1),shared_xaxes=True,base_layout=fig['layout'])
+		subplots['layout']['yaxis1']['domain']=[.27,1.0]
+		subplots['layout']['yaxis2']['domain']=[0,.25]
+		shapes=[tools.get_shape(y=i,yref='y2',color=j,dash='dash') for (i,j) in [(rsi_lower,'green'),(rsi_upper,'red')]]
+		subplots['layout']['shapes']=shapes
+		subplots['layout']['range']=[0,100]
+		subplots['layout']['nticks']=6
+		return iplot(subplots)
 	if study=='sma':
+		if not column:
+			if isinstance(self,pd.DataFrame):
+				df=self.copy()
+				column=self.keys().tolist()
+			else:
+				df=pd.DataFrame(self)
+				column=df.keys().tolist()
 		df=ta.sma(self,periods=periods,column=column,include=include,str=str,detail=detail,**study_kwargs)	
 	return df.iplot(**iplot_kwargs)
 

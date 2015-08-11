@@ -26,7 +26,10 @@ from auth import set_config_file,get_config_file
 from offline import is_offline,go_offline,go_online
 from version import __version__
 
-if get_config_file()['offline']:
-	go_offline()
-else:
-	go_online()
+try:
+	if get_config_file()['offline']:
+		go_offline()
+	else:
+		go_online()
+except:
+	pass

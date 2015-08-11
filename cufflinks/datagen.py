@@ -19,6 +19,10 @@ def scatter3d(n_categories=5,n=10,prefix='category',mode=None):
 			Number of points for each trace
 		prefix : string
 			Name for each trace
+		mode : string
+			Format for each item
+				'abc' for alphabet columns
+				'stocks' for random stock names
 	"""
 	categories=[]
 	for i in range(n_categories):
@@ -42,6 +46,10 @@ def bubble3d(n_categories=5,n=10,prefix='category',mode=None):
 			Number of points for each trace
 		prefix : string
 			Name for each trace
+		mode : string
+			Format for each item
+				'abc' for alphabet columns
+				'stocks' for random stock names
 	"""	
 	categories=[]
 	for i in range(n_categories):
@@ -66,6 +74,10 @@ def bubble(n_categories=5,n=10,prefix='category',mode=None):
 			Number of points for each category
 		prefix : string
 			Name for each category
+		mode : string
+			Format for each item
+				'abc' for alphabet columns
+				'stocks' for random stock names
 	"""	
 	categories=[]
 	for i in range(n_categories):
@@ -76,28 +88,22 @@ def bubble(n_categories=5,n=10,prefix='category',mode=None):
 						 'text':getName(n*n_categories,mode=mode),
 						 'categories':categories}) 
 
-def pie(n_categories=5,n=10,prefix='category',mode=None):
+def pie(n_labels=5,mode=None):
 	"""
 	Returns a DataFrame with the required format for 
 	a pie plot
 
 	Parameters:
 	-----------
-		n_categories : int
-			Number of categories 
-		n : int
-			Number of points for each category
-		prefix : string
-			Name for each category
+		n_labels : int
+			Number of labels 
+		mode : string
+			Format for each item
+				'abc' for alphabet columns
+				'stocks' for random stock names
 	"""	
-	categories=[]
-	for i in range(n_categories):
-		categories.extend([prefix+str(i+1)]*n)
-	return pd.DataFrame({'x':np.random.randn(n*n_categories),
-						 'y':np.random.randn(n*n_categories),
-						 'size':np.random.randint(1,100,n*n_categories),
-						 'text':getName(n*n_categories,mode=mode),
-						 'categories':categories})                               
+	return pd.DataFrame({'values':np.random.randint(1,100,n_labels),
+						 'labels':getName(n_labels,mode=mode)})                               
 
 def scatter(n_categories=5,n=10,prefix='category',mode=None):
 	"""
@@ -112,6 +118,10 @@ def scatter(n_categories=5,n=10,prefix='category',mode=None):
 			Number of points for each category
 		prefix : string
 			Name for each category
+		mode : string
+			Format for each item
+				'abc' for alphabet columns
+				'stocks' for random stock names
 	"""	
 	categories=[]
 	for i in range(n_categories):
@@ -153,11 +163,43 @@ def lines(n_traces=5,n=100,columns=None,dateIndex=True,mode=None):
 		dateIndex : bool
 			If True it will return a datetime index
 			if False it will return a enumerated index
+		mode : string
+			Format for each item
+				'abc' for alphabet columns
+				'stocks' for random stock names
 	"""	
 	index=pd.date_range('1/1/15',periods=n) if dateIndex else list(range(n))
 	df=pd.DataFrame(np.random.randn(n,n_traces),index=index,
 		columns=getName(n_traces,columns=columns,mode=mode))
 	return df.cumsum()  
+
+def ohlc(n=100):
+	"""
+	Returns a DataFrame with the required format for 
+	a scatter (lines) plot
+
+	Parameters:
+	-----------
+		n_traces : int
+			Number of traces 
+		n : int
+			Number of points for each trace
+		columns : [str]
+			List of column names
+		mode : string
+			Format for each item
+				'abc' for alphabet columns
+				'stocks' for random stock names
+	"""	
+	index=pd.date_range('1/1/15',periods=n*288,freq='5min',tz='utc')
+	data=np.random.randn(n*288)
+	data[0]=np.array([100])
+	df=pd.DataFrame(data,index=index,
+		columns=['a'])
+	df=df.cumsum()  
+	df=df.resample('1d',how='ohlc')
+	# df.index=df.index.date
+	return df['a']
 
 def box(n_traces=5,n=100,mode=None):
 	"""
@@ -170,6 +212,10 @@ def box(n_traces=5,n=100,mode=None):
 			Number of traces 
 		n : int
 			Number of points for each trace
+		mode : string
+			Format for each item
+				'abc' for alphabet columns
+				'stocks' for random stock names
 	"""	
 	df=pd.DataFrame([np.random.chisquare(np.random.randint(2,10),n_traces) for _ in range(n)],
 		columns=getName(n_traces,mode=mode))
@@ -186,6 +232,10 @@ def histogram(n_traces=1,n=500,mode=None):
 			Number of traces 
 		n : int
 			Number of points for each trace
+		mode : string
+			Format for each item
+				'abc' for alphabet columns
+				'stocks' for random stock names
 	"""	
 	df=pd.DataFrame(np.random.randn(n,n_traces)+np.random.randint(-1,2),
 		columns=getName(n_traces,mode=mode))                     

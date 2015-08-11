@@ -4,7 +4,7 @@ from plotly.graph_objs import Figure,XAxis,YAxis,Annotation,Layout,Data
 from plotlytools import getLayout
 from colors import normalize,to_rgba
 import auth
-
+from utils import merge_dict
 
 def strip_figures(figure):
 	"""
@@ -326,7 +326,68 @@ def get_subplots(rows=1,cols=1,
 			
 	return sp
 
+# Candlesticks and OHLC
 
+def _ohlc_dict(df):
+	c_dir={}
+	ohlc=['open','high','low','close']
+	for c in df.columns:
+		for _ in ohlc:
+			if _ in c.lower():
+				c_dir[_]=c
+	return c_dir
+
+def get_ohlc(df,up_color=None,down_color=None,theme=None,**kwargs):
+	ohlc=['open','high','low','close']
+	if not theme:
+		theme = auth.get_config_file()['theme']    
+	c_dir=_ohlc_dict(df)
+	args=[df[c_dir[_]] for _ in ohlc]
+	args.append(df.index)
+	fig=py.plotly.tools.FigureFactory.create_ohlc(*args,**kwargs)
+	ohlc_bars=Figure()
+	ohlc_bars['data']=fig['data']
+	ohlc_bars['layout']=fig['layout']
+	data=ohlc_bars['data']
+	if up_color:
+		data[0]['line'].update(color=normalize(up_color))
+	if down_color:
+		data[1]['line'].update(color=normalize(down_color))
+	ohlc_bars['layout']['hovermode']='closest'
+	layout=getLayout(theme=theme)
+	ohlc_bars['layout']=merge_dict(layout,ohlc_bars['layout'])
+	return ohlc_bars
+
+def get_candle(df,up_color=None,down_color=None,theme=None,**kwargs):
+	ohlc=['open','high','low','close']
+	if not theme:
+		theme = auth.get_config_file()['theme']    
+	c_dir=_ohlc_dict(df)
+	args=[df[c_dir[_]] for _ in ohlc]
+	args.append(df.index)
+	fig=py.plotly.tools.FigureFactory.create_candlestick(*args,**kwargs)
+	candle=Figure()
+	candle['data']=fig['data']
+	candle['layout']=fig['layout']
+	data=candle['data']
+	def update_color(n,color):
+		data[n]['marker'].update(color=normalize(color))
+		data[n]['line'].update(color=normalize(color))
+	if up_color:
+		update_color(1,up_color)
+		update_color(2,up_color)
+	if down_color:
+		update_color(4,down_color)
+		update_color(5,down_color)
+	# names=['{0}_{1}'.format(x,y) for x in ['inc','dec'] for y in ['inv','bar','wicks']]
+	# for i in range(len(names)):
+	# 	candle['data'][i]['name']=names[i]
+	candle['layout']['yaxis1']=candle['layout']['yaxis']
+	del candle['layout']['yaxis']
+	candle['layout']['hovermode']='closest'
+	layout=getLayout(theme=theme)
+	candle['layout']=merge_dict(layout,candle['layout'])
+	return candle
 
 def scatter_matrix(df,theme=None,bins=10,color='grey',size=2):
 	"""

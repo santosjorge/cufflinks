@@ -1,6 +1,16 @@
 import pickle
 
-			
+def merge_dict(d1,d2):
+	d=d2.copy()
+	for k,v in d1.items():
+		if k not in d:
+			d[k]=v
+		else:
+			if isinstance(v,dict):
+				d[k]=merge_dict(d1[k],d[k])
+	return d
+
+
 def pp(el,preString=''):
 	""" 
 	Formats (prettyprint) a concatenated dictionary
@@ -52,6 +62,12 @@ def inverseDict(d):
 			dt[v]=k
 	return dt	
 
+def check_kwargs(global_kwargs,values,local_kwargs=None):
+	local_kwargs={} if not local_kwargs else local_kwargs
+	for kw in values:
+		if kw in global_kwargs:
+			local_kwargs[kw]=global_kwargs[kw]
+	return local_kwargs
 
 def save_pickle(obj,filename):
 	"""

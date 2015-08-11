@@ -17,6 +17,11 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 ### Release Notes
 
+### v0.6
+
+* ta_plot
+* iplot(kind='pie')
+
 ### v0.5
 
 * Support of offline charts

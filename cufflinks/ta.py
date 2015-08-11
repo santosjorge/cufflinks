@@ -14,7 +14,7 @@ def get_column_name(name,study=None,str=None,period=None,column=None):
 
 def validate(df,column=None):
 	if isinstance(df,pd.DataFrame):
-		if column:
+		if column is not None:
 			df=pd.DataFrame(df[column])
 			_df=pd.DataFrame()
 		elif len(df.columns)>1:
