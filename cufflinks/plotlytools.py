@@ -466,8 +466,8 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			mode='lines',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
 			bestfit_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,zerolinecolor=None,margin=None,
-			labels=None,values=None,subplots=False,shape=None,asFrame=False,asDates=False,asFigure=False,asImage=False,
-			dimensions=(1116,587),asPlot=False,asUrl=False,online=None,**kwargs):
+			labels=None,values=None,secondary_y='',subplots=False,shape=None,asFrame=False,asDates=False,asFigure=False,
+			asImage=False,dimensions=(1116,587),asPlot=False,asUrl=False,online=None,**kwargs):
 	"""
 	Returns a plotly chart either as inline chart, image of Figure object
 
@@ -656,6 +656,9 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 		values : string
 			Name of the column that contains the values.
 			* Only valid when kind='pie'
+		secondary_y : string or list(string)
+			Name(s) of the column to be charted on the 
+			right hand side axis
 		subplots : bool
 			If true then each trace is placed in 
 			subplot layout
@@ -965,30 +968,20 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 	figure['data']=data
 	figure['layout']=layout
 
-
+## Check secondary axis
+	if secondary_y:
+		figure=figure.set_axis(secondary_y,side='right')
 
 ## Subplots 
 
 	if subplots:
 		fig=tools.strip_figures(figure)
-		kw=check_kwargs(kwargs,SUBPLOT_KWARGS)
-		# if 'horizontal_spacing' in kwargs:
-		# 	kw['horizontal_spacing']=kwargs['horizontal_spacing']
-		# if 'vertical_spacing' in kwargs:
-		# 	kw['vertical_spacing']=kwargs['vertical_spacing']
-		# if 'specs' in kwargs:
-		# 	kw['specs']=kwargs['specs']	
-		# if 'shared_xaxes' in kwargs:
-		# 	kw['shared_xaxes']=kwargs['shared_xaxes']	
-		# if 'shared_yaxes' in kwargs:
-		# 	kw['shared_yaxes']=kwargs['shared_yaxes']	
+		kw=check_kwargs(kwargs,SUBPLOT_KWARGS)	
 		if 'subplot_titles' in kwargs:
 			if kwargs['subplot_titles']==True:
 				kw['subplot_titles']=[d['name'] for d in data]
 			else:
-				kw['subplot_titles']=kwargs['subplot_titles']	
-		# if 'start_cell' in kwargs:
-		# 	kw['start_cell']=kwargs['start_cell']	
+				kw['subplot_titles']=kwargs['subplot_titles']		
 		figure=tools.subplots(fig,shape,base_layout=layout,theme=theme,**kw)
 
 
