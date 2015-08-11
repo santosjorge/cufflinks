@@ -19,8 +19,14 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 ### v0.6
 
-* ta_plot
 * iplot(kind='pie')
+* datagen.ohlc()
+* iplot(kind='candle')
+* iplot(kind='ohlc')
+* ta_plot(study='sma')
+* ta_plot(study='rsi')
+* iplot(logx)
+* iplot(logy)
 
 ### v0.5
 

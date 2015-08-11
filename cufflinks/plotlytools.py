@@ -21,7 +21,7 @@ def getTheme(theme):
 def getThemes():
 	return THEMES.keys()
 
-__LAYOUT_KWARGS = ['legend','vline','hline','vspan','hspan','shapes']
+__LAYOUT_KWARGS = ['legend','vline','hline','vspan','hspan','shapes','logx','logy']
 __TA_KWARGS = ['min_period','center','freq','how']
 
 def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
@@ -183,6 +183,13 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 	if 'legend' in kwargs:
 		layout['showlegend']=kwargs['legend']
 
+	if 'logy' in kwargs:
+		if kwargs['logy']:
+			layout['yaxis1']['type']='log'
+
+	if 'logx' in kwargs:
+		if kwargs['logx']:
+			layout['xaxis1']['type']='log'
 
 	# Shapes 
 
