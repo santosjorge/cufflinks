@@ -405,12 +405,15 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 		
 	""" 
 	df=self.copy()
+
 	if asTimestamp:
 		x=[_ for _ in df.index]
 	elif df.index.__class__.__name__ in ('PeriodIndex','DatetimeIndex'):
 		if asDates:
 			df.index=df.index.date
 		x=df.index.format()
+	elif isinstance(df.index,pd.MultiIndex):
+		x=['({0})'.format(','.join(_)) for _ in df.index.values]
 	else:
 		x = df.index.values
 	lines={}
