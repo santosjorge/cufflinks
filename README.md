@@ -27,6 +27,9 @@ This tutorial assumes that the plotly user credentials have already been configu
 * ta_plot(study='rsi')
 * iplot(logx)
 * iplot(logy)
+* support for MulitIndex
+* support for errorbars
+* support for continuous error bars
 
 ### v0.5
 

@@ -476,7 +476,8 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			mode='lines',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
 			bestfit_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,zerolinecolor=None,margin=None,
-			labels=None,values=None,secondary_y='',subplots=False,shape=None,asFrame=False,asDates=False,asFigure=False,
+			labels=None,values=None,secondary_y='',subplots=False,shape=None,error_x=None,error_y=None,error_type='data',
+			asFrame=False,asDates=False,asFigure=False,
 			asImage=False,dimensions=(1116,587),asPlot=False,asUrl=False,online=None,**kwargs):
 	"""
 	Returns a plotly chart either as inline chart, image of Figure object
@@ -676,6 +677,18 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			Tuple indicating the size of rows and columns
 			If omitted then the layout is automatically set
 			* Only valid when subplots=True
+		error_x : int or float or [int or float]
+			error values for the x axis
+		error_y : int or float or [int or float]
+			error values for the y axis
+		error_type : string
+			type of error bars
+				'data' 
+				'constant'
+				'percent'
+				'sqrt'
+				'continuous'
+				'continuous_percent'
 		asFrame : bool
 			If true then the data component of Figure will
 			be of Pandas form (Series) otherwise they will 
@@ -722,6 +735,40 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 					  '+' between each item
 					  ie 'label+percent'
 
+		Error Bars
+			error_trace : string
+				Name of the column for which error should be 
+				plotted. If omitted then errors apply to all 
+				traces.
+			error_values_minus : int or float or [int or float]
+				Values corresponding to the span of the error bars 
+				below the trace coordinates
+			error_color : string
+				Color for error bars
+			error_thickness : float 
+				Sets the line thickness of the error bars
+			error_width :  float
+				Sets the width (in pixels) of the cross-bar at both 
+				ends of the error bars
+			error_opacity : float [0,1]
+				Opacity for the error bars
+
+		Subplots
+			horizontal_spacing : float [0,1]
+				Space between subplot columns.
+			vertical_spacing : float [0,1]
+				Space between subplot rows.
+			subplot_titles : bool
+				If True, chart titles are plotted
+				at the top of each subplot
+			shared_xaxes : bool
+				Assign shared x axes.
+				If True, subplots in the same grid column have one common
+				shared x-axis at the bottom of the grid.
+			shared_yaxes : bool
+				Assign shared y axes.
+				If True, subplots in the same grid row have one common
+				shared y-axis on the left-hand side of the grid.
 	"""
 
 	# Look for invalid kwargs
@@ -730,10 +777,11 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 	OHLC_KWARGS=['up_color','down_color']
 	SUBPLOT_KWARGS=['horizontal_spacing', 'vertical_spacing',
 					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles']
-	valid_kwargs.extend(__LAYOUT_KWARGS)
-	valid_kwargs.extend(OHLC_KWARGS)
-	valid_kwargs.extend(PIE_KWARGS)
-	valid_kwargs.extend(SUBPLOT_KWARGS)
+	ERROR_KWARGS=['error_trace','error_values_minus','error_color','error_thickness',
+					'error_width','error_opacity']
+	kwargs_list = [__LAYOUT_KWARGS,OHLC_KWARGS,PIE_KWARGS,SUBPLOT_KWARGS,ERROR_KWARGS]
+	[valid_kwargs.extend(_) for _ in kwargs_list]
+	
 
 	for key in kwargs.keys():
 		if key not in valid_kwargs:
@@ -962,11 +1010,8 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 				else:
 					fig=tools.get_ohlc(self,theme=theme,**ohlc_kwargs)
 				if bestfit:
-					##here
 					df=self.copy()
 					bf=_to_iplot(self[d['close']],bestfit=True,bestfit_colors=bestfit_colors,asTimestamp=True)
-					# bf[1]['x']=df.index.values
-					# return df,bf
 					fig['data'].append(bf[1])
 				data=fig['data']
 				layout=fig['layout']
@@ -990,6 +1035,20 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 	if secondary_y:
 		figure=figure.set_axis(secondary_y,side='right')
 
+## Error Bars
+	if kind in ('scatter','bar','barh','lines'):
+		if any([error_x,error_y]):
+			def set_error(axis,**kwargs):
+				return tools.set_errors(figure,axis=axis,**kwargs)
+			kw=check_kwargs(kwargs,ERROR_KWARGS)
+			kw=dict([(k.replace('error_',''),v) for k,v in kw.items()])
+			kw['type']=error_type
+			if error_x:
+				kw['values']=error_x
+				figure=set_error('x',**kw)
+			if error_y:
+				kw['values']=error_y
+				figure=set_error('y',**kw)
 ## Subplots 
 
 	if subplots:

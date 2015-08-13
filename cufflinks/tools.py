@@ -1,10 +1,12 @@
 import plotly.plotly as py
 import plotly.offline as py_offline
-from plotly.graph_objs import Figure,XAxis,YAxis,Annotation,Layout,Data
+from plotly.graph_objs import Figure,XAxis,YAxis,Annotation,Layout,Data,ErrorY,ErrorX,Scatter,Line
 from plotlytools import getLayout
 from colors import normalize,to_rgba
 import auth
 from utils import merge_dict
+import numpy as np
+import copy
 
 def strip_figures(figure):
 	"""
@@ -85,11 +87,11 @@ def subplots(figures,shape=None,
 		shared_xaxes : bool
 			Assign shared x axes.
 			If True, subplots in the same grid column have one common
-			shared x-axis at the bottom of the gird.
+			shared x-axis at the bottom of the grid.
 		shared_yaxes : bool
 			Assign shared y axes.
 			If True, subplots in the same grid row have one common
-			shared y-axis on the left-hand side of the gird.
+			shared y-axis on the left-hand side of the grid.
 		start_cell : string
 				'bottom-left'
 				'top-left'
@@ -685,6 +687,94 @@ def get_shape(kind='line',x=None,y=None,x0=None,y0=None,x1=None,y1=None,span=0,c
 		shape['fillcolor']=fillcolor
 
 	return shape
+
+### Error Bars
+
+def get_error_bar(axis='y',type='data',values=None,values_minus=None,color=None,thickness=1,width=5,
+				 opacity=1):
+	error=ErrorY() if axis=='y' else ErrorX()
+	if type=='data':
+		if isinstance(values,list) or isinstance(values,np.ndarray):
+			if values_minus:
+				if len(values)!=len(values_minus):
+					raise Exception('Array values need to be of same length')
+				error.update(symmetric=False,arrayminus=values_minus)
+			error.update(array=values)
+		else:
+			if values_minus:
+				if isinstance(values_minus,list) or isinstance(a,np.ndarray):
+					raise Exception('Values should be of same type (int, float)')
+				error.udpate(symmetric=False,valueminus=values_minus)
+			error.update(value=values)
+	elif type in ['percent','constant']:
+		if isinstance(values,list) or isinstance(values,np.ndarray):
+			raise Exception('Value should be of type (int, float)')
+		error.update(value=values)
+	elif type=='sqrt':
+		pass
+	else:
+		raise Exception('Invalid type: {0}'.format(type))
+	error.update(type=type,thickness=thickness,width=width,visible=True,opacity=opacity)
+	if color:
+		error.update(color=normalize(color))
+	return error
+
+def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=None,color=None,thickness=1,width=None,
+				 opacity=None,**kwargs):
+	figure=Figure(copy.deepcopy(figure))
+	if 'value' in kwargs:
+		values=kwargs['value']
+	data=figure['data']
+	if 'continuous' not in type:
+		width=width if width else 5
+		opacity=opacity if opacity else 1
+		error=get_error_bar(axis=axis,type=type,values=values,values_minus=values_minus,
+							color=color,thickness=thickness,width=width,opacity=opacity)
+		if trace:
+			data[figure.trace_dict[trace]].update({'error_{0}'.format(axis):error})
+		else:
+			for trace in data:
+				trace.update({'error_{0}'.format(axis):error})
+	else:
+		width=width if width else .5
+		opacity=opacity if opacity else .3
+		def get_traces(trace,value,type,color=None,width=.2,opacity=.3):
+			if 'percent' in type:
+				y_up=trace['y']*(1+value/100.00)
+				y_down=trace['y']*(1-value/100.00)
+			else:
+				y_up=trace['y']+value
+				y_down=trace['y']-value            
+			y=trace['y']
+			upper=Scatter(y=y_up,mode='lines',showlegend=False,
+							 line=Line(width=width),x=trace['x'])
+			if 'yaxis' in trace:
+				upper['yaxis']=trace['yaxis']
+			if color:
+				color=normalize(color)
+			else:
+				if 'color' in trace['line']:
+					color=trace['line']['color']
+				else:
+					color='charcoal'
+			upper['line']['color']=color
+			lower=upper.copy()
+			name=trace['name']+'_' if 'name' in trace else ''
+			upper.update(name=name+'upper')
+			color=to_rgba(normalize(color),opacity)
+			lower.update(fill='tonexty',fillcolor=color,name=name+'lower',y=y_down)
+			return upper,lower
+		if trace:
+			traces=[figure.trace_dict[trace]]
+		else:
+			traces=range(len(figure['data']))
+		for i in traces:
+				trace=figure['data'][i]
+				upper,lower=get_traces(trace,values,type,color=color,width=width,opacity=opacity)
+				figure['data'].extend([upper,lower]) 
+	return figure
+
+### Offline
 
 def go_offline(offline=True):
 	if offline:
