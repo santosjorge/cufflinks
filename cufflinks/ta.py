@@ -42,7 +42,7 @@ def rename(df,_df,study,periods,column,include,str,detail):
 	else:
 		return __df
 
-def rsi(df,periods=14,column=None,include=True,str=None,detail=False):
+def rsi(df,periods=14,column=None,include=True,str=None,detail=False,**kwargs):
 	def _rsi(df,periods=14,column=None,include=True,str=None,detail=False):
 		study='RSI'
 		df,_df,column=validate(df,column)
@@ -74,6 +74,24 @@ def sma(df,periods=21,column=None,include=True,str=None,detail=False,**sma_kwarg
 	periods=_make_list(periods)
 	str=str if str else '{name}({column},{period})'
 	__df=pd.concat([_sma(df,column=x,periods=y,include=False,str=str) for y in periods for x in column],axis=1)
+	if include:
+		return pd.concat([df,__df],axis=1)
+	else:
+		return __df
+
+def boll(df,periods=20,boll_std=2,column=None,include=True,str=None,detail=False,**boll_kwargs):
+	def _boll(df,periods=21,column=None,include=True,str=None,detail=False,**boll_kwargs):
+		study='BOLL'
+		df,_df,column=validate(df,column)
+		_df['SMA']=pd.rolling_mean(df[column],periods)
+		_df['UPPER']=_df['SMA']+pd.rolling_std(df[column],periods)*boll_std
+		_df['LOWER']=_df['SMA']-pd.rolling_std(df[column],periods)*boll_std
+		str=str if str else '{name}({period})'
+		return rename(df,_df,study,periods,column,include,str,detail)
+	column=_make_list(column)
+	periods=_make_list(periods)
+	str=str if str else '{name}({column},{period})'
+	__df=pd.concat([_boll(df,column=x,periods=y,include=False,str=str,detail=detail) for y in periods for x in column],axis=1)
 	if include:
 		return pd.concat([df,__df],axis=1)
 	else:

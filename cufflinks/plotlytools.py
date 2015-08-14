@@ -22,7 +22,7 @@ def getThemes():
 	return THEMES.keys()
 
 __LAYOUT_KWARGS = ['legend','vline','hline','vspan','hspan','shapes','logx','logy']
-__TA_KWARGS = ['min_period','center','freq','how']
+__TA_KWARGS = ['min_period','center','freq','how','rsi_upper','rsi_lower','boll_std']
 
 def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
 				gridcolor=None,zerolinecolor=None,margin=None,annotations=False,is3d=False,**kwargs):
@@ -812,6 +812,9 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 	if 'columns' in kwargs:
 		keys=[kwargs['columns']] if isinstance(kwargs['columns'],str) else kwargs['columns']
 	kind='line' if kind=='lines' else kind
+
+	# We assume we are good citizens
+	validate=True
 	
 
 	if not layout:
@@ -1063,7 +1066,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 
 
 ## Exports 
-	validate = False if 'shapes' in layout else True
+	validate = False if 'shapes' in layout else validate
 
 	if asFigure:
 		return figure
@@ -1189,6 +1192,9 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 				Level for the upper rsi band
 			rsi_lower : int (0,100]
 				Level for the lower rsi band
+		BOLL
+			boll_std : int or float
+				Number of standrd deviations
 	"""
 	if 'columns' in iplot_kwargs:
 		column=iplot_kwargs['columns']
@@ -1203,8 +1209,8 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 			study_kwargs[k]=iplot_kwargs[k]
 			del iplot_kwargs[k]
 	if study=='rsi':
-		rsi_upper=iplot_kwargs['rsi_upper'] if 'rsi_upper' in iplot_kwargs else 70
-		rsi_lower=iplot_kwargs['rsi_lower'] if 'rsi_lower' in iplot_kwargs else 30
+		rsi_upper=study_kwargs['rsi_upper'] if 'rsi_upper' in study_kwargs else 70
+		rsi_lower=study_kwargs['rsi_lower'] if 'rsi_lower' in study_kwargs else 30
 		df=ta.rsi(self,periods=periods,column=column,include=include,str=str,detail=detail,**study_kwargs)
 		fig=df.figure(**iplot_kwargs)
 		figures=tools.strip_figures(fig)
@@ -1225,6 +1231,17 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 				df=pd.DataFrame(self)
 				column=df.keys().tolist()
 		df=ta.sma(self,periods=periods,column=column,include=include,str=str,detail=detail,**study_kwargs)	
+	if study=='boll':
+		if not column:
+			if isinstance(self,pd.DataFrame):
+				df=self.copy()
+				column=self.keys().tolist()
+			else:
+				df=pd.DataFrame(self)
+				column=df.keys().tolist()
+		boll_std=study_kwargs['boll_std'] if 'boll_std' in study_kwargs else 2
+		df=ta.boll(self,periods=periods,boll_std=boll_std,column=column,include=include,str=str,detail=True,**study_kwargs)	
+
 	return df.iplot(**iplot_kwargs)
 
 pd.DataFrame.to_iplot=_to_iplot
