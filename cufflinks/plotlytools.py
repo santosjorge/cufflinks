@@ -23,7 +23,7 @@ def getThemes():
 
 __LAYOUT_KWARGS = ['legend','vline','hline','vspan','hspan','shapes','logx','logy']
 __TA_KWARGS = ['min_period','center','freq','how','rsi_upper','rsi_lower','boll_std','fast_period',
-			   'slow_period','signal_period']
+			   'slow_period','signal_period','study_colors','study_colorscale']
 
 def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
 				gridcolor=None,zerolinecolor=None,margin=None,annotations=False,is3d=False,**kwargs):
@@ -1002,6 +1002,8 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 					if kw in kwargs:
 						pie[kw]=kwargs[kw]
 				data=Data()
+				del layout['xaxis1']
+				del layout['yaxis1']
 				data.append(pie)
 				validate=False
 			elif kind in ['candle','ohlc']:
@@ -1185,6 +1187,8 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 			detail : bool
 				If True the supporting data/calculations
 				are included in the chart 
+			study_colors : string or [string]
+				Colors to be used for the studies
 
 		Study Specific Parameters
 		-------------------------
@@ -1195,7 +1199,14 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 				Level for the lower rsi band
 		BOLL
 			boll_std : int or float
-				Number of standrd deviations
+				Number of standard deviations
+		MACD
+			fast_period : int
+				Number of periods for the fast moving average
+			slow_period : int
+				Number of periods for the slow moving average
+			signal_period : int
+				Number of periods for the signal 
 	"""
 	if 'columns' in iplot_kwargs:
 		column=iplot_kwargs['columns']
@@ -1203,6 +1214,15 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 	if 'period' in iplot_kwargs:
 		periods=iplot_kwargs['period']
 		del iplot_kwargs['periods']
+
+	def get_subplots(figures):
+		shape=(len(figures),1)
+		layout=tools.get_base_layout(figures)
+		subplots=tools.subplots(figures,shape=shape,shared_xaxes=True,base_layout=layout)
+		if len(figures)==2:
+			subplots['layout']['yaxis1']['domain']=[.27,1.0]
+			subplots['layout']['yaxis2']['domain']=[0,.25]
+		return subplots
 
 	study_kwargs={}
 	for k in __TA_KWARGS:
@@ -1212,30 +1232,32 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 	if study=='rsi':
 		rsi_upper=study_kwargs['rsi_upper'] if 'rsi_upper' in study_kwargs else 70
 		rsi_lower=study_kwargs['rsi_lower'] if 'rsi_lower' in study_kwargs else 30
-		df=ta.rsi(self,periods=periods,column=column,include=include,str=str,detail=detail,**study_kwargs)
-		fig=df.figure(**iplot_kwargs)
-		figures=tools.strip_figures(fig)
-		subplots=tools.subplots(figures,shape=(2,1),shared_xaxes=True,base_layout=fig['layout'])
-		subplots['layout']['yaxis1']['domain']=[.27,1.0]
-		subplots['layout']['yaxis2']['domain']=[0,.25]
-		shapes=[tools.get_shape(y=i,yref='y2',color=j,dash='dash') for (i,j) in [(rsi_lower,'green'),(rsi_upper,'red')]]
+		if include:
+			fig_0=self.figure(**iplot_kwargs)
+			iplot_kwargs['colors']='blue' if 'study_colors' not in study_kwargs else study_kwargs['study_colors']
+			df=ta.rsi(self,periods=periods,column=column,include=False,str=str,**study_kwargs)	
+			fig_1=df.figure(**iplot_kwargs)
+			subplots=get_subplots([fig_0,fig_1])
+			yref='y2'
+		else:
+			df=ta.rsi(self,periods=periods,column=column,include=False,str=str,detail=detail,**study_kwargs)	
+			iplot_kwargs['colors']='blue' if 'study_colors' not in study_kwargs else study_kwargs['study_colors']
+			subplots=df.figure(**iplot_kwargs)
+			yref='y1'
+		shapes=[tools.get_shape(y=i,yref=yref,color=j,dash='dash') for (i,j) in [(rsi_lower,'green'),(rsi_upper,'red')]]
 		subplots['layout']['shapes']=shapes
 		subplots['layout']['range']=[0,100]
 		subplots['layout']['nticks']=6
 		return iplot(subplots)
 	if study=='macd':
-		df=ta.macd(self,column=column,include=include,str=str,detail=detail,**study_kwargs)
-		fig=df.figure(**iplot_kwargs)
-		return fig
-		figures=tools.strip_figures(fig)
-		subplots=tools.subplots(figures,shape=(3,1),shared_xaxes=True,base_layout=fig['layout'])
-		subplots['layout']['yaxis1']['domain']=[.27,1.0]
-		subplots['layout']['yaxis2']['domain']=[0,.25]
-		# shapes=[tools.get_shape(y=i,yref='y2',color=j,dash='dash') for (i,j) in [(rsi_lower,'green'),(rsi_upper,'red')]]
-		# subplots['layout']['shapes']=shapes
-		# subplots['layout']['range']=[0,100]
-		# subplots['layout']['nticks']=6
-		return iplot(subplots)
+		if include:
+			fig_0=self.figure(**iplot_kwargs)
+			df=ta.macd(self,column=column,include=False,str=str,**study_kwargs)	
+			fig_1=df.figure(**iplot_kwargs)
+			subplots=get_subplots([fig_0,fig_1])
+			return iplot(subplots)
+		else:
+			df=ta.macd(self,column=column,include=False,detail=detail,str=str,**study_kwargs)	
 	if study=='sma':
 		if not column:
 			if isinstance(self,pd.DataFrame):

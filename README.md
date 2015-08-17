@@ -17,19 +17,41 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 ### Release Notes
 
-### v0.6
+### v0.6  
+[See the IPython Notebook](http://nbviewer.ipython.org/gist/santosjorge/72665839a6f05a0567e0)
 
-* iplot(kind='pie')
-* datagen.ohlc()
-* iplot(kind='candle')
-* iplot(kind='ohlc')
-* ta_plot(study='sma')
-* ta_plot(study='rsi')
-* iplot(logx)
-* iplot(logy)
-* support for MulitIndex
-* support for errorbars
-* support for continuous error bars
+* Support for **pie** charts  
+	* `cf.datagen.pie().iplot(kind='pie',labels='labels',values='values')`
+* Generate Open, High, Low, Close data
+	* `datagen.ohlc()`
+* Candle Charts support
+	* `ohlc=cf.datagen.ohlc()`  
+	  `ohlc.iplot(kind='candle',up_color='blue',down_color='red')`
+* OHLC (Bar) Charts support
+	* `ohlc=cf.datagen.ohlc()`  
+	  `ohlc.iplot(kind='ohlc',up_color='blue',down_color='red')`
+* Support for logarithmic charts ( logx | logy )
+	* `df=pd.DataFrame([x**2] for x in range(100))`  
+	  `df.iplot(kind='lines',logy=True)`  
+* Support for MulitIndex DataFrames
+* Support for Error Bars ( error_x | error_y )
+	* `cf.datagen.lines(1,5).iplot(kind='bar',error_y=[1,2,3.5,2,2])`  
+	* `cf.datagen.lines(1,5).iplot(kind='bar',error_y=20, error_type='percent')`   
+* Support for continuous error bars
+	* `cf.datagen.lines(1).iplot(kind='lines',error_y=20,error_type='continuous_percent')`
+	* `cf.datagen.lines(1).iplot(kind='lines',error_y=10,error_type='continuous',color='blue')`
+* **Technical Analysis Studies for Timeseries** *(beta)*  
+	* Simple Moving Averages (SMA)
+		* `cf.datagen.lines(1,500).ta_plot(study='sma',periods=[13,21,55])` 
+	* Relative Strength Indicator (RSI)
+		* `cf.datagen.lines(1,200).ta_plot(study='boll',periods=14)`  
+	* Bollinger Bands (BOLL)
+		* `cf.datagen.lines(1,200).ta_plot(study='rsi',periods=14)`  
+	* Moving Average Convergence Divergence (MACD)
+		* `cf.datagen.lines(1,200).ta_plot(study='macd',fast_period=12,slow_period=26,
+                                signal_period=9)`  
+
+
 
 ### v0.5
 
