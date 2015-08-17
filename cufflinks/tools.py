@@ -364,28 +364,22 @@ def get_candle(df,up_color=None,down_color=None,theme=None,**kwargs):
 	ohlc=['open','high','low','close']
 	if not theme:
 		theme = auth.get_config_file()['theme']    
+	layout=getLayout(theme=theme)
 	c_dir=_ohlc_dict(df)
 	args=[df[c_dir[_]] for _ in ohlc]
 	args.append(df.index)
 	fig=py.plotly.tools.FigureFactory.create_candlestick(*args,**kwargs)
 	candle=Figure()
 	candle['data']=fig['data']
-	candle['layout']=fig['layout']
+	candle['layout']=layout
 	data=candle['data']
 	def update_color(n,color):
-		data[n]['marker'].update(color=normalize(color))
+		data[n]['fillcolor']=normalize(color)
 		data[n]['line'].update(color=normalize(color))
 	if up_color:
-		update_color(1,up_color)
-		update_color(2,up_color)
+		update_color(0,up_color)
 	if down_color:
-		update_color(4,down_color)
-		update_color(5,down_color)
-	# names=['{0}_{1}'.format(x,y) for x in ['inc','dec'] for y in ['inv','bar','wicks']]
-	# for i in range(len(names)):
-	# 	candle['data'][i]['name']=names[i]
-	candle['layout']['yaxis1']=candle['layout']['yaxis']
-	del candle['layout']['yaxis']
+		update_color(1,down_color)
 	candle['layout']['hovermode']='closest'
 	layout=getLayout(theme=theme)
 	candle['layout']=merge_dict(layout,candle['layout'])

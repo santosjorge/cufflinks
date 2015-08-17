@@ -22,7 +22,8 @@ def getThemes():
 	return THEMES.keys()
 
 __LAYOUT_KWARGS = ['legend','vline','hline','vspan','hspan','shapes','logx','logy']
-__TA_KWARGS = ['min_period','center','freq','how','rsi_upper','rsi_lower','boll_std']
+__TA_KWARGS = ['min_period','center','freq','how','rsi_upper','rsi_lower','boll_std','fast_period',
+			   'slow_period','signal_period']
 
 def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
 				gridcolor=None,zerolinecolor=None,margin=None,annotations=False,is3d=False,**kwargs):
@@ -1221,6 +1222,19 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 		subplots['layout']['shapes']=shapes
 		subplots['layout']['range']=[0,100]
 		subplots['layout']['nticks']=6
+		return iplot(subplots)
+	if study=='macd':
+		df=ta.macd(self,column=column,include=include,str=str,detail=detail,**study_kwargs)
+		fig=df.figure(**iplot_kwargs)
+		return fig
+		figures=tools.strip_figures(fig)
+		subplots=tools.subplots(figures,shape=(3,1),shared_xaxes=True,base_layout=fig['layout'])
+		subplots['layout']['yaxis1']['domain']=[.27,1.0]
+		subplots['layout']['yaxis2']['domain']=[0,.25]
+		# shapes=[tools.get_shape(y=i,yref='y2',color=j,dash='dash') for (i,j) in [(rsi_lower,'green'),(rsi_upper,'red')]]
+		# subplots['layout']['shapes']=shapes
+		# subplots['layout']['range']=[0,100]
+		# subplots['layout']['nticks']=6
 		return iplot(subplots)
 	if study=='sma':
 		if not column:
