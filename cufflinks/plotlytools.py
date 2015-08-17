@@ -1159,7 +1159,7 @@ def _ta_figure(self,**kwargs):
 	return self.ta_plot(**kwargs)
 
 def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=False,
-			 world_readable=None,**iplot_kwargs):
+			 world_readable=None,filename='',title='',**iplot_kwargs):
 	"""
 	Generates a Technical Study Chart
 
@@ -1219,6 +1219,12 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 			world_readable = auth.get_config_file()['world_readable']
 	iplot_kwargs['world_readable']=world_readable
 
+	if not filename:
+		if title:
+			filename=title
+		else:
+			filename='Plotly Playground {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
+
 	def get_subplots(figures):
 		shape=(len(figures),1)
 		layout=tools.get_base_layout(figures)
@@ -1250,14 +1256,14 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 			yref='y1'
 		shapes=[tools.get_shape(y=i,yref=yref,color=j,dash='dash') for (i,j) in [(rsi_lower,'green'),(rsi_upper,'red')]]
 		subplots['layout']['shapes']=shapes
-		return iplot(subplots,world_readable=world_readable)
+		return iplot(subplots,world_readable=world_readable,filename=filename)
 	if study=='macd':
 		if include:
 			fig_0=self.figure(**iplot_kwargs)
 			df=ta.macd(self,column=column,include=False,str=str,**study_kwargs)	
 			fig_1=df.figure(**iplot_kwargs)
 			subplots=get_subplots([fig_0,fig_1])
-			return iplot(subplots,world_readable=world_readable)
+			return iplot(subplots,world_readable=world_readable,filename=filename)
 		else:
 			df=ta.macd(self,column=column,include=False,detail=detail,str=str,**study_kwargs)	
 	if study=='sma':
