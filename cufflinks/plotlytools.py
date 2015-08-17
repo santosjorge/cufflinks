@@ -1250,16 +1250,14 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 			yref='y1'
 		shapes=[tools.get_shape(y=i,yref=yref,color=j,dash='dash') for (i,j) in [(rsi_lower,'green'),(rsi_upper,'red')]]
 		subplots['layout']['shapes']=shapes
-		subplots['layout']['range']=[0,100]
-		subplots['layout']['nticks']=6
-		return iplot(subplots)
+		return iplot(subplots,world_readable=world_readable)
 	if study=='macd':
 		if include:
 			fig_0=self.figure(**iplot_kwargs)
 			df=ta.macd(self,column=column,include=False,str=str,**study_kwargs)	
 			fig_1=df.figure(**iplot_kwargs)
 			subplots=get_subplots([fig_0,fig_1])
-			return iplot(subplots)
+			return iplot(subplots,world_readable=world_readable)
 		else:
 			df=ta.macd(self,column=column,include=False,detail=detail,str=str,**study_kwargs)	
 	if study=='sma':
