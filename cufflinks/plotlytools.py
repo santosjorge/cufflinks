@@ -1158,7 +1158,8 @@ def _ta_figure(self,**kwargs):
 	kwargs['asFigure']=True
 	return self.ta_plot(**kwargs)
 
-def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=False,**iplot_kwargs):
+def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=False,
+			 world_readable=None,**iplot_kwargs):
 	"""
 	Generates a Technical Study Chart
 
@@ -1214,6 +1215,9 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 	if 'period' in iplot_kwargs:
 		periods=iplot_kwargs['period']
 		del iplot_kwargs['periods']
+	if world_readable is None:
+			world_readable = auth.get_config_file()['world_readable']
+	iplot_kwargs['world_readable']=world_readable
 
 	def get_subplots(figures):
 		shape=(len(figures),1)
