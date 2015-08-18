@@ -1,12 +1,13 @@
 from collections import deque
-from auth import get_config_file
+from .auth import get_config_file
 import numpy as np
 import colorsys
 import colorlover as cl
-from utils import inverseDict
+from .utils import inverseDict
 import operator
-import themes
+from . import themes
 from IPython.display import HTML,display
+from ast import literal_eval as eval
 
 class CufflinksError(Exception):
 		pass
@@ -55,7 +56,7 @@ def hex_to_rgb(color):
 	"""
 	color=normalize(color)
 	color=color[1:]
-	return 'rgb'+str(tuple(ord(c) for c in color.decode('hex')))
+	return 'rgb'+str((int(color[0:2], base=16), int(color[2:4], base=16), int(color[4:6], base=16)))
 
 def normalize(color):
 	"""
@@ -99,7 +100,7 @@ def rgb_to_hex(color):
 		rgb_to_hex('rgb(23,25,24)')
 	"""
 	rgb=eval(color.replace('rgb',''))
-	return '#'+''.join(map(chr, rgb)).encode('hex')
+	return '#' + ''.join(['{0:02x}'.format(x) for x in rgb])
 
 def rgba_to_rgb(color,bg='rgb(255,255,255)'):
 	"""
@@ -138,7 +139,7 @@ def hex_to_hsv(color):
 	"""
 	color=normalize(color)
 	color=color[1:]
-	color=tuple(ord(c)/255.0 for c in color.decode('hex'))
+	color=(int(color[0:2], base=16)/255.0, int(color[2:4], base=16)/255.0, int(color[4:6], base=16)/255.0)
 	return colorsys.rgb_to_hsv(*color)
 
 
@@ -165,7 +166,7 @@ def color_range(color,N=20):
 	for c in HSV_tuples:
 		c = colorsys.hsv_to_rgb(*c)
 		c = [int(_*255) for _ in c]
-		hex_out.append("#"+"".join([chr(x).encode('hex') for x in c]))
+		hex_out.append("#"+"".join(['{0:02x}'.format(x) for x in c]))
 	if org not in hex_out:
 		hex_out.append(org)
 	hex_out.sort()
@@ -209,7 +210,7 @@ def color_table(color,N=1,sort=False,sort_values=False,inline=False,as_html=Fals
 			rgb_tup.sort()
 	elif isinstance(color,dict):
 		c_=''
-		items=[(k,normalize(v),hex_to_hsv(normalize(v))) for k,v in color.items()]
+		items=[(k,normalize(v),hex_to_hsv(normalize(v))) for k,v in list(color.items())]
 		if sort_values:
 			items=sorted(items,key=operator.itemgetter(2))
 		elif sort:
@@ -517,7 +518,7 @@ def interp(colors,N):
 		except:
 			return _interp(colors,N+1)
 	c=_interp(colors,N)
-	return map(rgb_to_hex,cl.to_rgb(c))
+	return list(map(rgb_to_hex,cl.to_rgb(c)))
 
 def scales(scale=None):
 	"""
@@ -544,7 +545,7 @@ def scales(scale=None):
 			display(HTML(cl.to_html(get_scales(scale))))	
 	else:
 		s=''
-		keys=_scales_names.keys()
+		keys=list(_scales_names.keys())
 		keys.sort()
 		for k in keys:
 			scale=get_scales(k)
@@ -560,29 +561,29 @@ def reset_scales():
 	scale_cpy=cl.scales.copy()
 
 	# Add custom scales
-	for k,v in _custom_scales.items():
+	for k,v in list(_custom_scales.items()):
 		if v:
-			for k_,v_ in v.items():
+			for k_,v_ in list(v.items()):
 				if str(len(v_)) not in scale_cpy:
 					scale_cpy[str(len(v_))]={}
 				scale_cpy[str(len(v_))][k][k_]=[hex_to_rgb(normalize(_)) for _ in v_]
 
 	# Dictionary by Type > Name > N
 	_scales={}
-	for k,v in scale_cpy.items():
-		for k_,v_ in v.items():
+	for k,v in list(scale_cpy.items()):
+		for k_,v_ in list(v.items()):
 			if k_ not in _scales:
 				_scales[k_]={}
-			for k__,v__ in v_.items():
+			for k__,v__ in list(v_.items()):
 				if k__ not in _scales[k_]:
 					_scales[k_][k__]={}
 				_scales[k_][k__][k]=v__
 
 	# Dictionary by Name > N
 	_scales_names={}
-	for k,v in scale_cpy.items():
-		for k_,v_ in v.items():
-			for k__,v__ in v_.items():
+	for k,v in list(scale_cpy.items()):
+		for k_,v_ in list(v.items()):
+			for k__,v__ in list(v_.items()):
 				k__=k__.lower()
 				if k__ not in _scales_names:
 					_scales_names[k__]={}
@@ -616,7 +617,7 @@ def get_scales(scale=None,n=None):
 			scale=scale[1:]
 			is_reverse=True
 		d=_scales_names[scale.lower()]
-		keys=map(int,d.keys())
+		keys=list(map(int,list(d.keys())))
 		if n:
 			if n in keys:
 				cs=d[str(n)]
@@ -628,9 +629,9 @@ def get_scales(scale=None,n=None):
 		return cs
 	else:
 		d={}
-		for k,v in _scales_names.items():
+		for k,v in list(_scales_names.items()):
 			if isinstance(v,dict):
-				keys=map(int,v.keys())
+				keys=list(map(int,list(v.keys())))
 				d[k]=v[str(max(keys))]
 			else:
 				d[k]=v

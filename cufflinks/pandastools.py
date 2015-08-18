@@ -18,7 +18,7 @@ def _screen(self,include=True,**kwargs):
 		df.screen(col1='string_to_match',col2=['string1','string2'])
 	"""
 	df=self.copy()
-	for k,v in kwargs.items():
+	for k,v in list(kwargs.items()):
 		v=[v] if type(v)!=list else v
 		if include:
 			df=df[df[k].str.contains('|'.join(v),flags=re.IGNORECASE).fillna(False)]
@@ -51,7 +51,7 @@ def bestfit(self):
 		called 'formula' which includes the string representation 
 		of the bestfit line. 
 	"""
-	x=pd.Series(range(1,len(self)+1),index=self.index)
+	x=pd.Series(list(range(1,len(self)+1)),index=self.index)
 	model=pd.ols(x=x,y=self,intercept=True)
 	best_fit=model.y_fitted
 	best_fit.formula='%.2f*x+%.2f' % (model.beta.x,model.beta.intercept)
