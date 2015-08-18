@@ -6,7 +6,7 @@ Based in Plotly's tools module
 import os
 import json
 import warnings
-from offline import go_offline
+from .offline import go_offline
 
 package='cufflinks'
 

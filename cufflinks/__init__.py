@@ -9,22 +9,22 @@ Author: @jorgesantos
 
 
 
-import datetools
-import utils
-import datagen
-import tools
-import colors
-import pandastools
-import ta
+from . import datetools
+from . import utils
+from . import datagen
+from . import tools
+from . import colors
+from . import pandastools
+from . import ta
 
-from plotlytools import *
+from .plotlytools import *
 from plotly.plotly import plot
-from utils import pp
-from tools import subplots,scatter_matrix,figures
-from extract import to_df
-from auth import set_config_file,get_config_file
-from offline import is_offline,go_offline,go_online
-from version import __version__
+from .utils import pp
+from .tools import subplots,scatter_matrix,figures
+from .extract import to_df
+from .auth import set_config_file,get_config_file
+from .offline import is_offline,go_offline,go_online
+from .version import __version__
 
 try:
 	if get_config_file()['offline']:
