@@ -1074,9 +1074,15 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 	if asFigure:
 		return figure
 	elif asImage:
-		py.image.save_as(figure,filename='img/'+filename,format='png',
-			width=dimensions[0],height=dimensions[1])
-		return display(Image('img/'+filename+'.png'))
+		try:
+			py.image.save_as(figure,filename='img/'+filename,format='png',
+				width=dimensions[0],height=dimensions[1])
+			path='img/'+filename+'.png'
+		except:
+			py.image.save_as(figure,filename=filename,format='png',
+				width=dimensions[0],height=dimensions[1])
+			path=filename+'.png'
+		return display(Image(path))
 	elif asPlot:
 		return py.plot(figure,world_readable=world_readable,filename=filename,validate=validate)
 	elif asUrl:
