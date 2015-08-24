@@ -472,7 +472,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 		return data
 	return Data(lines_plotly)
 
-def _iplot(self,data=None,layout=None,filename='',world_readable=None,
+def _iplot(self,data=None,layout=None,filename='',sharing=None,
 			kind='scatter',title='',xTitle='',yTitle='',zTitle='',theme=None,colors=None,colorscale=None,fill=False,width=None,
 			mode='lines',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
@@ -499,8 +499,11 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			generated from the DataFrame.
 		filename : string
 			Filename to be saved as in plotly account
-		world_readable : bool
-			If False then it will be saved as a private file
+		sharing : string
+			Sets the sharing level permission
+				public - anyone can see this chart
+				private - only you can see this chart
+				secret - only people with the link can see the chart
 		kind : string
 			Kind of chart
 				scatter
@@ -773,7 +776,7 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 	"""
 
 	# Look for invalid kwargs
-	valid_kwargs = ['color','opacity','column','columns','labels','text']
+	valid_kwargs = ['color','opacity','column','columns','labels','text','world_readable']
 	PIE_KWARGS=['sort','pull','hole','textposition','textinfo','linecolor']
 	OHLC_KWARGS=['up_color','down_color']
 	SUBPLOT_KWARGS=['horizontal_spacing', 'vertical_spacing',
@@ -816,6 +819,11 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 
 	# We assume we are good citizens
 	validate=True
+
+	# Support for the old sharing approach
+	if 'world_readable' in kwargs:
+		sharing=kwargs['world_readable']
+
 	
 
 	if not layout:
@@ -1021,8 +1029,15 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 					fig['data'].append(bf[1])
 				data=fig['data']
 				layout=fig['layout']
-	if world_readable is None:
-			world_readable = auth.get_config_file()['world_readable']
+	
+## Sharing Values
+	if sharing is None:
+			sharing = auth.get_config_file()['sharing']
+	if isinstance(sharing,bool):
+			if sharing:
+				sharing='public'
+			else:
+				sharing='private'
 
 	if not filename:
 		if title:
@@ -1084,11 +1099,11 @@ def _iplot(self,data=None,layout=None,filename='',world_readable=None,
 			path=filename+'.png'
 		return display(Image(path))
 	elif asPlot:
-		return py.plot(figure,world_readable=world_readable,filename=filename,validate=validate)
+		return py.plot(figure,sharing=sharing,filename=filename,validate=validate)
 	elif asUrl:
-		return py.plot(figure,world_readable=world_readable,filename=filename,validate=validate,auto_open=False)
+		return py.plot(figure,sharing=sharing,filename=filename,validate=validate,auto_open=False)
 	else:
-		return iplot(figure,world_readable=world_readable,filename=filename,validate=validate,online=online)
+		return iplot(figure,sharing=sharing,filename=filename,validate=validate,online=online)
 
 
 def get_colors(colors,colorscale,keys,asList=False):
@@ -1141,7 +1156,18 @@ def _figure(self,**kwargs):
 	kwargs['asFigure']=True
 	return self.iplot(**kwargs)
 
-def iplot(data_or_figure,validate=True,world_readable=False,filename='',online=None):
+def iplot(data_or_figure,validate=True,sharing=False,filename='',online=None,**kwargs):
+	valid_kwargs=['world_readable']
+	for key in kwargs.keys():
+		if key not in valid_kwargs:
+			raise Exception("Invalid keyword : '{0}'".format(key))
+	if 'world_readable' in kwargs:
+		sharing=kwargs['world_readable']
+	if isinstance(sharing,bool):
+		if sharing:
+			sharing='public'
+		else:
+			sharing='private'
 	if offline.is_offline() and not online:
 		show_link = auth.get_config_file()['offline_show_link']
 		link_text = auth.get_config_file()['offline_link_text']
@@ -1149,7 +1175,7 @@ def iplot(data_or_figure,validate=True,world_readable=False,filename='',online=N
 	else:
 		if 'layout' in data_or_figure:
 			validate = False if 'shapes' in data_or_figure['layout'] else validate
-		return py.iplot(data_or_figure,validate=validate,world_readable=world_readable,
+		return py.iplot(data_or_figure,validate=validate,sharing=sharing,
 						filename=filename)
 
 def _ta_figure(self,**kwargs):
@@ -1165,7 +1191,7 @@ def _ta_figure(self,**kwargs):
 	return self.ta_plot(**kwargs)
 
 def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=False,
-			 world_readable=None,filename='',**iplot_kwargs):
+			 sharing=None,filename='',**iplot_kwargs):
 	"""
 	Generates a Technical Study Chart
 
@@ -1221,9 +1247,17 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 	if 'period' in iplot_kwargs:
 		periods=iplot_kwargs['period']
 		del iplot_kwargs['periods']
-	if world_readable is None:
-			world_readable = auth.get_config_file()['world_readable']
-	iplot_kwargs['world_readable']=world_readable
+	if 'world_readable' in iplot_kwargs:
+		sharing=iplot_kwargs['world_readable']
+		del iplot_kwargs['world_readable']
+	if sharing is None:
+			sharing = auth.get_config_file()['sharing']
+	if isinstance(sharing,bool):
+			if sharing:
+				sharing='public'
+			else:
+				sharing='private'
+	iplot_kwargs['sharing']=sharing
 
 	if not filename:
 		if 'title' in iplot_kwargs:
@@ -1262,14 +1296,14 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 			yref='y1'
 		shapes=[tools.get_shape(y=i,yref=yref,color=j,dash='dash') for (i,j) in [(rsi_lower,'green'),(rsi_upper,'red')]]
 		subplots['layout']['shapes']=shapes
-		return iplot(subplots,world_readable=world_readable,filename=filename)
+		return iplot(subplots,sharing=sharing,filename=filename)
 	if study=='macd':
 		if include:
 			fig_0=self.figure(**iplot_kwargs)
 			df=ta.macd(self,column=column,include=False,str=str,**study_kwargs)	
 			fig_1=df.figure(**iplot_kwargs)
 			subplots=get_subplots([fig_0,fig_1])
-			return iplot(subplots,world_readable=world_readable,filename=filename)
+			return iplot(subplots,sharing=sharing,filename=filename)
 		else:
 			df=ta.macd(self,column=column,include=False,detail=detail,str=str,**study_kwargs)	
 	if study=='sma':

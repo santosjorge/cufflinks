@@ -23,7 +23,7 @@ TEST_FILE = os.path.join(AUTH_DIR, ".permission_test")
 
 _FILE_CONTENT = {
 				 CONFIG_FILE: {
-				 		"world_readable" : False,
+				 		"sharing" : "public",
 				 		"theme" : "pearl",
 				 		"colorscale" : "dflt",
 				 		"offline" : False,
@@ -79,9 +79,9 @@ def ensure_local_files():
 					  "your 'home' ('~') directory")
 
 
-def set_config_file(world_readable=None,theme=None,colorscale=None,offline=None,
+def set_config_file(sharing=None,theme=None,colorscale=None,offline=None,
 					offline_url=None,offline_show_link=None,offline_link_text=None,
-					datagen_mode=None):
+					datagen_mode=None,**kwargs):
 	"""
 	Set the keyword-value pairs in `~/.config`.
 
@@ -89,9 +89,20 @@ def set_config_file(world_readable=None,theme=None,colorscale=None,offline=None,
 	if not _file_permissions:
 		raise Exception("You don't have proper file permissions "
 									 "to run this function.")
+	valid_kwargs=['world_readable']
+	for key in kwargs.keys():
+		if key not in valid_kwargs:
+			raise Exception("Invalid keyword : '{0}'".format(key))
+	if 'world_readable' in kwargs:
+		sharing=kwargs['world_readable']
+	if isinstance(sharing,bool):
+			if sharing:
+				sharing='public'
+			else:
+				sharing='private'
 	config = get_config_file()
-	if world_readable is not None:
-		config['world_readable'] = world_readable
+	if sharing is not None:
+		config['sharing'] = sharing
 	if theme:
 		config['theme']=theme
 	if colorscale:
@@ -118,7 +129,7 @@ def get_config_file(*args):
     Returns all if no arguments are specified.
 
     Example:
-        get_config_file('world_readable')
+        get_config_file('sharing')
 
     """
     if _file_permissions:
