@@ -531,7 +531,10 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 			Sets the title of the axis
 			Applies only to new axis
 	"""
-	fig=Figure(self.copy())
+	fig=Figure()
+	fig_cpy=self.copy()
+	fig['data']=fig_cpy['data']
+	fig['layout']=fig_cpy['layout']
 	if not isinstance(traces,list):
 		traces=[traces]
 
