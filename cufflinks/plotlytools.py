@@ -21,267 +21,10 @@ def getTheme(theme):
 def getThemes():
 	return THEMES.keys()
 
-__LAYOUT_KWARGS = ['legend','vline','hline','vspan','hspan','shapes','logx','logy']
+
 __TA_KWARGS = ['min_period','center','freq','how','rsi_upper','rsi_lower','boll_std','fast_period',
 			   'slow_period','signal_period','study_colors','study_colorscale']
 
-def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
-				gridcolor=None,zerolinecolor=None,margin=None,annotations=False,is3d=False,**kwargs):
-	"""
-	Generates a plotly Layout
-
-	Parameters:
-	-----------
-		theme : string
-			Layout Theme
-				solar
-				pearl
-				white
-		title : string
-			Chart Title
-		xTitle : string
-			X Axis Title
-		yTitle : string
-			Y Axis Title
-		zTitle : string
-			Z Axis Title
-			Applicable only for 3d charts
-		barmode : string 
-			Mode when displaying bars
-				group
-				stack
-				overlay
-		bargap : float
-			Sets the gap between bars
-				[0,1)
-			Applicabe for bar and histogram plots
-		bargroupgap : float
-			Set the gap between groups
-				[0,1)
-			Applicabe for bar and histogram plots			
-		gridcolor : string
-				grid color
-		zerolinecolor : string
-				zero line color
-		margin : dict or tuple
-				Dictionary (l,r,b,t) or
-				Tuple containing the left,
-				right, bottom and top margins
-		annotations : dictionary
-			Dictionary of annotations
-			{x_point : text}
-		is3d : bool
-			Indicates if the layout is for a 3D chart
-	"""
-
-
-	for key in kwargs.keys():
-		if key not in __LAYOUT_KWARGS:
-			raise Exception("Invalid keyword : '{0}'".format(key))
-	
-	if not theme:
-		theme = auth.get_config_file()['theme']
-
-	size=None
-	if annotations:
-		if 'font' in annotations:
-			if 'size' in annotations['font']:
-				size=annotations['font']['size']
-
-	def update_annotations(annotations,font_color,arrow_color):
-		if annotations:
-			if isinstance(annotations,dict):
-				annotations=[annotations]
-			for i in annotations:
-				i.update(dict(arrowcolor=arrow_color,font={'color':font_color}))
-
-	if theme=='ggplot':
-		layout=Layout(legend=Legend(bgcolor='white',font={'color':'grey10'}),
-						paper_bgcolor='white',plot_bgcolor='#E5E5E5',
-						yaxis1=YAxis(tickfont={'color':'grey10'},gridcolor='#F6F6F6',title=yTitle,
-								 titlefont={'color':'grey10'},zerolinecolor='#F6F6F6'),
-						xaxis1=XAxis(tickfont={'color':'grey10'},gridcolor='#F6F6F6',title=xTitle,
-								titlefont={'color':'grey10'},zerolinecolor='#F6F6F6',showgrid=True),
-						titlefont={'color':'charcoal'})
-		update_annotations(annotations,'grey10','grey10')
-
-	if theme=='solar':
-		layout=Layout(legend=Legend(bgcolor='charcoal',font={'color':'pearl'}),
-						paper_bgcolor='charcoal',plot_bgcolor='charcoal',
-						yaxis1=YAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=yTitle,
-								 titlefont={'color':'pearl'},zerolinecolor='grey09'),
-						xaxis1=XAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=xTitle,
-								titlefont={'color':'pearl'},zerolinecolor='grey09'),
-						titlefont={'color':'pearl'})
-		update_annotations(annotations,'pearl','grey11')
-
-	elif theme=='space':
-		layout=Layout(legend=Legend(bgcolor='grey03',font={'color':'pearl'}),
-						paper_bgcolor='grey03',plot_bgcolor='grey03',
-						yaxis1=YAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=yTitle,
-								 titlefont={'color':'pearl'},zerolinecolor='grey09'),
-						xaxis1=XAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=xTitle,
-								titlefont={'color':'pearl'},zerolinecolor='grey09'),
-						titlefont={'color':'pearl'})
-		update_annotations(annotations,'pearl','red')
-
-	elif theme=='pearl':
-		layout=Layout(legend=Legend(bgcolor='pearl02',font={'color':'pearl06'}),
-						paper_bgcolor='pearl02',plot_bgcolor='pearl02',
-						yaxis1=YAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=yTitle,
-								  titlefont={'color':'pearl06'},zeroline=False,zerolinecolor='pearl04' if is3d else 'pearl03'),
-						xaxis1=XAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=xTitle,
-								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'))
-		update_annotations(annotations,'pearl06','pearl04')
-
-	elif theme=='white':
-		layout=Layout(legend=Legend(bgcolor='white',font={'color':'pearl06'}),
-						paper_bgcolor='white',plot_bgcolor='white',
-						yaxis1=YAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=yTitle,
-								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'),
-						xaxis1=XAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=xTitle,
-								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'))
-		update_annotations(annotations,'pearl06','pearl04')
-	
-	if barmode:
-		layout.update({'barmode':barmode})
-	if bargroupgap:
-		layout.update({'bargroupgap':bargroupgap})
-	if bargap:
-		layout.update(bargap=bargap)
-	if title:
-		layout.update({'title':title})
-	if annotations:
-		if size:
-			annotations['font']['size']=size
-		layout.update({'annotations':annotations})
-	if gridcolor:
-		for k in layout:
-			if 'axis' in k:
-				layout[k].update(gridcolor=normalize(gridcolor))
-	if zerolinecolor:
-		for k in layout:
-			if 'axis' in k:
-				layout[k].update(zerolinecolor=normalize(zerolinecolor))
-	if margin:
-		if isinstance(margin,dict):
-			margin=margin
-		else:
-			margin=dict(zip(('l','r','b','t'),margin))
-		layout.update(margin=margin)
-
-	if is3d:
-		zaxis=layout['xaxis1'].copy()
-		zaxis.update(title=zTitle)
-		scene=Scene(xaxis1=layout['xaxis1'],yaxis1=layout['yaxis1'],zaxis=zaxis)
-		layout.update(scene=scene)
-		del layout['xaxis1']
-		del layout['yaxis1']
-
-
-	## Kwargs
-
-	if 'legend' in kwargs:
-		layout['showlegend']=kwargs['legend']
-
-	if 'logy' in kwargs:
-		if kwargs['logy']:
-			layout['yaxis1']['type']='log'
-
-	if 'logx' in kwargs:
-		if kwargs['logx']:
-			layout['xaxis1']['type']='log'
-
-	# Shapes 
-
-	if any(k in kwargs for k in ['vline','hline','shapes','hspan','vspan']):
-		shapes=[]
-
-		def get_shapes(xline):
-			orientation=xline[0]
-			xline=kwargs[xline]
-			if isinstance(xline,list):
-				for x_i in xline:
-					if isinstance(x_i,dict):
-						x_i['kind']='line'
-						shapes.append(tools.get_shape(**x_i))
-					else:						
-						if orientation=='h':
-							shapes.append(tools.get_shape(kind='line',y=x_i))
-						else:
-							shapes.append(tools.get_shape(kind='line',x=x_i))
-			elif isinstance(xline,dict):
-				shapes.append(tools.get_shape(**xline))
-			else:
-				if orientation=='h':
-					shapes.append(tools.get_shape(kind='line',y=xline))			
-				else:
-					shapes.append(tools.get_shape(kind='line',x=xline))			
-
-		def get_span(xspan):
-			orientation=xspan[0]
-			xspan=kwargs[xspan]
-			if isinstance(xspan,list):
-				for x_i in xspan:
-					if isinstance(x_i,dict):
-						x_i['kind']='rect'
-						shapes.append(tools.get_shape(**x_i))
-					else:
-						v0,v1=x_i
-						if orientation=='h':
-							shapes.append(tools.get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
-						else:
-							shapes.append(tools.get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
-			elif isinstance(xspan,dict):
-				xspan['kind']='rect'
-				shapes.append(tools.get_shape(**xspan))
-			elif isinstance(xspan,tuple):
-				v0,v1=xspan
-				if orientation=='h':
-					shapes.append(tools.get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
-				else:
-					shapes.append(tools.get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
-			else:
-				raise Exception('Invalid value for {0}span: {1}'.format(orientation,xspan))
-
-		if 'hline' in kwargs:
-			get_shapes('hline')
-		if 'vline' in kwargs:
-			get_shapes('vline')
-		if 'hspan' in kwargs:
-			get_span('hspan')
-		if 'vspan' in kwargs:
-			get_span('vspan')
-		if 'shapes' in kwargs:
-			shapes_=kwargs['shapes']
-			if isinstance(shapes_,list):
-				for i in shapes_:
-					shp=i if 'type' in i else tools.get_shape(**i)
-					shapes.append(shp)
-			elif isinstance(shapes_,dict):
-					shp=shapes_ if 'type' in shapes_ else tools.get_shape(**shapes_)
-					shapes.append(shp)
-			else:
-				raise Exception("Shapes need to be either a dict or list of dicts")
-
-
-		layout['shapes']=shapes
-
-	def updateColors(layout):
-		for k,v in layout.items():
-			if isinstance(v,dict):
-				updateColors(v)
-			else:
-				if isinstance(v,list):
-					for _ in v:
-						if isinstance(_,dict):
-							updateColors(_)
-				if 'color' in k.lower():
-					if 'rgba' not in v:
-						layout[k]=normalize(v)
-		return layout
-	
-	return updateColors(layout)
 
 def getAnnotations(df,annotations):
 	"""
@@ -783,7 +526,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles']
 	ERROR_KWARGS=['error_trace','error_values_minus','error_color','error_thickness',
 					'error_width','error_opacity']
-	kwargs_list = [__LAYOUT_KWARGS,OHLC_KWARGS,PIE_KWARGS,SUBPLOT_KWARGS,ERROR_KWARGS]
+	kwargs_list = [tools.__LAYOUT_KWARGS,OHLC_KWARGS,PIE_KWARGS,SUBPLOT_KWARGS,ERROR_KWARGS]
 	[valid_kwargs.extend(_) for _ in kwargs_list]
 	
 
@@ -827,10 +570,10 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 	
 
 	if not layout:
-		l_kwargs=dict([(k,kwargs[k]) for k in __LAYOUT_KWARGS if k in kwargs])
+		l_kwargs=dict([(k,kwargs[k]) for k in tools.__LAYOUT_KWARGS if k in kwargs])
 		if annotations:
 				annotations=getAnnotations(self.copy(),annotations)
-		layout=getLayout(theme=theme,xTitle=xTitle,yTitle=yTitle,zTitle=zTitle,title=title,barmode=barmode,
+		layout=tools.getLayout(theme=theme,xTitle=xTitle,yTitle=yTitle,zTitle=zTitle,title=title,barmode=barmode,
 								bargap=bargap,bargroupgap=bargroupgap,annotations=annotations,gridcolor=gridcolor,
 								zerolinecolor=zerolinecolor,margin=margin,is3d='3d' in kind,**l_kwargs)
 
@@ -863,15 +606,15 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 						_size=size
 					_data=Scatter3d(x=_x,y=_y,mode=mode,name=_,
 								marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-												line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis1']['titlefont'])
+												line=Line(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
 					if '3d' in kind:
 						_data=Scatter3d(x=_x,y=_y,z=_z,mode=mode,name=_,
 								marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-												line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis1']['titlefont'])
+												line=Line(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
 					else:
 						_data=Scatter(x=_x,y=_y,mode=mode,name=_,
 								marker=Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-												line=Line(width=width)),textfont=getLayout(theme=theme)['xaxis1']['titlefont'])
+												line=Line(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
 					if text:
 						_data.update(text=_text)
 					data.append(_data)
@@ -934,7 +677,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				clrs=[clrs] if not isinstance(clrs,list) else clrs
 				clrs=[clrs[0]]*len(x)
 				marker=Marker(color=clrs,size=z,symbol=symbol,
-								line=Line(width=width),textfont=getLayout(theme=theme)['xaxis1']['titlefont'])
+								line=Line(width=width),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
 				trace=Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
 				data=Data([trace])
 			elif kind in ('box','histogram','hist'):
@@ -1286,6 +1029,7 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 			fig_0=self.figure(**iplot_kwargs)
 			iplot_kwargs['colors']='blue' if 'study_colors' not in study_kwargs else study_kwargs['study_colors']
 			df=ta.rsi(self,periods=periods,column=column,include=False,str=str,**study_kwargs)	
+			iplot_kwargs['kind']='lines'
 			fig_1=df.figure(**iplot_kwargs)
 			subplots=get_subplots([fig_0,fig_1])
 			yref='y2'
