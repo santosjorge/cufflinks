@@ -317,7 +317,7 @@ def figures(df,specs):
 	figs=[]
 	for spec in specs:
 		figs.append(df.figure(**spec))
-	return figs
+	return merge_figures(figs)
 
 def merge_figures(figures):
 	figure=Figure()

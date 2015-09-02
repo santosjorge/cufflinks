@@ -23,7 +23,7 @@ def getThemes():
 
 
 __TA_KWARGS = ['min_period','center','freq','how','rsi_upper','rsi_lower','boll_std','fast_period',
-			   'slow_period','signal_period','study_colors','study_colorscale']
+			   'slow_period','signal_period']
 
 
 def getAnnotations(df,annotations):
@@ -85,8 +85,8 @@ def dict_to_iplot(d):
 
 
 def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbol='dot',size='12',fill=False,
-		width=3,sortbars=False,keys=False,bestfit=False,bestfit_colors=None,asDates=False,
-		asTimestamp=False,text=None,**kwargs):
+		width=3,dash='solid',sortbars=False,keys=False,bestfit=False,bestfit_colors=None,
+		mean=False,mean_colors=None,asDates=False,asTimestamp=False,text=None,**kwargs):
 	"""
 	Generates a plotly Data object 
 
@@ -130,6 +130,12 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 			Filled Traces
 		width : int
 			Line width
+		dash : string
+			Drawing style of lines
+				solid
+				dash
+				dashdot
+				dot
 		sortbars : bool
 			Sort bars in descending order
 			* Only valid when kind='bar'
@@ -183,7 +189,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 		if 'bar' in kind:
 			lines[key]["marker"]={'color':to_rgba(colors[key],.6),'line':{'color':colors[key],'width':1}}
 		else:
-			lines[key]["line"]={'color':colors[key],'width':width}
+			lines[key]["line"]={'color':colors[key],'width':width,'dash':dash}
 			lines[key]["mode"]=mode
 			if 'marker' in mode:
 				lines[key]["marker"]=Marker(symbol=symbol,size=size)
@@ -213,15 +219,31 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 		data=Data(lines_plotly)
 		data.extend(bestfit_lines)
 		return data
+
+	if mean:
+		if type(mean)==list:
+			keys=mean
+		d={}
+		for key in keys:
+			mean=df[key].mean()
+			d['MEAN({key})'.format(key=key)]=pd.Series([mean]*len(df[key]),index=df[key].index)
+		mean_lines=pd.DataFrame(d).to_iplot(mean=False,colors=mean_colors,kind='scatter',asTimestamp=asTimestamp)
+		for line in mean_lines:
+			line['line']['dash']='dash'
+			if not mean_colors:
+				line['line']['color']=to_rgba(line['line']['color'],.6)
+		data=Data(lines_plotly)
+		data.extend(mean_lines)
+		return data
 	return Data(lines_plotly)
 
 def _iplot(self,data=None,layout=None,filename='',sharing=None,
 			kind='scatter',title='',xTitle='',yTitle='',zTitle='',theme=None,colors=None,colorscale=None,fill=False,width=None,
-			mode='lines',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
+			dash='solid',mode='lines',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
-			bestfit_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,zerolinecolor=None,margin=None,
-			labels=None,values=None,secondary_y='',subplots=False,shape=None,error_x=None,error_y=None,error_type='data',
-			asFrame=False,asDates=False,asFigure=False,
+			bestfit_colors=None,mean=False,mean_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,
+            zerolinecolor=None,margin=None,labels=None,values=None,secondary_y='',subplots=False,shape=None,error_x=None,
+            error_y=None,error_type='data',asFrame=False,asDates=False,asFigure=False,
 			asImage=False,dimensions=(1116,587),asPlot=False,asUrl=False,online=None,**kwargs):
 	"""
 	Returns a plotly chart either as inline chart, image of Figure object
@@ -290,6 +312,12 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 			Filled Traces		
 		width : int
 			Line width	
+		dash : string
+			Drawing style of lines
+				solid
+				dash
+				dashdot
+				dot
 		mode : string
 			Plotting mode for scatter trace
 				lines
@@ -632,8 +660,8 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				if text:
 					if not isinstance(text,list):
 						text=self[text].values
-				data=df.to_iplot(colors=colors,colorscale=colorscale,kind=kind,fill=fill,width=width,sortbars=sortbars,keys=keys,
-						bestfit=bestfit,bestfit_colors=bestfit_colors,asDates=asDates,mode=mode,symbol=symbol,size=size,
+				data=df.to_iplot(colors=colors,colorscale=colorscale,kind=kind,fill=fill,width=width,dash=dash,sortbars=sortbars,keys=keys,
+						bestfit=bestfit,bestfit_colors=bestfit_colors,mean=mean,mean_colors=mean_colors,asDates=asDates,mode=mode,symbol=symbol,size=size,
 						text=text,**kwargs)				
 				if kind in ('spread','ratio'):
 						if kind=='spread':
@@ -934,7 +962,7 @@ def _ta_figure(self,**kwargs):
 	return self.ta_plot(**kwargs)
 
 def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=False,
-			 sharing=None,filename='',**iplot_kwargs):
+			 theme=None,sharing=None,filename='',asFigure=False,**iplot_kwargs):
 	"""
 	Generates a Technical Study Chart
 
@@ -983,13 +1011,20 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 				Number of periods for the slow moving average
 			signal_period : int
 				Number of periods for the signal 
+		CORREL
+			how : string
+				Method for the correlation calculation
+					values
+					pct_cht
+					diff
+					
 	"""
 	if 'columns' in iplot_kwargs:
 		column=iplot_kwargs['columns']
 		del iplot_kwargs['columns']
 	if 'period' in iplot_kwargs:
 		periods=iplot_kwargs['period']
-		del iplot_kwargs['periods']
+		del iplot_kwargs['period']
 	if 'world_readable' in iplot_kwargs:
 		sharing=iplot_kwargs['world_readable']
 		del iplot_kwargs['world_readable']
@@ -1001,6 +1036,8 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 			else:
 				sharing='private'
 	iplot_kwargs['sharing']=sharing
+	if theme is None:
+		theme = auth.get_config_file()['theme']
 
 	if not filename:
 		if 'title' in iplot_kwargs:
@@ -1017,60 +1054,75 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 			subplots['layout']['yaxis2']['domain']=[0,.25]
 		return subplots
 
-	study_kwargs={}
+	def get_study(df,func,iplot_kwargs,iplot_study_kwargs,str=None,include=False,column=None,inset=False):
+		df=df.copy()
+		if inset:
+			if not column:
+				if isinstance(df,pd.DataFrame):
+					column=df.keys().tolist()
+				else:
+					df=pd.DataFrame(df)
+					column=df.keys().tolist()
+		if 'legend' in iplot_kwargs:
+			iplot_study_kwargs['legend']=iplot_kwargs['legend']
+		fig_0=df.figure(**iplot_kwargs)
+		df_ta=func(df,column=column,include=False,str=str,**study_kwargs)	
+		kind=iplot_kwargs['kind'] if 'kind' in iplot_kwargs else ''
+		iplot_study_kwargs['kind']='scatter'
+		iplot_study_kwargs['colors']='blue' if 'colors' not in iplot_study_kwargs else iplot_study_kwargs['colors']
+		fig_1=df_ta.figure(theme=theme,**iplot_study_kwargs)
+		if kind in ['candle','ohlc']:
+				for i in fig_1['data']:
+					i['x']=[pd.Timestamp(_) for _ in i['x']]
+		if inset:
+			figure=tools.merge_figures([fig_0,fig_1]) if include else fig_1
+		else:
+			figure=get_subplots([fig_0,fig_1]) if include else fig_1
+		return figure
+
+	study_kwargs={}  
+	iplot_study_kwargs={}
+	for k in iplot_kwargs.keys():
+		if 'study' in k:
+			iplot_study_kwargs[k.replace('study_','')]=iplot_kwargs[k]
+			del iplot_kwargs[k]
 	for k in __TA_KWARGS:
 		if k in iplot_kwargs:
 			study_kwargs[k]=iplot_kwargs[k]
-			del iplot_kwargs[k]
+			del iplot_kwargs[k]	
+
 	if study=='rsi':
+		study_kwargs.update({'periods':periods})
+		figure=get_study(self,ta.rsi,iplot_kwargs,iplot_study_kwargs,include=include,column=column,str=str,inset=False)
 		rsi_upper=study_kwargs['rsi_upper'] if 'rsi_upper' in study_kwargs else 70
 		rsi_lower=study_kwargs['rsi_lower'] if 'rsi_lower' in study_kwargs else 30
-		if include:
-			fig_0=self.figure(**iplot_kwargs)
-			iplot_kwargs['colors']='blue' if 'study_colors' not in study_kwargs else study_kwargs['study_colors']
-			df=ta.rsi(self,periods=periods,column=column,include=False,str=str,**study_kwargs)	
-			iplot_kwargs['kind']='lines'
-			fig_1=df.figure(**iplot_kwargs)
-			subplots=get_subplots([fig_0,fig_1])
-			yref='y2'
-		else:
-			df=ta.rsi(self,periods=periods,column=column,include=False,str=str,detail=detail,**study_kwargs)	
-			iplot_kwargs['colors']='blue' if 'study_colors' not in study_kwargs else study_kwargs['study_colors']
-			subplots=df.figure(**iplot_kwargs)
-			yref='y1'
+		yref='y2' if include else 'y1'
 		shapes=[tools.get_shape(y=i,yref=yref,color=j,dash='dash') for (i,j) in [(rsi_lower,'green'),(rsi_upper,'red')]]
-		subplots['layout']['shapes']=shapes
-		return iplot(subplots,sharing=sharing,filename=filename)
-	if study=='macd':
-		if include:
-			fig_0=self.figure(**iplot_kwargs)
-			df=ta.macd(self,column=column,include=False,str=str,**study_kwargs)	
-			fig_1=df.figure(**iplot_kwargs)
-			subplots=get_subplots([fig_0,fig_1])
-			return iplot(subplots,sharing=sharing,filename=filename)
-		else:
-			df=ta.macd(self,column=column,include=False,detail=detail,str=str,**study_kwargs)	
-	if study=='sma':
-		if not column:
-			if isinstance(self,pd.DataFrame):
-				df=self.copy()
-				column=self.keys().tolist()
-			else:
-				df=pd.DataFrame(self)
-				column=df.keys().tolist()
-		df=ta.sma(self,periods=periods,column=column,include=include,str=str,detail=detail,**study_kwargs)	
-	if study=='boll':
-		if not column:
-			if isinstance(self,pd.DataFrame):
-				df=self.copy()
-				column=self.keys().tolist()
-			else:
-				df=pd.DataFrame(self)
-				column=df.keys().tolist()
-		boll_std=study_kwargs['boll_std'] if 'boll_std' in study_kwargs else 2
-		df=ta.boll(self,periods=periods,boll_std=boll_std,column=column,include=include,str=str,detail=True,**study_kwargs)	
+		figure['layout']['shapes']=shapes
 
-	return df.iplot(**iplot_kwargs)
+	if study=='macd':
+		figure=get_study(self,ta.macd,iplot_kwargs,iplot_study_kwargs,include=include,column=column,str=str,inset=False)
+	
+	if study=='sma':
+		study_kwargs.update({'periods':periods})
+		figure=get_study(self,ta.sma,iplot_kwargs,iplot_study_kwargs,include=include,column=column,str=str,inset=True)
+
+	if study=='boll':
+		study_kwargs.update({'periods':periods})
+		figure=get_study(self,ta.boll,iplot_kwargs,iplot_study_kwargs,include=include,column=column,str=str,inset=True)
+
+	if study=='correl':
+		study_kwargs.update({'periods':periods})
+		figure=get_study(self,ta.correl,iplot_kwargs,iplot_study_kwargs,include=include,column=column,str=str,inset=False)	
+
+
+	## Exports
+
+	if asFigure:
+		return figure
+	else: 
+		return iplot(figure,sharing=sharing,filename=filename)
+
 
 pd.DataFrame.to_iplot=_to_iplot
 pd.DataFrame.scatter_matrix=_scatter_matrix
