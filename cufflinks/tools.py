@@ -2,12 +2,32 @@ import plotly.plotly as py
 import plotly.offline as py_offline
 from plotly.graph_objs import *
 from colors import normalize,to_rgba
+from themes import THEMES
 import auth
 from utils import merge_dict
 import numpy as np
 import copy
 
 __LAYOUT_KWARGS = ['legend','vline','hline','vspan','hspan','shapes','logx','logy']
+
+
+def getTheme(theme):
+	"""
+	Returns a theme definition.
+
+	To see the colors translated (hex) use 
+	cufflinks.getLayout(theme) instead.
+	"""
+	if theme in THEMES:
+		return copy.deepcopy(THEMES[theme])
+	else:
+		raise Exception("Invalid Theme: {0}".format(theme))
+
+def getThemes():
+	"""
+	Returns the list of available themes
+	"""
+	return THEMES.keys()
 
 def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
 				gridcolor=None,zerolinecolor=None,margin=None,annotations=False,is3d=False,**kwargs):
@@ -56,7 +76,39 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 			{x_point : text}
 		is3d : bool
 			Indicates if the layout is for a 3D chart
+
+		Other Kwargs
+		============
+
+		Shapes
+			hline : int, list or dict
+				Draws a horizontal line at the 
+				indicated y position(s)
+				Extra parameters can be passed in
+				the form of a dictionary (see shapes)
+			vline : int, list or dict
+				Draws a vertical line at the 
+				indicated x position(s)
+				Extra parameters can be passed in
+				the form of a dictionary (see shapes)
+			hline : [y0,y1]
+				Draws a horizontal rectangle at the 
+				indicated (y0,y1) positions.
+				Extra parameters can be passed in
+				the form of a dictionary (see shapes)
+			vline : [x0,x1]
+				Draws a vertical rectangle at the 
+				indicated (x0,x1) positions.
+				Extra parameters can be passed in
+				the form of a dictionary (see shapes)
+			shapes : dict or list(dict)
+				List of dictionaries with the 
+				specifications of a given shape.
+				See help(cufflinks.tools.get_shape)
+				for more information
+
 	"""
+
 
 
 	for key in kwargs.keys():
@@ -79,53 +131,14 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 			for i in annotations:
 				i.update(dict(arrowcolor=arrow_color,font={'color':font_color}))
 
-	if theme=='ggplot':
-		layout=Layout(legend=Legend(bgcolor='white',font={'color':'grey10'}),
-						paper_bgcolor='white',plot_bgcolor='#E5E5E5',
-						yaxis1=YAxis(tickfont={'color':'grey10'},gridcolor='#F6F6F6',title=yTitle,
-								 titlefont={'color':'grey10'},zerolinecolor='#F6F6F6'),
-						xaxis1=XAxis(tickfont={'color':'grey10'},gridcolor='#F6F6F6',title=xTitle,
-								titlefont={'color':'grey10'},zerolinecolor='#F6F6F6',showgrid=True),
-						titlefont={'color':'charcoal'})
-		update_annotations(annotations,'grey10','grey10')
-
-	if theme=='solar':
-		layout=Layout(legend=Legend(bgcolor='charcoal',font={'color':'pearl'}),
-						paper_bgcolor='charcoal',plot_bgcolor='charcoal',
-						yaxis1=YAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=yTitle,
-								 titlefont={'color':'pearl'},zerolinecolor='grey09'),
-						xaxis1=XAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=xTitle,
-								titlefont={'color':'pearl'},zerolinecolor='grey09'),
-						titlefont={'color':'pearl'})
-		update_annotations(annotations,'pearl','grey11')
-
-	elif theme=='space':
-		layout=Layout(legend=Legend(bgcolor='grey03',font={'color':'pearl'}),
-						paper_bgcolor='grey03',plot_bgcolor='grey03',
-						yaxis1=YAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=yTitle,
-								 titlefont={'color':'pearl'},zerolinecolor='grey09'),
-						xaxis1=XAxis(tickfont={'color':'grey12'},gridcolor='grey08',title=xTitle,
-								titlefont={'color':'pearl'},zerolinecolor='grey09'),
-						titlefont={'color':'pearl'})
-		update_annotations(annotations,'pearl','red')
-
-	elif theme=='pearl':
-		layout=Layout(legend=Legend(bgcolor='pearl02',font={'color':'pearl06'}),
-						paper_bgcolor='pearl02',plot_bgcolor='pearl02',
-						yaxis1=YAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=yTitle,
-								  titlefont={'color':'pearl06'},zeroline=False,zerolinecolor='pearl04' if is3d else 'pearl03'),
-						xaxis1=XAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=xTitle,
-								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'))
-		update_annotations(annotations,'pearl06','pearl04')
-
-	elif theme=='white':
-		layout=Layout(legend=Legend(bgcolor='white',font={'color':'pearl06'}),
-						paper_bgcolor='white',plot_bgcolor='white',
-						yaxis1=YAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=yTitle,
-								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'),
-						xaxis1=XAxis(tickfont={'color':'pearl06'},gridcolor='pearl04' if is3d else 'pearl03',title=xTitle,
-								  titlefont={'color':'pearl06'},zerolinecolor='pearl04' if is3d else 'pearl03'))
-		update_annotations(annotations,'pearl06','pearl04')
+	theme_data = getTheme(theme)
+	layout=theme_data['layout']
+	layout['xaxis1'].update({'title':xTitle})
+	layout['yaxis1'].update({'title':yTitle})
+	if annotations:
+		update_annotations(annotations,
+						theme_data['annotations']['fontcolor'],
+						theme_data['annotations']['arrowcolor'])
 	
 	if barmode:
 		layout.update({'barmode':barmode})
@@ -155,9 +168,11 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 		layout.update(margin=margin)
 
 	if is3d:
+		if '3d' in theme_data:
+			layout.update(theme_data['3d'])
 		zaxis=layout['xaxis1'].copy()
 		zaxis.update(title=zTitle)
-		scene=Scene(xaxis1=layout['xaxis1'],yaxis1=layout['yaxis1'],zaxis=zaxis)
+		scene=Scene(xaxis=layout['xaxis1'],yaxis=layout['yaxis1'],zaxis=zaxis)
 		layout.update(scene=scene)
 		del layout['xaxis1']
 		del layout['yaxis1']
@@ -188,19 +203,19 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 				for x_i in xline:
 					if isinstance(x_i,dict):
 						x_i['kind']='line'
-						shapes.append(tools.get_shape(**x_i))
+						shapes.append(get_shape(**x_i))
 					else:						
 						if orientation=='h':
-							shapes.append(tools.get_shape(kind='line',y=x_i))
+							shapes.append(get_shape(kind='line',y=x_i))
 						else:
-							shapes.append(tools.get_shape(kind='line',x=x_i))
+							shapes.append(get_shape(kind='line',x=x_i))
 			elif isinstance(xline,dict):
-				shapes.append(tools.get_shape(**xline))
+				shapes.append(get_shape(**xline))
 			else:
 				if orientation=='h':
-					shapes.append(tools.get_shape(kind='line',y=xline))			
+					shapes.append(get_shape(kind='line',y=xline))			
 				else:
-					shapes.append(tools.get_shape(kind='line',x=xline))			
+					shapes.append(get_shape(kind='line',x=xline))			
 
 		def get_span(xspan):
 			orientation=xspan[0]
@@ -209,22 +224,22 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 				for x_i in xspan:
 					if isinstance(x_i,dict):
 						x_i['kind']='rect'
-						shapes.append(tools.get_shape(**x_i))
+						shapes.append(get_shape(**x_i))
 					else:
 						v0,v1=x_i
 						if orientation=='h':
-							shapes.append(tools.get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
+							shapes.append(get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
 						else:
-							shapes.append(tools.get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
+							shapes.append(get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
 			elif isinstance(xspan,dict):
 				xspan['kind']='rect'
-				shapes.append(tools.get_shape(**xspan))
+				shapes.append(get_shape(**xspan))
 			elif isinstance(xspan,tuple):
 				v0,v1=xspan
 				if orientation=='h':
-					shapes.append(tools.get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
+					shapes.append(get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5))
 				else:
-					shapes.append(tools.get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
+					shapes.append(get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5))
 			else:
 				raise Exception('Invalid value for {0}span: {1}'.format(orientation,xspan))
 
@@ -240,10 +255,10 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 			shapes_=kwargs['shapes']
 			if isinstance(shapes_,list):
 				for i in shapes_:
-					shp=i if 'type' in i else tools.get_shape(**i)
+					shp=i if 'type' in i else get_shape(**i)
 					shapes.append(shp)
 			elif isinstance(shapes_,dict):
-					shp=shapes_ if 'type' in shapes_ else tools.get_shape(**shapes_)
+					shp=shapes_ if 'type' in shapes_ else get_shape(**shapes_)
 					shapes.append(shp)
 			else:
 				raise Exception("Shapes need to be either a dict or list of dicts")

@@ -22,23 +22,23 @@ def pp(el,preString=''):
 		for key in keys:
 			val=el[key]
 			if isinstance(val,dict) or isinstance(val,list):
-				print '%s%s :' % (preString,key)
+				print('%s%s :' % (preString,key))
 				pp(val,preString+tab)
 			else:
-				print '%s%s  =  %s' % (preString,key,val)
+				print('%s%s  =  %s' % (preString,key,val))
 	
 	elif isinstance(el,list):
-		print preString+tab+'['
+		print(preString+tab+'[')
 		preString+=tab	
 		for _ in el:
 			if isinstance(_,dict):
-				print preString+tab+'{'
+				print (preString+tab+'{')
 				pp(_,preString+tab*2)
-				print preString+tab+'}'
+				print(preString+tab+'}')
 			elif isinstance(_,list):
-				print preString+tab+'['
+				print(preString+tab+'[')
 				pp(_,preString+tab)
-				print preString+tab+']'
+				print(preString+tab+']')
 			else:
 				pp(_,preString+tab)
 			#print preString+'      '+str('-')*10            

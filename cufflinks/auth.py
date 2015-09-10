@@ -85,6 +85,32 @@ def set_config_file(sharing=None,theme=None,colorscale=None,offline=None,
 	"""
 	Set the keyword-value pairs in `~/.config`.
 
+	sharing : string
+			Sets the sharing level permission
+				public - anyone can see this chart
+				private - only you can see this chart
+				secret - only people with the link can see the chart
+	theme : string
+			Sets the default theme
+			See cufflinks.getThemes() for available themes 
+	colorscale : string
+			Sets the default colorscale
+			See cufflinks.scales()
+	offline : bool
+			If true then the charts are rendered
+			locally. 
+	offline_show_link : bool
+			If true then the chart will show a link to 
+			plot.ly at the bottom right of the chart 
+	offline_link_text : string
+			Text to display as link at the bottom 
+			right of the chart 
+	datagen_mode : string
+			Mode in which the data is generated
+			by the datagen module
+				stocks : random stock names are used for the index
+				abc : alphabet values are used for the index
+
 	"""
 	if not _file_permissions:
 		raise Exception("You don't have proper file permissions "
@@ -93,7 +119,7 @@ def set_config_file(sharing=None,theme=None,colorscale=None,offline=None,
 	for key in kwargs.keys():
 		if key not in valid_kwargs:
 			raise Exception("Invalid keyword : '{0}'".format(key))
-	if 'world_readable' in kwargs:
+	if all(['world_readable' in kwargs,sharing is None]):
 		sharing=kwargs['world_readable']
 	if isinstance(sharing,bool):
 			if sharing:

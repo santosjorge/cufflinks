@@ -209,7 +209,7 @@ def color_table(color,N=1,sort=False,sort_values=False,inline=False,as_html=Fals
 			rgb_tup.sort()
 	elif isinstance(color,dict):
 		c_=''
-		items=[(k,normalize(v),hex_to_hsv(normalize(v))) for k,v in color.items()]
+		items=[(k,normalize(v),hex_to_hsv(normalize(v))) for k,v in list(color.items())]
 		if sort_values:
 			items=sorted(items,key=operator.itemgetter(2))
 		elif sort:
@@ -372,6 +372,7 @@ cnames={'aliceblue': '#F0F8FF',
  'grey11':			 '#8C8C8C',
  'grey12':			 '#C2C2C2',
  'grey13':			 '#E2E2E2',
+ 'grey14':			 '#E5E5E5',
  'honeydew':		 '#F0FFF0',
  'hotpink':			 '#FF69B4',
  'indianred':		 '#CD5C5C',
@@ -391,6 +392,7 @@ cnames={'aliceblue': '#F0F8FF',
  'lightgray':		 '#D3D3D3',
  'lightgreen':		 '#90EE90',
  'lightgrey':		 '#D3D3D3',
+ 'lightivory':		 '#F6F6F6',
  'lightpink':		 '#FFB6C1',
  'lightsalmon':		 '#FFA07A',
  'lightseagreen':	 '#20B2AA',
@@ -560,29 +562,29 @@ def reset_scales():
 	scale_cpy=cl.scales.copy()
 
 	# Add custom scales
-	for k,v in _custom_scales.items():
+	for k,v in list(_custom_scales.items()):
 		if v:
-			for k_,v_ in v.items():
+			for k_,v_ in list(v.items()):
 				if str(len(v_)) not in scale_cpy:
 					scale_cpy[str(len(v_))]={}
 				scale_cpy[str(len(v_))][k][k_]=[hex_to_rgb(normalize(_)) for _ in v_]
 
 	# Dictionary by Type > Name > N
 	_scales={}
-	for k,v in scale_cpy.items():
-		for k_,v_ in v.items():
+	for k,v in list(scale_cpy.items()):
+		for k_,v_ in list(v.items()):
 			if k_ not in _scales:
 				_scales[k_]={}
-			for k__,v__ in v_.items():
+			for k__,v__ in list(v_.items()):
 				if k__ not in _scales[k_]:
 					_scales[k_][k__]={}
 				_scales[k_][k__][k]=v__
 
 	# Dictionary by Name > N
 	_scales_names={}
-	for k,v in scale_cpy.items():
-		for k_,v_ in v.items():
-			for k__,v__ in v_.items():
+	for k,v in list(scale_cpy.items()):
+		for k_,v_ in list(v.items()):
+			for k__,v__ in list(v_.items()):
 				k__=k__.lower()
 				if k__ not in _scales_names:
 					_scales_names[k__]={}
@@ -628,7 +630,7 @@ def get_scales(scale=None,n=None):
 		return cs
 	else:
 		d={}
-		for k,v in _scales_names.items():
+		for k,v in list(_scales_names.items()):
 			if isinstance(v,dict):
 				keys=map(int,v.keys())
 				d[k]=v[str(max(keys))]

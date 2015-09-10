@@ -5,7 +5,6 @@ import offline
 from plotly.graph_objs import *
 from collections import defaultdict
 from colors import normalize,get_scales,colorgen,to_rgba
-from themes import THEMES
 from utils import check_kwargs
 from IPython.display import display,Image
 import time
@@ -15,11 +14,6 @@ import ta
 
 
 
-def getTheme(theme):
-	return THEMES[theme]
-
-def getThemes():
-	return THEMES.keys()
 
 
 __TA_KWARGS = ['min_period','center','freq','how','rsi_upper','rsi_lower','boll_std','fast_period',
@@ -544,6 +538,33 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				Assign shared y axes.
 				If True, subplots in the same grid row have one common
 				shared y-axis on the left-hand side of the grid.
+
+		Shapes
+			hline : int, list or dict
+				Draws a horizontal line at the 
+				indicated y position(s)
+				Extra parameters can be passed in
+				the form of a dictionary (see shapes)
+			vline : int, list or dict
+				Draws a vertical line at the 
+				indicated x position(s)
+				Extra parameters can be passed in
+				the form of a dictionary (see shapes)
+			hline : [y0,y1]
+				Draws a horizontal rectangle at the 
+				indicated (y0,y1) positions.
+				Extra parameters can be passed in
+				the form of a dictionary (see shapes)
+			vline : [x0,x1]
+				Draws a vertical rectangle at the 
+				indicated (x0,x1) positions.
+				Extra parameters can be passed in
+				the form of a dictionary (see shapes)
+			shapes : dict or list(dict)
+				List of dictionaries with the 
+				specifications of a given shape.
+				See help(cufflinks.tools.get_shape)
+				for more information
 	"""
 
 	# Look for invalid kwargs
@@ -572,7 +593,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 	# Get values from config theme
 	if theme is None:
 		theme = auth.get_config_file()['theme']
-	theme_config=getTheme(theme)
+	theme_config=tools.getTheme(theme)
 	if colorscale is None:
 		colorscale=theme_config['colorscale'] if 'colorscale' in theme_config else 'dflt'
 	if width is None:
