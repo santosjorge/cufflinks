@@ -612,10 +612,6 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 	# We assume we are good citizens
 	validate=True
 
-	# Support for the old sharing approach
-	if 'world_readable' in kwargs:
-		sharing=kwargs['world_readable']
-
 	
 
 	if not layout:
@@ -823,13 +819,15 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				layout=fig['layout']
 	
 ## Sharing Values
-	if sharing is None:
-			sharing = auth.get_config_file()['sharing']
+	if all(['world_readable' in kwargs,sharing is None]):
+		sharing=kwargs['world_readable']
 	if isinstance(sharing,bool):
 			if sharing:
 				sharing='public'
 			else:
 				sharing='private'
+	if sharing is None:
+		sharing=auth.get_config_file()['sharing']
 
 	if not filename:
 		if title:
@@ -948,18 +946,38 @@ def _figure(self,**kwargs):
 	kwargs['asFigure']=True
 	return self.iplot(**kwargs)
 
-def iplot(data_or_figure,validate=True,sharing=False,filename='',online=None,**kwargs):
+def iplot(data_or_figure,validate=True,sharing=None,filename='',online=None,**kwargs):
+	"""
+	Plots a figure in IPython
+
+	data_or_figure : figure
+		Plotly figure to be charted
+	validate : bool
+		If True then all values are validated before 
+		it is charted
+	sharing : string
+		Sets the sharing level permission
+			public - anyone can see this chart
+			private - only you can see this chart
+			secret - only people with the link can see the chart
+	filename : string
+		Name to be used to save the file in the server
+	online : bool
+		If True then charts are rendered in the server 
+	"""
 	valid_kwargs=['world_readable']
 	for key in kwargs.keys():
 		if key not in valid_kwargs:
 			raise Exception("Invalid keyword : '{0}'".format(key))
-	if 'world_readable' in kwargs:
+	if all(['world_readable' in kwargs,sharing is None]):
 		sharing=kwargs['world_readable']
 	if isinstance(sharing,bool):
-		if sharing:
-			sharing='public'
-		else:
-			sharing='private'
+			if sharing:
+				sharing='public'
+			else:
+				sharing='private'
+	if sharing is None:
+		sharing=auth.get_config_file()['sharing']
 	if offline.is_offline() and not online:
 		show_link = auth.get_config_file()['offline_show_link']
 		link_text = auth.get_config_file()['offline_link_text']
