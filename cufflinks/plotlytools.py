@@ -964,11 +964,20 @@ def iplot(data_or_figure,validate=True,sharing=None,filename='',online=None,**kw
 		Name to be used to save the file in the server
 	online : bool
 		If True then charts are rendered in the server 
+
+	Other Kwargs
+	============
+
+		legend : bool
+			If False then the legend will not be shown		
 	"""
-	valid_kwargs=['world_readable']
+	valid_kwargs=['world_readable','legend']
 	for key in kwargs.keys():
 		if key not in valid_kwargs:
 			raise Exception("Invalid keyword : '{0}'".format(key))
+	if 'legend' in kwargs:
+		if 'layout' in data_or_figure:
+			data_or_figure['layout'].update(showlegend=kwargs['legend'])
 	if all(['world_readable' in kwargs,sharing is None]):
 		sharing=kwargs['world_readable']
 	if isinstance(sharing,bool):
