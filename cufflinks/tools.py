@@ -380,6 +380,12 @@ def subplots(figures,shape=None,
 				white		
 			see cufflinks.getThemes() for all 
 			available themes
+		base_layout : layout (dict)
+			Layout to be used as base where the subplots will be 
+			added
+		subplot_titles : list(string)
+			List of strings that contains the titles of each
+			plot. 
 		horizontal_spacing : float
 				[0,1]
 			Space between subplot columns.
