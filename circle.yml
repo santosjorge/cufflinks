@@ -15,7 +15,7 @@ dependencies:
 
     - pip install git+https://github.com/plotly/python-api.git@update-graph-reference
     # we need to cd out of the project root to ensure the install worked
-    - cd ~ && python -c "import plotly"
+    - cd ~ && python -c "import cufflinks"
 
   cache_directories:
     - "~/.pyenv/versions"  # attempt to just cache installed pyenv things
