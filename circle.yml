@@ -12,7 +12,6 @@ dependencies:
 
     # install testing tools for circle's version of things
     - pip install nose coverage
-    - pip install -I .
 
     - pip install git+https://github.com/plotly/python-api.git@update-graph-reference
     # we need to cd out of the project root to ensure the install worked
