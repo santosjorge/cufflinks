@@ -56,4 +56,4 @@ target/
 # iPython Checkpoints
 .ipynb_checkpoints/
 
-.DS_Store
+vv/*
