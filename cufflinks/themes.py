@@ -166,6 +166,45 @@ THEMES = {
 					'zerolinecolor'  : 'pearl04'
 				}
 			}
+		},
+		'polar' : {
+			'colorscale':'polar',
+			'linewidth':1.3,
+			'bargap' : .01,
+			'layout' : {
+				'legend' : {'bgcolor':'polardust','font':{'color':'polargrey'}},
+				'paper_bgcolor' : 'polardust',
+				'plot_bgcolor' : 'polardust',
+				'yaxis1' : YAxis({
+					'tickfont' : {'color':'polargrey'},
+					'gridcolor' : 'pearl03',
+					'titlefont' : {'color':'polargrey'},
+					'zerolinecolor' : 'pearl03',
+					'showgrid' : True
+				}),
+				'xaxis1' : XAxis({
+					'tickfont' : {'color':'polargrey'},
+					'gridcolor' : 'pearl03',
+					'titlefont' : {'color':'polargrey'},
+					'zerolinecolor' : 'pearl03',
+					'showgrid' : True
+				}),
+				'titlefont' : {'color':'polardark'}
+			},
+			'annotations' : {
+				'fontcolor' : 'polardark',
+				'arrowcolor' : 'pearl04'
+			},
+			'3d' : {
+				'yaxis1' : {
+					'gridcolor' : 'pearl04',
+					'zerolinecolor'  : 'pearl04'
+				},
+				'xaxis1' : {
+					'gridcolor' : 'pearl04',
+					'zerolinecolor'  : 'pearl04'
+				}
+			}
 		}
 	}
 

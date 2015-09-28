@@ -4,7 +4,7 @@ from plotly.graph_objs import *
 from colors import normalize,to_rgba
 from themes import THEMES
 import auth
-from utils import merge_dict
+from utils import merge_dict,deep_update
 import numpy as np
 import copy
 
@@ -169,10 +169,10 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 
 	if is3d:
 		if '3d' in theme_data:
-			layout.update(theme_data['3d'])
+			layout=deep_update(layout,theme_data['3d'])
 		zaxis=layout['xaxis1'].copy()
 		zaxis.update(title=zTitle)
-		scene=Scene(xaxis=layout['xaxis1'],yaxis=layout['yaxis1'],zaxis=zaxis)
+		scene=Scene(xaxis=layout['xaxis1'].copy(),yaxis=layout['yaxis1'].copy(),zaxis=zaxis)
 		layout.update(scene=scene)
 		del layout['xaxis1']
 		del layout['yaxis1']
@@ -283,6 +283,52 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 	return updateColors(layout)
 
 
+def getAnnotations(df,annotations):
+	"""
+	Generates an annotations object
+
+	Parameters:
+	-----------
+		df : DataFrame
+			Original DataFrame of values
+		annotations : dictionary 
+			Dictionary of annotations
+			{x_point : text}
+	"""
+	l=[]
+	if 'title' in annotations:
+		l.append(
+				Annotation(
+						text=annotations['title'],
+						showarrow=False,
+						x=0,
+						y=1,
+						xref='paper',
+						yref='paper',
+						font={'size':24}
+					)
+			)
+	else:
+		for k,v in list(annotations.items()):
+			maxv=df.ix[k].sum() if k in df.index else 0
+			l.append(
+					 Annotation(
+								x=k,
+								y=maxv,
+								xref='x',
+								yref='y',
+								text=v,
+								showarrow=True,
+								arrowhead=7,
+								ax=0,
+								ay=-100,
+								textangle=-90
+								)
+					 )
+		values=['x','y','xref','yref','text','showarrow',
+				 'arrowhead','ax','ay','textangle','arrowsize',
+				 'arrowwidth','arrowcolor']
+	return Annotations(l)
 
 def strip_figures(figure):
 	"""

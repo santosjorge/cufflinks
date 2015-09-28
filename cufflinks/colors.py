@@ -450,6 +450,18 @@ cnames={'aliceblue': '#F0F8FF',
  'pink':			 '#ff0088',
  'pinksalmon':		 '#FFB5B8',
  'plum':			 '#DDA0DD',
+ 'polar':			 '#ACAFB5',
+ 'polarblue':		 '#0080F0',
+ 'polarbluelight':	 '#46A0F0',
+ 'polarcyan':		 '#ADFCFC',
+ 'polardark':		 '#484848',
+ 'polardiv':		 '#D5D8DB',
+ 'polardust':		 '#F2F3F7',
+ 'polargrey':		 '#505050',
+ 'polargreen':		 '#309054',
+ 'polarorange':		 '#EE7600',
+ 'polarpurple':		 '#6262DE',
+ 'polarred':		 '#D94255',
  'powderblue':		 '#B0E0E6',
  'purple':			 '#800080',
  'red':				 '#db4052',
@@ -490,7 +502,8 @@ cnames={'aliceblue': '#F0F8FF',
 _custom_scales={
 	'qual': {
 		'dflt':['orange','blue','grassgreen','purple','red','teal','yellow','olive','salmon','lightblue2'],
-		'ggplot':['brick','smurf','lightviolet','mediumgray','mustard','lime2','pinksalmon']
+		'ggplot':['brick','smurf','lightviolet','mediumgray','mustard','lime2','pinksalmon'],
+		'polar':['polarblue','polarorange','polargreen','polarpurple','polarred','polarcyan','polarbluelight']
 	},
 	'div': {
 

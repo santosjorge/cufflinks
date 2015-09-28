@@ -20,50 +20,6 @@ __TA_KWARGS = ['min_period','center','freq','how','rsi_upper','rsi_lower','boll_
 			   'slow_period','signal_period']
 
 
-def getAnnotations(df,annotations):
-	"""
-	Generates an annotations object
-
-	Parameters:
-	-----------
-		df : DataFrame
-			Original DataFrame of values
-		annotations : dictionary 
-			Dictionary of annotations
-			{x_point : text}
-	"""
-	l=[]
-	if 'title' in annotations:
-		l.append(
-				Annotation(
-						text=annotations['title'],
-						showarrow=False,
-						x=0,
-						y=1,
-						xref='paper',
-						yref='paper',
-						font={'size':24}
-					)
-			)
-	else:
-		for k,v in annotations.items():
-			maxv=df.ix[k].sum() if k in df.index else 0
-			l.append(
-					 Annotation(
-								x=k,
-								y=maxv,
-								xref='x',
-								yref='y',
-								text=v,
-								showarrow=True,
-								arrowhead=7,
-								ax=0,
-								ay=-100,
-								textangle=-90
-								)
-					 )
-	return Annotations(l)
-
 def iplot_to_dict(data):
 	d=collections.defaultdict(dict)
 	for i in data:
@@ -617,7 +573,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 	if not layout:
 		l_kwargs=dict([(k,kwargs[k]) for k in tools.__LAYOUT_KWARGS if k in kwargs])
 		if annotations:
-				annotations=getAnnotations(self.copy(),annotations)
+				annotations=tools.getAnnotations(self.copy(),annotations)
 		layout=tools.getLayout(theme=theme,xTitle=xTitle,yTitle=yTitle,zTitle=zTitle,title=title,barmode=barmode,
 								bargap=bargap,bargroupgap=bargroupgap,annotations=annotations,gridcolor=gridcolor,
 								zerolinecolor=zerolinecolor,margin=margin,is3d='3d' in kind,**l_kwargs)
