@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import string
-from auth import get_config_file
+from .auth import get_config_file
 
 class CufflinksError(Exception):
 		pass

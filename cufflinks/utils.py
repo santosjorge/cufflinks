@@ -2,7 +2,7 @@ import pickle
 
 def merge_dict(d1,d2):
 	d=d2.copy()
-	for k,v in d1.items():
+	for k,v in list(d1.items()):
 		if k not in d:
 			d[k]=v
 		else:
@@ -17,7 +17,7 @@ def pp(el,preString=''):
 	"""
 	tab=' '*4
 	if isinstance(el,dict):
-		keys=el.keys()
+		keys=list(el.keys())
 		keys.sort()
 		for key in keys:
 			val=el[key]
@@ -42,9 +42,9 @@ def pp(el,preString=''):
 			else:
 				pp(_,preString+tab)
 			#print preString+'      '+str('-')*10            
-		print preString	+']'
+		print(preString	+']')
 	else:
-		print preString+str(el)	
+		print(preString+str(el))
 
 def inverseDict(d):
 	"""
@@ -54,7 +54,7 @@ def inverseDict(d):
 		d : dictionary
 	"""
 	dt={}
-	for k,v in d.items():
+	for k,v in list(d.items()):
 		if type(v) in (list,tuple):
 			for i in v:
 				dt[i]=k

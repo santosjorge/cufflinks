@@ -23,13 +23,13 @@ __TA_KWARGS = ['min_period','center','freq','how','rsi_upper','rsi_lower','boll_
 def iplot_to_dict(data):
 	d=collections.defaultdict(dict)
 	for i in data:
-		for k,v in i.items():
+		for k,v in list(i.items()):
 			d[i['name']][k]=v
 	return d 
 
 def dict_to_iplot(d):
 	l=[]
-	for k,v in d.items():
+	for k,v in list(d.items()):
 		l.append(v)
 	return Data(l)
 
@@ -123,11 +123,11 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 	if not keys:		
 		if 'bar' in kind:
 			if sortbars:
-				keys=df.sum().sort(inplace=False,ascending=False).keys()
+				keys=list(df.sum().sort(inplace=False,ascending=False).keys())
 			else:
-				keys=df.keys()
+				keys=list(df.keys())
 		else:
-			keys=df.keys()
+			keys=list(df.keys())
 	colors=get_colors(colors,colorscale,keys)
 	for key in keys:
 		lines[key]={}
@@ -535,7 +535,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 	[valid_kwargs.extend(_) for _ in kwargs_list]
 	
 
-	for key in kwargs.keys():
+	for key in list(kwargs.keys()):
 		if key not in valid_kwargs:
 			raise Exception("Invalid keyword : '{0}'".format(key))
 
@@ -722,7 +722,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 					data=Data([Surface(z=z,x=x,y=y,colorscale=colorscale)])
 			elif kind in ('scatter3d','bubble3d'):
 				data=Data()
-				keys=self[text].values if text else range(len(self))
+				keys=self[text].values if text else list(range(len(self)))
 				colors=get_colors(colors,colorscale,keys,asList=True)
 				df=self.copy()
 				df['index']=keys
@@ -760,7 +760,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				validate=False
 			elif kind in ['candle','ohlc']:
 				d=tools._ohlc_dict(self)
-				if len(d.keys())!=4:
+				if len(list(d.keys()))!=4:
 					raise Exception("OHLC type of charts require an Open, High, Low and Close column")				
 				ohlc_kwargs=check_kwargs(kwargs,OHLC_KWARGS)
 				if kind=='candle':					
@@ -808,7 +808,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 			def set_error(axis,**kwargs):
 				return tools.set_errors(figure,axis=axis,**kwargs)
 			kw=check_kwargs(kwargs,ERROR_KWARGS)
-			kw=dict([(k.replace('error_',''),v) for k,v in kw.items()])
+			kw=dict([(k.replace('error_',''),v) for k,v in list(kw.items())])
 			kw['type']=error_type
 			if error_x:
 				kw['values']=error_x
@@ -859,11 +859,11 @@ def get_colors(colors,colorscale,keys,asList=False):
 					colors=get_scales(colorscale,len(keys))
 			clrgen=colorgen(colors,len(keys))
 			if asList:
-				colors=[clrgen.next() for _ in keys]
+				colors=[next(clrgen) for _ in keys]
 			else:
 				colors={}
 				for key in keys:
-					colors[key]=clrgen.next()
+					colors[key]=next(clrgen)
 	return colors
 
 
@@ -928,7 +928,7 @@ def iplot(data_or_figure,validate=True,sharing=None,filename='',online=None,**kw
 			If False then the legend will not be shown		
 	"""
 	valid_kwargs=['world_readable','legend']
-	for key in kwargs.keys():
+	for key in list(kwargs.keys()):
 		if key not in valid_kwargs:
 			raise Exception("Invalid keyword : '{0}'".format(key))
 	if 'legend' in kwargs:
@@ -1086,7 +1086,7 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 
 	study_kwargs={}  
 	iplot_study_kwargs={}
-	for k in iplot_kwargs.keys():
+	for k in list(iplot_kwargs.keys()):
 		if 'study' in k:
 			iplot_study_kwargs[k.replace('study_','')]=iplot_kwargs[k]
 			del iplot_kwargs[k]

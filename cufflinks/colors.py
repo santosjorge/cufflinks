@@ -1,11 +1,11 @@
 from collections import deque
-from auth import get_config_file
+from .auth import get_config_file
 import numpy as np
 import colorsys
 import colorlover as cl
-from utils import inverseDict
+from .utils import inverseDict
 import operator
-import themes
+from . import themes
 from IPython.display import HTML,display
 
 class CufflinksError(Exception):
@@ -532,7 +532,7 @@ def interp(colors,N):
 		except:
 			return _interp(colors,N+1)
 	c=_interp(colors,N)
-	return map(rgb_to_hex,cl.to_rgb(c))
+	return list(map(rgb_to_hex,cl.to_rgb(c)))
 
 def scales(scale=None):
 	"""
@@ -559,7 +559,7 @@ def scales(scale=None):
 			display(HTML(cl.to_html(get_scales(scale))))	
 	else:
 		s=''
-		keys=_scales_names.keys()
+		keys=list(_scales_names.keys())
 		keys.sort()
 		for k in keys:
 			scale=get_scales(k)
@@ -631,7 +631,7 @@ def get_scales(scale=None,n=None):
 			scale=scale[1:]
 			is_reverse=True
 		d=_scales_names[scale.lower()]
-		keys=map(int,d.keys())
+		keys=list(map(int,list(d.keys())))
 		if n:
 			if n in keys:
 				cs=d[str(n)]
@@ -645,7 +645,7 @@ def get_scales(scale=None,n=None):
 		d={}
 		for k,v in list(_scales_names.items()):
 			if isinstance(v,dict):
-				keys=map(int,v.keys())
+				keys=list(map(int,list(v.keys())))
 				d[k]=v[str(max(keys))]
 			else:
 				d[k]=v
