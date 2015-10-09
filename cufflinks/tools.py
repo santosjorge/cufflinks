@@ -527,6 +527,15 @@ def subplots(figures,shape=None,
 				del sp['layout'][k]
 		except:
 			pass
+
+	# Check for non-cartesian plots
+	data=sp['data']
+	layout=sp['layout']
+	for d in data:
+		if d['type']=='pie':
+			d['domain']={}
+			d['domain']['x']=layout['xaxis{0}'.format(d['xaxis'][1:])]['domain']
+			d['domain']['y']=layout['yaxis{0}'.format(d['yaxis'][1:])]['domain'] 
 	return sp
 
 
