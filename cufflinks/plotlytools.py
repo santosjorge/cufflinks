@@ -867,7 +867,7 @@ def get_colors(colors,colorscale,keys,asList=False):
 	return colors
 
 
-def _scatter_matrix(self,theme=None,bins=10,color='grey',size=2, **iplot_kwargs):
+def _scatter_matrix(self,theme=None,bins=10,color='grey',size=2, asFigure=False, **iplot_kwargs):
 	"""
 	Displays a matrix with scatter plot for each pair of 
 	Series in the DataFrame.
@@ -888,7 +888,11 @@ def _scatter_matrix(self,theme=None,bins=10,color='grey',size=2, **iplot_kwargs)
 		iplot_kwargs : key-value pairs
 			Keyword arguments to pass through to `iplot`
 	"""
-	return iplot(tools.scatter_matrix(self,theme=theme,bins=bins,color=color,size=size), **iplot_kwargs)
+	sm=tools.scatter_matrix(self,theme=theme,bins=bins,color=color,size=size)
+	if asFigure:
+		return sm
+	else:
+		return iplot(sm,**iplot_kwargs)
 
 def _figure(self,**kwargs):
 	"""

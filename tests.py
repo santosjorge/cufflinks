@@ -11,9 +11,9 @@ class TestIPlot(unittest.TestCase):
     def _iplot(self, df, **kwargs):
         return df.iplot(asFigure=True, **kwargs)
 
-    @unittest.skip("no asFigure method")
-    def test_scatter_matrix(self):
-        self.df.scatter_matrix(asFigure=True)
+    # @unittest.skip("no asFigure method")
+    # def test_scatter_matrix(self):
+    #     self.df.scatter_matrix(asFigure=True)
 
     @unittest.skip("example from docs, but this doesnt work")
     def test_irregular_subplots(self):
