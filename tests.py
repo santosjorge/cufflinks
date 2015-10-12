@@ -1,8 +1,10 @@
 import cufflinks as cf
 import pandas as pd
-
 import unittest
 
+##
+## nosetests -xv tests.py --with-coverage --cover-package=cufflinks
+##
 
 class TestIPlot(unittest.TestCase):
     def setUp(self):
