@@ -209,7 +209,7 @@ scatter_plot_input_argument_tests()
 bubble_chart_argument_tests()
 subplot_input_argument_tests()
 shape_input_argument_tests()
-test_irregular_subplots()
+# test_irregular_subplots()
 
 if __name__ == '__main__':
     unittest.main()
