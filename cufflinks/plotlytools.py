@@ -20,60 +20,16 @@ __TA_KWARGS = ['min_period','center','freq','how','rsi_upper','rsi_lower','boll_
 			   'slow_period','signal_period']
 
 
-def getAnnotations(df,annotations):
-	"""
-	Generates an annotations object
-
-	Parameters:
-	-----------
-		df : DataFrame
-			Original DataFrame of values
-		annotations : dictionary 
-			Dictionary of annotations
-			{x_point : text}
-	"""
-	l=[]
-	if 'title' in annotations:
-		l.append(
-				Annotation(
-						text=annotations['title'],
-						showarrow=False,
-						x=0,
-						y=1,
-						xref='paper',
-						yref='paper',
-						font={'size':24}
-					)
-			)
-	else:
-		for k,v in annotations.items():
-			maxv=df.ix[k].sum() if k in df.index else 0
-			l.append(
-					 Annotation(
-								x=k,
-								y=maxv,
-								xref='x',
-								yref='y',
-								text=v,
-								showarrow=True,
-								arrowhead=7,
-								ax=0,
-								ay=-100,
-								textangle=-90
-								)
-					 )
-	return Annotations(l)
-
 def iplot_to_dict(data):
 	d=collections.defaultdict(dict)
 	for i in data:
-		for k,v in i.items():
+		for k,v in list(i.items()):
 			d[i['name']][k]=v
 	return d 
 
 def dict_to_iplot(d):
 	l=[]
-	for k,v in d.items():
+	for k,v in list(d.items()):
 		l.append(v)
 	return Data(l)
 
@@ -167,11 +123,11 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 	if not keys:		
 		if 'bar' in kind:
 			if sortbars:
-				keys=df.sum().sort(inplace=False,ascending=False).keys()
+				keys=list(df.sum().sort(inplace=False,ascending=False).keys())
 			else:
-				keys=df.keys()
+				keys=list(df.keys())
 		else:
-			keys=df.keys()
+			keys=list(df.keys())
 	colors=get_colors(colors,colorscale,keys)
 	for key in keys:
 		lines[key]={}
@@ -579,7 +535,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 	[valid_kwargs.extend(_) for _ in kwargs_list]
 	
 
-	for key in kwargs.keys():
+	for key in list(kwargs.keys()):
 		if key not in valid_kwargs:
 			raise Exception("Invalid keyword : '{0}'".format(key))
 
@@ -617,7 +573,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 	if not layout:
 		l_kwargs=dict([(k,kwargs[k]) for k in tools.__LAYOUT_KWARGS if k in kwargs])
 		if annotations:
-				annotations=getAnnotations(self.copy(),annotations)
+				annotations=tools.getAnnotations(self.copy(),annotations)
 		layout=tools.getLayout(theme=theme,xTitle=xTitle,yTitle=yTitle,zTitle=zTitle,title=title,barmode=barmode,
 								bargap=bargap,bargroupgap=bargroupgap,annotations=annotations,gridcolor=gridcolor,
 								zerolinecolor=zerolinecolor,margin=margin,is3d='3d' in kind,**l_kwargs)
@@ -766,7 +722,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 					data=Data([Surface(z=z,x=x,y=y,colorscale=colorscale)])
 			elif kind in ('scatter3d','bubble3d'):
 				data=Data()
-				keys=self[text].values if text else range(len(self))
+				keys=self[text].values if text else list(range(len(self)))
 				colors=get_colors(colors,colorscale,keys,asList=True)
 				df=self.copy()
 				df['index']=keys
@@ -804,7 +760,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				validate=False
 			elif kind in ['candle','ohlc']:
 				d=tools._ohlc_dict(self)
-				if len(d.keys())!=4:
+				if len(list(d.keys()))!=4:
 					raise Exception("OHLC type of charts require an Open, High, Low and Close column")				
 				ohlc_kwargs=check_kwargs(kwargs,OHLC_KWARGS)
 				if kind=='candle':					
@@ -852,7 +808,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 			def set_error(axis,**kwargs):
 				return tools.set_errors(figure,axis=axis,**kwargs)
 			kw=check_kwargs(kwargs,ERROR_KWARGS)
-			kw=dict([(k.replace('error_',''),v) for k,v in kw.items()])
+			kw=dict([(k.replace('error_',''),v) for k,v in list(kw.items())])
 			kw['type']=error_type
 			if error_x:
 				kw['values']=error_x
@@ -903,15 +859,15 @@ def get_colors(colors,colorscale,keys,asList=False):
 					colors=get_scales(colorscale,len(keys))
 			clrgen=colorgen(colors,len(keys))
 			if asList:
-				colors=[clrgen.next() for _ in keys]
+				colors=[next(clrgen) for _ in keys]
 			else:
 				colors={}
 				for key in keys:
-					colors[key]=clrgen.next()
+					colors[key]=next(clrgen)
 	return colors
 
 
-def _scatter_matrix(self,theme=None,bins=10,color='grey',size=2, **iplot_kwargs):
+def _scatter_matrix(self,theme=None,bins=10,color='grey',size=2, asFigure=False, **iplot_kwargs):
 	"""
 	Displays a matrix with scatter plot for each pair of 
 	Series in the DataFrame.
@@ -932,7 +888,11 @@ def _scatter_matrix(self,theme=None,bins=10,color='grey',size=2, **iplot_kwargs)
 		iplot_kwargs : key-value pairs
 			Keyword arguments to pass through to `iplot`
 	"""
-	return iplot(tools.scatter_matrix(self,theme=theme,bins=bins,color=color,size=size), **iplot_kwargs)
+	sm=tools.scatter_matrix(self,theme=theme,bins=bins,color=color,size=size)
+	if asFigure:
+		return sm
+	else:
+		return iplot(sm,**iplot_kwargs)
 
 def _figure(self,**kwargs):
 	"""
@@ -964,11 +924,20 @@ def iplot(data_or_figure,validate=True,sharing=None,filename='',online=None,**kw
 		Name to be used to save the file in the server
 	online : bool
 		If True then charts are rendered in the server 
+
+	Other Kwargs
+	============
+
+		legend : bool
+			If False then the legend will not be shown		
 	"""
-	valid_kwargs=['world_readable']
-	for key in kwargs.keys():
+	valid_kwargs=['world_readable','legend']
+	for key in list(kwargs.keys()):
 		if key not in valid_kwargs:
 			raise Exception("Invalid keyword : '{0}'".format(key))
+	if 'legend' in kwargs:
+		if 'layout' in data_or_figure:
+			data_or_figure['layout'].update(showlegend=kwargs['legend'])
 	if all(['world_readable' in kwargs,sharing is None]):
 		sharing=kwargs['world_readable']
 	if isinstance(sharing,bool):
@@ -985,6 +954,8 @@ def iplot(data_or_figure,validate=True,sharing=None,filename='',online=None,**kw
 	else:
 		if 'layout' in data_or_figure:
 			validate = False if 'shapes' in data_or_figure['layout'] else validate
+		if not filename:
+			filename='Plotly Playground {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
 		return py.iplot(data_or_figure,validate=validate,sharing=sharing,
 						filename=filename)
 
@@ -1121,7 +1092,7 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 
 	study_kwargs={}  
 	iplot_study_kwargs={}
-	for k in iplot_kwargs.keys():
+	for k in list(iplot_kwargs.keys()):
 		if 'study' in k:
 			iplot_study_kwargs[k.replace('study_','')]=iplot_kwargs[k]
 			del iplot_kwargs[k]

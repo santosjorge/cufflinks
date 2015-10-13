@@ -1,10 +1,10 @@
 import plotly.plotly as py
 import plotly.offline as py_offline
 from plotly.graph_objs import *
-from colors import normalize,to_rgba
-from themes import THEMES
-import auth
-from utils import merge_dict
+from .colors import normalize,to_rgba
+from .themes import THEMES
+from . import auth
+from .utils import merge_dict,deep_update
 import numpy as np
 import copy
 
@@ -27,7 +27,7 @@ def getThemes():
 	"""
 	Returns the list of available themes
 	"""
-	return THEMES.keys()
+	return list(THEMES.keys())
 
 def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
 				gridcolor=None,zerolinecolor=None,margin=None,annotations=False,is3d=False,**kwargs):
@@ -111,7 +111,7 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 
 
 
-	for key in kwargs.keys():
+	for key in list(kwargs.keys()):
 		if key not in __LAYOUT_KWARGS:
 			raise Exception("Invalid keyword : '{0}'".format(key))
 	
@@ -164,15 +164,15 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 		if isinstance(margin,dict):
 			margin=margin
 		else:
-			margin=dict(zip(('l','r','b','t'),margin))
+			margin=dict(list(zip(('l','r','b','t')),margin))
 		layout.update(margin=margin)
 
 	if is3d:
 		if '3d' in theme_data:
-			layout.update(theme_data['3d'])
+			layout=deep_update(layout,theme_data['3d'])
 		zaxis=layout['xaxis1'].copy()
 		zaxis.update(title=zTitle)
-		scene=Scene(xaxis=layout['xaxis1'],yaxis=layout['yaxis1'],zaxis=zaxis)
+		scene=Scene(xaxis=layout['xaxis1'].copy(),yaxis=layout['yaxis1'].copy(),zaxis=zaxis)
 		layout.update(scene=scene)
 		del layout['xaxis1']
 		del layout['yaxis1']
@@ -267,7 +267,7 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 		layout['shapes']=shapes
 
 	def updateColors(layout):
-		for k,v in layout.items():
+		for k,v in list(layout.items()):
 			if isinstance(v,dict):
 				updateColors(v)
 			else:
@@ -283,6 +283,52 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 	return updateColors(layout)
 
 
+def getAnnotations(df,annotations):
+	"""
+	Generates an annotations object
+
+	Parameters:
+	-----------
+		df : DataFrame
+			Original DataFrame of values
+		annotations : dictionary 
+			Dictionary of annotations
+			{x_point : text}
+	"""
+	l=[]
+	if 'title' in annotations:
+		l.append(
+				Annotation(
+						text=annotations['title'],
+						showarrow=False,
+						x=0,
+						y=1,
+						xref='paper',
+						yref='paper',
+						font={'size':24}
+					)
+			)
+	else:
+		for k,v in list(annotations.items()):
+			maxv=df.ix[k].sum() if k in df.index else 0
+			l.append(
+					 Annotation(
+								x=k,
+								y=maxv,
+								xref='x',
+								yref='y',
+								text=v,
+								showarrow=True,
+								arrowhead=7,
+								ax=0,
+								ay=-100,
+								textangle=-90
+								)
+					 )
+		values=['x','y','xref','yref','text','showarrow',
+				 'arrowhead','ax','ay','textangle','arrowsize',
+				 'arrowwidth','arrowcolor']
+	return Annotations(l)
 
 def strip_figures(figure):
 	"""
@@ -311,11 +357,11 @@ def get_base_layout(figs):
 	"""
 	layout={}
 	for fig in figs:
-		for k,v in fig['layout'].items():
+		for k,v in list(fig['layout'].items()):
 			layout[k]=v
 	return layout
 
-def figures(df,specs):
+def figures(df,specs,asList=False):
 	"""
 	Generates multiple Plotly figures for a given DataFrame
 
@@ -332,7 +378,10 @@ def figures(df,specs):
 	figs=[]
 	for spec in specs:
 		figs.append(df.figure(**spec))
-	return merge_figures(figs)
+	if asList:
+		return figs
+	else:
+		return merge_figures(figs)
 
 def merge_figures(figures):
 	figure=Figure()
@@ -380,6 +429,12 @@ def subplots(figures,shape=None,
 				white		
 			see cufflinks.getThemes() for all 
 			available themes
+		base_layout : layout (dict)
+			Layout to be used as base where the subplots will be 
+			added
+		subplot_titles : list(string)
+			List of strings that contains the titles of each
+			plot. 
 		horizontal_spacing : float
 				[0,1]
 			Space between subplot columns.
@@ -461,7 +516,7 @@ def subplots(figures,shape=None,
 	list_ref=(col for row in sp._grid_ref for col in row)
 	for i in range(len(figures)):
 		while True:
-			lr=list_ref.next()
+			lr=next(list_ref)
 			if lr is not None:
 				break
 		for _ in figures[i]['data']:
@@ -469,12 +524,21 @@ def subplots(figures,shape=None,
 				_.update({'{0}axis'.format(axe[0]):axe})
 			sp['data'].append(_)
 	# Remove extra plots
-	for k in sp['layout'].keys():
+	for k in list(sp['layout'].keys()):
 		try:
 			if int(k[-1])>len(figures):
 				del sp['layout'][k]
 		except:
 			pass
+
+	# Check for non-cartesian plots
+	data=sp['data']
+	layout=sp['layout']
+	for d in data:
+		if d['type']=='pie':
+			d['domain']={}
+			d['domain']['x']=layout['xaxis{0}'.format(d['xaxis'][1:])]['domain']
+			d['domain']['y']=layout['yaxis{0}'.format(d['yaxis'][1:])]['domain'] 
 	return sp
 
 
@@ -580,7 +644,7 @@ def get_subplots(rows=1,cols=1,
 	sp=py.plotly.tools.make_subplots(rows=rows,cols=cols,shared_xaxes=shared_xaxes,
 										   shared_yaxes=shared_yaxes,print_grid=False,
 											start_cell=start_cell,**kwargs)
-	for k,v in layout.items():
+	for k,v in list(layout.items()):
 		if not isinstance(v,XAxis) and not isinstance(v,YAxis):
 			sp['layout'].update({k:v})
 			
@@ -593,10 +657,10 @@ def get_subplots(rows=1,cols=1,
 			ann['font'].update(color=annotation['font']['color'])
 
 	def update_items(sp_item,layout,axis):
-		for k,v in layout[axis].items():
+		for k,v in list(layout[axis].items()):
 			sp_item.update({k:v})
 
-	for k,v in sp['layout'].items():
+	for k,v in list(sp['layout'].items()):
 		if isinstance(v,XAxis):
 			update_items(v,layout,'xaxis1')
 		elif isinstance(v,YAxis):
@@ -724,7 +788,7 @@ def get_ref(figure):
 
 def get_def(figure):
 	d={}
-	items=figure['layout']['scene'].items() if 'scene' in figure['layout'] else figure['layout'].items()
+	items=list(figure['layout']['scene'].items()) if 'scene' in figure['layout'] else list(figure['layout'].items())
 	for k,v in items:
 		if 'axis' in k:
 			d['{0}{1}'.format(k[0],1 if k[-1]=='s' else k[-1])]=v
@@ -732,7 +796,7 @@ def get_def(figure):
 
 def get_len(figure):
 	d={}
-	keys=figure['layout']['scene'].keys() if 'scene' in figure['layout'] else figure['layout'].keys()
+	keys=list(figure['layout']['scene'].keys()) if 'scene' in figure['layout'] else list(figure['layout'].keys())
 	for k in keys:
 		if 'axis' in k:
 			d[k[0]] = d[k[0]]+1 if k[0] in d else 1
@@ -740,7 +804,7 @@ def get_len(figure):
 
 def get_which(figure):
 	d={}
-	keys=figure['layout']['scene'].keys() if 'scene' in figure['layout'] else figure['layout'].keys()
+	keys=list(figure['layout']['scene'].keys()) if 'scene' in figure['layout'] else list(figure['layout'].keys())
 	for k in keys:
 		if 'axis' in k:
 			if k[0] in d:
@@ -751,7 +815,7 @@ def get_which(figure):
 
 def get_ref_axis(figure):
 	d={}
-	for k,v in get_ref(figure).items():
+	for k,v in list(get_ref(figure).items()):
 		for i in v:
 			if i not in d:
 				d[i]=[]
@@ -840,7 +904,7 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 			update_data(trace,y=new_axis)
 
 
-	for k in fig.axis['def'].keys():
+	for k in list(fig.axis['def'].keys()):
 		id='{0}axis{1}'.format(k[0],k[-1:])
 		if k not in fig.axis['ref_axis']:
 			try:
@@ -1040,7 +1104,7 @@ def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=N
 		if trace:
 			traces=[figure.trace_dict[trace]]
 		else:
-			traces=range(len(figure['data']))
+			traces=list(range(len(figure['data'])))
 		for i in traces:
 				trace=figure['data'][i]
 				upper,lower=get_traces(trace,values,type,color=color,width=width,opacity=opacity)

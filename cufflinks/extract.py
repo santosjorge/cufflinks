@@ -52,7 +52,7 @@ def to_df(figure):
             vals=trace['x'] if 'x' in trace else trace['y']
             df=pd.DataFrame({trace['name']:vals})
             dfs.append(df)
-    if max(map(len,dfs))==min(map(len,dfs)):
+    if max(list(map(len,dfs)))==min(list(map(len,dfs))):
         if len(dfs)==1:
             return dfs[0]
         else:

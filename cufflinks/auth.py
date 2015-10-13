@@ -6,7 +6,7 @@ Based in Plotly's tools module
 import os
 import json
 import warnings
-from offline import go_offline
+from .offline import go_offline
 
 package='cufflinks'
 
@@ -116,7 +116,7 @@ def set_config_file(sharing=None,theme=None,colorscale=None,offline=None,
 		raise Exception("You don't have proper file permissions "
 									 "to run this function.")
 	valid_kwargs=['world_readable']
-	for key in kwargs.keys():
+	for key in list(kwargs.keys()):
 		if key not in valid_kwargs:
 			raise Exception("Invalid keyword : '{0}'".format(key))
 	if all(['world_readable' in kwargs,sharing is None]):
