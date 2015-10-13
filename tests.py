@@ -17,26 +17,26 @@ class TestIPlot(unittest.TestCase):
     # def test_scatter_matrix(self):
     #     self.df.scatter_matrix(asFigure=True)
 
-    @unittest.skip("example from docs, but this doesnt work")
-    def test_irregular_subplots(self):
-        df = cf.datagen.bubble(10, 50, mode='stocks')
-        figs = cf.figures(df, [
-            dict(kind='histogram', keys='x', color='blue'),
-            dict(kind='scatter', mode='markers', x='x', y='y', size=5),
-            dict(kind='scatter', mode='markers', x='x', y='y',
-                 size=5, color='teal')])
-        figs.append(cf.datagen.lines(1).figure(bestfit=True, colors=['blue'],
-                                               bestfit_colors=['pink']))
-        base_layout = cf.tools.get_base_layout(figs)
-        sp = cf.subplots(figs, shape=(3, 2), base_layout=base_layout,
-                         vertical_spacing=.15, horizontal_spacing=.03,
-                         specs=[[{'rowspan': 2}, {}], [None, {}],
-                                [{'colspan': 2}, None]],
-                         subplot_titles=['Histogram', 'Scatter 1',
-                                         'Scatter 2', 'Bestfit Line'])
-        sp['layout'].update(showlegend=False)
+    # @unittest.skip("example from docs, but this doesnt work")
 
-        cf.iplot(sp, asFigure=True)
+def test_irregular_subplots():
+    df = cf.datagen.bubble(10, 50, mode='stocks')
+    figs = cf.figures(df, [
+        dict(kind='histogram', keys='x', color='blue'),
+        dict(kind='scatter', mode='markers', x='x', y='y', size=5),
+        dict(kind='scatter', mode='markers', x='x', y='y',
+             size=5, color='teal')],asList=True)
+    figs.append(cf.datagen.lines(1).figure(bestfit=True, colors=['blue'],
+                                           bestfit_colors=['pink']))
+    base_layout = cf.tools.get_base_layout(figs)
+    sp = cf.subplots(figs, shape=(3, 2), base_layout=base_layout,
+                     vertical_spacing=.15, horizontal_spacing=.03,
+                     specs=[[{'rowspan': 2}, {}], [None, {}],
+                            [{'colspan': 2}, None]],
+                     subplot_titles=['Histogram', 'Scatter 1',
+                                     'Scatter 2', 'Bestfit Line'])
+    sp['layout'].update(showlegend=False)
+    return sp
 
 
 def bar_input_argument_tests():
@@ -209,6 +209,7 @@ scatter_plot_input_argument_tests()
 bubble_chart_argument_tests()
 subplot_input_argument_tests()
 shape_input_argument_tests()
+test_irregular_subplots()
 
 if __name__ == '__main__':
     unittest.main()

@@ -361,7 +361,7 @@ def get_base_layout(figs):
 			layout[k]=v
 	return layout
 
-def figures(df,specs):
+def figures(df,specs,asList=False):
 	"""
 	Generates multiple Plotly figures for a given DataFrame
 
@@ -378,7 +378,10 @@ def figures(df,specs):
 	figs=[]
 	for spec in specs:
 		figs.append(df.figure(**spec))
-	return merge_figures(figs)
+	if asList:
+		return figs
+	else:
+		return merge_figures(figs)
 
 def merge_figures(figures):
 	figure=Figure()
