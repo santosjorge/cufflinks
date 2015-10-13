@@ -26,7 +26,7 @@ def test_irregular_subplots():
         dict(kind='scatter', mode='markers', x='x', y='y', size=5),
         dict(kind='scatter', mode='markers', x='x', y='y',
              size=5, color='teal')],asList=True)
-    figs.append(cf.datagen.lines(1).figure(bestfit=True, colors=['blue'],
+    figs.append(cf.datagen.lines(1).figure(bestfit=False, colors=['blue'],
                                            bestfit_colors=['pink']))
     base_layout = cf.tools.get_base_layout(figs)
     sp = cf.subplots(figs, shape=(3, 2), base_layout=base_layout,
@@ -209,7 +209,7 @@ scatter_plot_input_argument_tests()
 bubble_chart_argument_tests()
 subplot_input_argument_tests()
 shape_input_argument_tests()
-# test_irregular_subplots()
+test_irregular_subplots()
 
 if __name__ == '__main__':
     unittest.main()

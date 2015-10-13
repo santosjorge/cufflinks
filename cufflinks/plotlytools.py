@@ -954,6 +954,8 @@ def iplot(data_or_figure,validate=True,sharing=None,filename='',online=None,**kw
 	else:
 		if 'layout' in data_or_figure:
 			validate = False if 'shapes' in data_or_figure['layout'] else validate
+		if not filename:
+			filename='Plotly Playground {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
 		return py.iplot(data_or_figure,validate=validate,sharing=sharing,
 						filename=filename)
 
