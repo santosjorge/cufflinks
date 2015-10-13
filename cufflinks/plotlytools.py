@@ -697,10 +697,11 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 						__=Box(y=df[_].values.tolist(),marker=Marker(color=clrs[_]),name=_,
 								line=Line(width=width),boxpoints=boxpoints)
 					else:
-						__=Histogram(x=df[_].values.tolist(),marker=Marker(color=clrs[_]),name=_,
-								line=Line(width=width),orientation=orientation,
-								opacity=kwargs['opacity'] if 'opacity' in kwargs else .8, histfunc=histfunc, 
-								histnorm=histnorm) 
+						__=Histogram(x=df[_].values.tolist(),name=_,
+								marker=Marker(color=clrs[_], line=Line(width=width)),
+								orientation=orientation,
+								opacity=kwargs['opacity'] if 'opacity' in kwargs else .8, histfunc=histfunc,
+								histnorm=histnorm)
 						if orientation=='h':
 							__['y']=__['x']
 							del __['x']
