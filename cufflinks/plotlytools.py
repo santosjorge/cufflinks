@@ -678,7 +678,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				clrs=[clrs] if not isinstance(clrs,list) else clrs
 				clrs=[clrs[0]]*len(x)
 				marker=Marker(color=clrs,size=z,symbol=symbol,
-								line=Line(width=width),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
+								line=Line(width=width))
 				trace=Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
 				data=Data([trace])
 			elif kind in ('box','histogram','hist'):
