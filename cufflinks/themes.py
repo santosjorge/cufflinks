@@ -4,6 +4,7 @@ THEMES = {
 		'ggplot' : {
 			'colorscale':'ggplot',
 			'linewidth':1.3,
+			'linecolor':'pearl',
 			'bargap' : .01,
 			'layout' : {
 				'legend' : {'bgcolor':'white','font':{'color':'grey10'}},

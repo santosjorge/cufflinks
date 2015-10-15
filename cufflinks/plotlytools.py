@@ -702,6 +702,14 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 								orientation=orientation,
 								opacity=kwargs['opacity'] if 'opacity' in kwargs else .8, histfunc=histfunc,
 								histnorm=histnorm)
+						if 'linecolor' in kwargs:
+							linecolor=normalize(kwargs['linecolor'])
+						else:
+							if 'linecolor' in tools.getTheme(theme=theme):
+								linecolor=normalize(tools.getTheme(theme=theme)['linecolor'])
+							else: 
+								linecolor=tools.getLayout(theme=theme)['xaxis1']['titlefont']['color']
+						__['marker']['line'].update(color=linecolor)
 						if orientation=='h':
 							__['y']=__['x']
 							del __['x']
