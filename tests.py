@@ -6,6 +6,7 @@ import unittest
 ## nosetests -xv tests.py --with-coverage --cover-package=cufflinks
 ##
 
+
 class TestIPlot(unittest.TestCase):
     def setUp(self):
         self.df = pd.DataFrame(dict(x=[1, 2, 3], y=[4, 2, 1], c=[3, 1, 5]))
@@ -13,11 +14,15 @@ class TestIPlot(unittest.TestCase):
     def _iplot(self, df, **kwargs):
         return df.iplot(asFigure=True, **kwargs)
 
-    # @unittest.skip("no asFigure method")
-    # def test_scatter_matrix(self):
-    #     self.df.scatter_matrix(asFigure=True)
+    def test_scatter_matrix(self):
+        self.df.scatter_matrix(asFigure=True)
 
-    # @unittest.skip("example from docs, but this doesnt work")
+    def test_bubble_chart_with_pearl(self):
+        df = cf.datagen.bubble(10, 50, mode='stocks')
+        df.iplot(kind='bubble', x='gdpPercap', y='lifeExp', size='pop',
+                 text='country',
+                 xTitle='GDP per Capita', yTitle='Life Expectancy',
+                 asFigure=True, theme='pearl')
 
 def test_irregular_subplots():
     df = cf.datagen.bubble(10, 50, mode='stocks')

@@ -678,7 +678,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				clrs=[clrs] if not isinstance(clrs,list) else clrs
 				clrs=[clrs[0]]*len(x)
 				marker=Marker(color=clrs,size=z,symbol=symbol,
-								line=Line(width=width),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
+								line=Line(width=width))
 				trace=Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
 				data=Data([trace])
 			elif kind in ('box','histogram','hist'):
@@ -697,10 +697,11 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 						__=Box(y=df[_].values.tolist(),marker=Marker(color=clrs[_]),name=_,
 								line=Line(width=width),boxpoints=boxpoints)
 					else:
-						__=Histogram(x=df[_].values.tolist(),marker=Marker(color=clrs[_]),name=_,
-								line=Line(width=width),orientation=orientation,
-								opacity=kwargs['opacity'] if 'opacity' in kwargs else .8, histfunc=histfunc, 
-								histnorm=histnorm) 
+						__=Histogram(x=df[_].values.tolist(),name=_,
+								marker=Marker(color=clrs[_], line=Line(width=width)),
+								orientation=orientation,
+								opacity=kwargs['opacity'] if 'opacity' in kwargs else .8, histfunc=histfunc,
+								histnorm=histnorm)
 						if orientation=='h':
 							__['y']=__['x']
 							del __['x']
