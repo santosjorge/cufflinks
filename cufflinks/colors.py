@@ -1,3 +1,8 @@
+##
+# Special thanks to @krey for the python3 support
+##
+
+
 from collections import deque
 from .auth import get_config_file
 import numpy as np
@@ -55,7 +60,8 @@ def hex_to_rgb(color):
 	"""
 	color=normalize(color)
 	color=color[1:]
-	return 'rgb'+str(tuple(ord(c) for c in color.decode('hex')))
+	# return 'rgb'+str(tuple(ord(c) for c in color.decode('hex')))
+	return 'rgb'+str((int(color[0:2], base=16), int(color[2:4], base=16), int(color[4:6], base=16)))
 
 def normalize(color):
 	"""
@@ -99,7 +105,8 @@ def rgb_to_hex(color):
 		rgb_to_hex('rgb(23,25,24)')
 	"""
 	rgb=eval(color.replace('rgb',''))
-	return '#'+''.join(map(chr, rgb)).encode('hex')
+	# return '#'+''.join(map(chr, rgb)).encode('hex')
+	return '#' + ''.join(['{0:02x}'.format(x).upper() for x in rgb])
 
 def rgba_to_rgb(color,bg='rgb(255,255,255)'):
 	"""
@@ -138,7 +145,8 @@ def hex_to_hsv(color):
 	"""
 	color=normalize(color)
 	color=color[1:]
-	color=tuple(ord(c)/255.0 for c in color.decode('hex'))
+	# color=tuple(ord(c)/255.0 for c in color.decode('hex'))
+	color=(int(color[0:2], base=16)/255.0, int(color[2:4], base=16)/255.0, int(color[4:6], base=16)/255.0)
 	return colorsys.rgb_to_hsv(*color)
 
 
@@ -165,7 +173,8 @@ def color_range(color,N=20):
 	for c in HSV_tuples:
 		c = colorsys.hsv_to_rgb(*c)
 		c = [int(_*255) for _ in c]
-		hex_out.append("#"+"".join([chr(x).encode('hex') for x in c]))
+		# hex_out.append("#"+"".join([chr(x).encode('hex') for x in c]))
+		hex_out.append("#"+"".join(['{0:02x}'.format(x) for x in c]))
 	if org not in hex_out:
 		hex_out.append(org)
 	hex_out.sort()
