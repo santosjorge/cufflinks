@@ -1,5 +1,5 @@
 appnope==0.1.0
-colorlover==0.2
+colorlover==0.2.1
 cufflinks==0.6.7
 decorator==4.0.2
 gnureadline==6.3.3
