@@ -77,7 +77,7 @@ def histogram_input_argument_tests():
         'barmode': ['stack'],
         'bins': [20],
         'orientation': ['h', 'v', 'horizontal', 'vertical'],
-        'histnorm': ['propbability'],
+        'histnorm': ['probability','percent','density'],
         'subplots': [True]
     }
 
