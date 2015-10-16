@@ -1,19 +1,16 @@
 import pandas as pd
 import plotly.plotly as py
-import tools 
-import offline
-from plotly.graph_objs import *
-from collections import defaultdict
-from colors import normalize,get_scales,colorgen,to_rgba
-from utils import check_kwargs
-from IPython.display import display,Image
 import time
 import copy
-import auth
-import ta
-
-
-
+from plotly.graph_objs import *
+from collections import defaultdict
+from IPython.display import display,Image
+from .colors import normalize,get_scales,colorgen,to_rgba
+from .utils import check_kwargs
+from . import tools 
+from . import offline
+from . import auth
+from . import ta
 
 
 __TA_KWARGS = ['min_period','center','freq','how','rsi_upper','rsi_lower','boll_std','fast_period',
