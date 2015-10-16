@@ -321,7 +321,7 @@ def getName(n=1,name=3,exchange=2,columns=None,mode='abc'):
 		if mode=='abc':
 			columns=list(string.ascii_letters[:n])
 		elif mode=='stocks':
-			columns=[''.join(np.random.choice(list(string.uppercase),name)) + '.' + ''.join(np.random.choice(list(string.uppercase),exchange)) for _ in range(n)]
+			columns=[''.join(np.random.choice(list(string.ascii_uppercase),name)) + '.' + ''.join(np.random.choice(list(string.ascii_uppercase),exchange)) for _ in range(n)]
 		else:
 			raise CufflinksError("Unknown mode: {0}".format(mode))
 	return columns
