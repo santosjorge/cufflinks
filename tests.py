@@ -184,7 +184,7 @@ def _generate_tests(test_class, test_func, test_name, options):
                                    for r in range(len(s) + 1))
 
     key_value_tuple = {}
-    for option, values in options.iteritems():
+    for option, values in list(options.items()):
         key_value_tuple[option] = [(option, i) for i in values]
 
     for option_groups in powerset(key_value_tuple.values()):

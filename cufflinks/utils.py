@@ -62,6 +62,16 @@ def inverseDict(d):
 			dt[v]=k
 	return dt	
 
+## Kwargs handlers
+
+def kwargs_from_keyword(from_kwargs,to_kwargs,keyword,clean_origin=True):
+	for k in list(from_kwargs.keys()):
+		if '{0}_'.format(keyword) in k:
+			to_kwargs[k.replace('{0}_'.format(keyword),'')]=from_kwargs[k]
+			if clean_origin:
+				del from_kwargs[k]
+	return to_kwargs
+
 def check_kwargs(global_kwargs,values,local_kwargs=None):
 	local_kwargs={} if not local_kwargs else local_kwargs
 	for kw in values:
