@@ -65,6 +65,22 @@ def inverseDict(d):
 ## Kwargs handlers
 
 def kwargs_from_keyword(from_kwargs,to_kwargs,keyword,clean_origin=True):
+	"""
+	Looks for keys of the format keyword_value. 
+	And return a dictionary with {keyword:value} format
+
+	Parameters:
+	-----------
+		from_kwargs : dict
+			Original dictionary
+		to_kwargs : dict
+			Dictionary where the items will be appended
+		keyword : string
+			Keyword to look for in the orginal dictionary
+		clean_origin : bool
+			If True then the k,v pairs from the original 
+			dictionary are deleted
+	"""
 	for k in list(from_kwargs.keys()):
 		if '{0}_'.format(keyword) in k:
 			to_kwargs[k.replace('{0}_'.format(keyword),'')]=from_kwargs[k]
@@ -99,6 +115,16 @@ def load_pickle(filename):
 	return pickle.load(open(filename,'rb'))
 
 def deep_update(d,d_update):
+	"""
+	Updates the values (deep form) of a given dictionary
+
+	Parameters:
+	-----------
+		d : dict
+			dictionary that contains the values to update
+		d_update : dict
+			dictionary to be updated
+	"""
 	for k,v in list(d_update.items()):
 		if isinstance(v,dict):
 			if k in d:

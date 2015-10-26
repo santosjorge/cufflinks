@@ -17,13 +17,6 @@ class TestIPlot(unittest.TestCase):
     def test_scatter_matrix(self):
         self.df.scatter_matrix(asFigure=True)
 
-    # def test_bubble_chart_with_pearl(self):
-    #     df = cf.datagen.bubble(10, 50, mode='stocks')
-    #     df.iplot(kind='bubble', x='gdpPercap', y='lifeExp', size='pop',
-    #              text='country',
-    #              xTitle='GDP per Capita', yTitle='Life Expectancy',
-    #              asFigure=True, theme='pearl')
-
 def test_irregular_subplots():
     df = cf.datagen.bubble(10, 50, mode='stocks')
     figs = cf.figures(df, [
@@ -78,7 +71,8 @@ def histogram_input_argument_tests():
         'bins': [20],
         'orientation': ['h', 'v', 'horizontal', 'vertical'],
         'histnorm': ['probability','percent','density'],
-        'subplots': [True]
+        'subplots': [True],
+        'line_color':['blue','#fa0','rgb(20,20,20)']
     }
 
     def histogram_test(self, **kwargs):

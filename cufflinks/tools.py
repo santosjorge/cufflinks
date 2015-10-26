@@ -1111,6 +1111,25 @@ def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=N
 				figure['data'].extend([upper,lower]) 
 	return figure
 
+
+def updateColors(d):
+	for k,v in list(d.items()):
+		if isinstance(v,dict):
+			updateColors(v)
+		else:
+			if isinstance(v,list):
+				if 'color' in k:
+					d[k]=[normalize(_) for _ in v]
+				else:
+					for _ in v:
+						if isinstance(_,dict):
+							updateColors(_)
+			else:
+				if 'color' in k.lower():
+					if 'rgba' not in v:
+						d[k]=normalize(v)
+	return d
+
 ### Offline
 
 def go_offline(offline=True):

@@ -6,7 +6,7 @@ from plotly.graph_objs import *
 from collections import defaultdict
 from IPython.display import display,Image
 from .colors import normalize,get_scales,colorgen,to_rgba
-from .utils import check_kwargs
+from .utils import check_kwargs, deep_update, kwargs_from_keyword
 from . import tools 
 from . import offline
 from . import auth
@@ -189,8 +189,8 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 			dash='solid',mode='lines',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
 			bestfit_colors=None,mean=False,mean_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,
-            zerolinecolor=None,margin=None,labels=None,values=None,secondary_y='',subplots=False,shape=None,error_x=None,
-            error_y=None,error_type='data',asFrame=False,asDates=False,asFigure=False,
+			zerolinecolor=None,margin=None,labels=None,values=None,secondary_y='',subplots=False,shape=None,error_x=None,
+			error_y=None,error_type='data',asFrame=False,asDates=False,asFigure=False,
 			asImage=False,dimensions=(1116,587),asPlot=False,asUrl=False,online=None,**kwargs):
 	"""
 	Returns a plotly chart either as inline chart, image of Figure object
@@ -457,6 +457,10 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 					  '+' between each item
 					  ie 'label+percent'
 
+		Histogram
+			line_color : string
+				specifies the line color of the histogram
+
 		Error Bars
 			error_trace : string
 				Name of the column for which error should be 
@@ -530,6 +534,12 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 					'error_width','error_opacity']
 	kwargs_list = [tools.__LAYOUT_KWARGS,OHLC_KWARGS,PIE_KWARGS,SUBPLOT_KWARGS,ERROR_KWARGS]
 	[valid_kwargs.extend(_) for _ in kwargs_list]
+
+	dict_modifiers_keys = ['line']
+	dict_modifiers={}
+
+	for k in dict_modifiers_keys:
+		dict_modifiers[k]=kwargs_from_keyword(kwargs,{},k,True)
 	
 
 	for key in list(kwargs.keys()):
@@ -699,14 +709,17 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 								orientation=orientation,
 								opacity=kwargs['opacity'] if 'opacity' in kwargs else .8, histfunc=histfunc,
 								histnorm=histnorm)
-						if 'linecolor' in kwargs:
-							linecolor=normalize(kwargs['linecolor'])
-						else:
-							if 'linecolor' in tools.getTheme(theme=theme):
-								linecolor=normalize(tools.getTheme(theme=theme)['linecolor'])
-							else: 
-								linecolor=tools.getLayout(theme=theme)['xaxis1']['titlefont']['color']
-						__['marker']['line'].update(color=linecolor)
+
+						if 'line' in dict_modifiers:
+							if 'color' not in dict_modifiers['line']:
+								if 'linecolor' in tools.getTheme(theme=theme):
+									linecolor=normalize(tools.getTheme(theme=theme)['linecolor'])
+								else: 
+									linecolor=tools.getLayout(theme=theme)['xaxis1']['titlefont']['color']
+								dict_modifiers['line']['color']=linecolor
+							dict_modifiers['line']=tools.updateColors(dict_modifiers['line'])
+						__['marker']['line']=deep_update(__['marker']['line'],dict_modifiers['line'])
+
 						if orientation=='h':
 							__['y']=__['x']
 							del __['x']
