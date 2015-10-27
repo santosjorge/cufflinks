@@ -72,7 +72,7 @@ def histogram_input_argument_tests():
         'orientation': ['h', 'v', 'horizontal', 'vertical'],
         'histnorm': ['probability','percent','density'],
         'subplots': [True],
-        'line_color':['blue','#fa0','rgb(20,20,20)']
+        'line_color':['blue','#fa0']
     }
 
     def histogram_test(self, **kwargs):
@@ -198,7 +198,10 @@ def _generate_test(test_func, **kwargs):
 
     return test
 
+def tt():
+    return 2*2
 
+tt()
 bar_input_argument_tests()
 bar_row_input_argument_tests()
 histogram_input_argument_tests()

@@ -508,7 +508,7 @@ def subplots(figures,shape=None,
 			rows=1
 		else:
 			cols=2
-			rows=len(figures)/2+len(figures)%2
+			rows=len(figures)//2+len(figures)%2
 	sp=get_subplots(rows=rows,cols=cols,
 				  shared_xaxes=shared_xaxes, shared_yaxes=shared_yaxes,
 				  start_cell=start_cell, theme=theme,base_layout=base_layout,
