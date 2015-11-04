@@ -192,7 +192,6 @@ def ta_tests():
 	def ta_test(self, **kwargs):
 		self._ta(df, **kwargs)
 
-	print options
 	_generate_tests(TestIPlot, ta_test, 'ta', options)
 
 # test generators
