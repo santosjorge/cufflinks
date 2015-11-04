@@ -17,6 +17,10 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 ### Release Notes
 
+### v0.7
+
+* Support for Python 3
+
 ### v0.6  
 [See the IPython Notebook](http://nbviewer.ipython.org/gist/santosjorge/72665839a6f05a0567e0?flush_cache=true)
 
