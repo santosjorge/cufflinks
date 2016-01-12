@@ -17,8 +17,9 @@ class TestIPlot(unittest.TestCase):
 	def _iplot(self, df, **kwargs):
 		return df.iplot(asFigure=True, **kwargs)
 
-	def _ta(self, df, **kwargs):
-		return df.ta_figure(**kwargs)
+	def _ta(self, df, study, **kwargs):
+		# print(study,kwargs)
+		return df.ta_figure(study,**kwargs)
 
 	def test_scatter_matrix(self):
 		self.df.scatter_matrix(asFigure=True)
@@ -184,15 +185,16 @@ def color_normalize_tests():
 
 def ta_tests():
 	df=cf.datagen.lines(1,500)
+	studies=['sma']
 	options = {
-		'study' : ['sma'],
-		'periods' : [14,[14,21]]
+		'periods' : [14]
 	}
 
-	def ta_test(self, **kwargs):
-		self._ta(df, **kwargs)
+	def ta_tests(self, studies, **kwargs):
+		for study in studies:
+			self._ta(df, study, **kwargs)
 
-	_generate_tests(TestIPlot, ta_test, 'ta', options)
+	_generate_tests(TestIPlot, ta_tests, 'ta', options)
 
 # test generators
 
@@ -205,7 +207,6 @@ def _generate_tests(test_class, test_func, test_name, options):
 		s = list(iterable)
 		return chain.from_iterable(combinations(s, r)
 								   for r in range(len(s) + 1))
-
 	key_value_tuple = {}
 	for option, values in list(options.items()):
 		key_value_tuple[option] = [(option, i) for i in values]

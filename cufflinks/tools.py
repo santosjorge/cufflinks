@@ -164,7 +164,7 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 		if isinstance(margin,dict):
 			margin=margin
 		else:
-			margin=dict(list(zip(('l','r','b','t')),margin))
+			margin=dict(list(zip(('l','r','b','t'),margin)))
 		layout.update(margin=margin)
 
 	if is3d:

@@ -990,6 +990,7 @@ def _ta_figure(self,**kwargs):
 	kwargs['asFigure']=True
 	return self.ta_plot(**kwargs)
 
+
 def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=False,
 			 theme=None,sharing=None,filename='',asFigure=False,**iplot_kwargs):
 	"""
@@ -1057,6 +1058,9 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 	if 'world_readable' in iplot_kwargs:
 		sharing=iplot_kwargs['world_readable']
 		del iplot_kwargs['world_readable']
+	if 'asFigure' in iplot_kwargs:
+		asFigure=iplot_kwargs['asFigure']
+		del iplot_kwargs['asFigure']
 	if sharing is None:
 			sharing = auth.get_config_file()['sharing']
 	if isinstance(sharing,bool):
