@@ -8,7 +8,8 @@ from .utils import merge_dict,deep_update
 import numpy as np
 import copy
 
-__LAYOUT_KWARGS = ['legend','vline','hline','vspan','hspan','shapes','logx','logy','layout_update']
+__LAYOUT_KWARGS = ['legend','vline','hline','vspan','hspan','shapes','logx','logy','layout_update',
+					'xrange','yrange','zrange']
 
 
 def getTheme(theme):
@@ -107,6 +108,14 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 				See help(cufflinks.tools.get_shape)
 				for more information
 
+		Axis Ranges
+			xrange : [lower_bound,upper_bound]
+				Sets the range for the x axis
+			yrange : [lower_bound,upper_bound]
+				Sets the range for the y axis
+			zrange : [lower_bound,upper_bound]
+				Sets the range for the z axis
+
 		Explicit Layout Updates
 			layout_update : dict
 				The layout will be modified with all 
@@ -182,6 +191,14 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 		layout.update(scene=scene)
 		del layout['xaxis1']
 		del layout['yaxis1']
+
+	## Axis Range
+	for r in ['x','y','z']:
+		if '{0}range'.format(r) in kwargs:
+			if is3d:
+				layout['scene']['{0}axis'.format(r)].update(range=kwargs['{0}range'.format(r)])
+			else:
+				layout['{0}axis1'.format(r)].update(range=kwargs['{0}range'.format(r)])
 
 
 	## Kwargs

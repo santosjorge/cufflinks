@@ -522,7 +522,15 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				specifications of a given shape.
 				See help(cufflinks.tools.get_shape)
 				for more information
-
+		
+		Axis Ranges
+			xrange : [lower_bound,upper_bound]
+				Sets the range for the x axis
+			yrange : [lower_bound,upper_bound]
+				Sets the range for the y axis
+			zrange : [lower_bound,upper_bound]
+				Sets the range for the z axis
+				
 		Explicit Layout Updates
 			layout_update : dict
 				The layout will be modified with all 

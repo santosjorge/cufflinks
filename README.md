@@ -17,6 +17,12 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 ### Release Notes
 
+### v0.7.1
+
+* `xrange`, `yrange` and `zrange` can be specified in `iplot` and `getLayout`
+	* `cf.datagen.lines(1).iplot(yrange=[5,15])`
+* `layout_update` can be set in `iplot` and `getLayout` to explicitly update any `Layout` value
+
 ### v0.7
 
 * Support for Python 3
