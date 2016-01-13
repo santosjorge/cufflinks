@@ -522,6 +522,14 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				specifications of a given shape.
 				See help(cufflinks.tools.get_shape)
 				for more information
+
+		Explicit Layout Updates
+			layout_update : dict
+				The layout will be modified with all 
+				the explicit values stated in the 
+				dictionary. 
+				It will not apply if layout is passed
+				as parameter.
 	"""
 
 	# Look for invalid kwargs

@@ -8,7 +8,7 @@ from .utils import merge_dict,deep_update
 import numpy as np
 import copy
 
-__LAYOUT_KWARGS = ['legend','vline','hline','vspan','hspan','shapes','logx','logy']
+__LAYOUT_KWARGS = ['legend','vline','hline','vspan','hspan','shapes','logx','logy','layout_update']
 
 
 def getTheme(theme):
@@ -106,6 +106,12 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 				specifications of a given shape.
 				See help(cufflinks.tools.get_shape)
 				for more information
+
+		Explicit Layout Updates
+			layout_update : dict
+				The layout will be modified with all 
+				the explicit values stated in the 
+				dictionary
 
 	"""
 
@@ -266,6 +272,11 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 
 		layout['shapes']=shapes
 
+	# Explicit Updates
+
+	if 'layout_update' in kwargs:
+		layout=deep_update(layout,kwargs['layout_update'])
+
 	def updateColors(layout):
 		for k,v in list(layout.items()):
 			if isinstance(v,dict):
@@ -279,7 +290,8 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 					if 'rgba' not in v:
 						layout[k]=normalize(v)
 		return layout
-	
+
+
 	return updateColors(layout)
 
 
