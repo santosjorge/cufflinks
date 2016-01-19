@@ -746,7 +746,13 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 								__.update(nbinsx=bins)
 					data.append(__)
 			elif kind in ('heatmap','surface'):
-				x=self[x].values.tolist() if x else self.index.values.tolist()
+				if x:
+					x=self[x].values.tolist()
+				else:
+					if self.index.__class__.__name__ in ('PeriodIndex','DatetimeIndex'):
+						x=self.index.format()
+					else:
+						x=self.index.values.tolist()
 				y=self[y].values.tolist() if y else self.columns.values.tolist()
 				z=self[z].values.tolist() if z else self.values.transpose()
 				scale=get_scales('rdbu') if not colorscale else get_scales(colorscale)
