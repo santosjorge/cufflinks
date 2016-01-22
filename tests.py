@@ -88,6 +88,17 @@ def histogram_input_argument_tests():
 	_generate_tests(TestIPlot, histogram_test, 'histogram', options)
 
 
+def heatmap_input_argument_tests():
+	options = {}
+
+	def heatmap_test(self, **kwargs):
+		self._iplot(self.df, kind='heatmap', **kwargs)
+		df=cf.datagen.heatmap()
+		df.index=cf.pd.period_range('1/1/2016',periods=5)
+		df.iplot(kind='heatmap')
+
+	_generate_tests(TestIPlot, heatmap_test, 'heatmap', options)
+
 def box_input_argument_tests():
 	options = {}
 
@@ -234,6 +245,7 @@ bar_input_argument_tests()
 bar_row_input_argument_tests()
 histogram_input_argument_tests()
 box_input_argument_tests()
+heatmap_input_argument_tests()
 area_plot_input_argument_tests()
 scatter_plot_input_argument_tests()
 bubble_chart_argument_tests()
