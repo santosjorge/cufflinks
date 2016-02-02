@@ -599,6 +599,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				annotations=tools.getAnnotations(self.copy(),annotations)
 		layout=tools.getLayout(theme=theme,xTitle=xTitle,yTitle=yTitle,zTitle=zTitle,title=title,barmode=barmode,
 								bargap=bargap,bargroupgap=bargroupgap,annotations=annotations,gridcolor=gridcolor,
+							   dimensions=dimensions,
 								zerolinecolor=zerolinecolor,margin=margin,is3d='3d' in kind,**l_kwargs)
 
 	if not data:

@@ -31,7 +31,8 @@ def getThemes():
 	return list(THEMES.keys())
 
 def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
-				gridcolor=None,zerolinecolor=None,margin=None,annotations=False,is3d=False,**kwargs):
+			  gridcolor=None,zerolinecolor=None,margin=None, dimensions=None, width=None, height=None,
+			  annotations=False,is3d=False,**kwargs):
 	"""
 	Generates a plotly Layout
 
@@ -72,6 +73,8 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 				Dictionary (l,r,b,t) or
 				Tuple containing the left,
 				right, bottom and top margins
+		dimensions : tuple
+			Dimensions of figure
 		annotations : dictionary
 			Dictionary of annotations
 			{x_point : text}
@@ -182,6 +185,14 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 			margin=dict(list(zip(('l','r','b','t'),margin)))
 		layout.update(margin=margin)
 
+	if dimensions:
+		layout.update(width=dimensions[0])
+		layout.update(height=dimensions[1])
+
+	if height:
+		layout.update(height=height)
+	if width:
+		layout.update(width=width)
 	if is3d:
 		if '3d' in theme_data:
 			layout=deep_update(layout,theme_data['3d'])
