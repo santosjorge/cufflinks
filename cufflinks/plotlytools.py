@@ -126,6 +126,10 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 		else:
 			keys=list(df.keys())
 	colors=get_colors(colors,colorscale,keys)
+	dash=get_items_as_list(dash,keys,'dash')
+	symbol=get_items_as_list(symbol,keys,'symbol')
+	mode=get_items_as_list(mode,keys,'mode')
+	width=get_items_as_list(width,keys,'width')
 	for key in keys:
 		lines[key]={}
 		lines[key]["x"]=x
@@ -136,10 +140,10 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 		if 'bar' in kind:
 			lines[key]["marker"]={'color':to_rgba(colors[key],.6),'line':{'color':colors[key],'width':1}}
 		else:
-			lines[key]["line"]={'color':colors[key],'width':width,'dash':dash}
-			lines[key]["mode"]=mode
-			if 'marker' in mode:
-				lines[key]["marker"]=Marker(symbol=symbol,size=size)
+			lines[key]["line"]={'color':colors[key],'width':width[key],'dash':dash[key]}
+			lines[key]["mode"]=mode[key]
+			if 'marker' in mode[key]:
+				lines[key]["marker"]=Marker(symbol=symbol[key],size=size)
 			if fill:
 				lines[key]["fill"]='tonexty' if kind=='area' else 'tozeroy'
 				lines[key]["fillcolor"]=to_rgba(colors[key],kwargs['opacity'] if 'opacity' in kwargs else .3		)
@@ -246,10 +250,10 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				white		
 			see cufflinks.getThemes() for all 
 			available themes
-		colors : list or dict
+		colors : dict, list or string
 			{key:color} to specify the color for each column
 			[colors] to use the colors in the defined order
-		colorscale : str 
+		colorscale : string
 			Color scale name
 			If the color name is preceded by a minus (-) 
 			then the scale is inversed
@@ -259,13 +263,13 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 			Filled Traces		
 		width : int
 			Line width	
-		dash : string
+		dash : dict, list or string
 			Drawing style of lines
 				solid
 				dash
 				dashdot
 				dot
-		mode : string
+		mode : dict, list or string
 			Plotting mode for scatter trace
 				lines
 				markers
@@ -273,7 +277,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				lines+text
 				markers+text
 				lines+markers+text		
-		symbol : string
+		symbol : dict, list or string
 			The symbol that is drawn on the plot for each marker
 			Valid only when mode includes markers
 				dot
@@ -906,6 +910,29 @@ def get_colors(colors,colorscale,keys,asList=False):
 				for key in keys:
 					colors[key]=next(clrgen)
 	return colors
+
+def get_items_as_list(items,keys,items_names='styles'):
+	"""
+	Returns a dict with an item per key
+
+	Parameters:
+	-----------
+		items : string, list or dict
+			Items (ie line styles)
+		keys: list 
+			List of keys
+		items_names : string
+			Name of items 
+	"""
+	if type(items)!=dict:
+		if type(items)==list:
+			if len(items)!=len(keys):
+				raise Exception('List of {0} is not the same length as keys'.format(items_names))
+			else:
+				items=dict(zip(keys,items))
+		else:
+			items=dict(zip(keys,[items]*len(keys)))
+	return items
 
 
 def _scatter_matrix(self,theme=None,bins=10,color='grey',size=2, asFigure=False, **iplot_kwargs):
