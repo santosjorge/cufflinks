@@ -261,15 +261,30 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 			See cufflinks.colors.scales() for available scales
 		fill : bool
 			Filled Traces		
-		width : int
+		width : dict, list or string
+				string : applies to all traces
+				list : applies to each trace in the order 
+						specified
+				dict: {column:value} for each column in 
+						the dataframe
 			Line width	
 		dash : dict, list or string
+				string : applies to all traces
+				list : applies to each trace in the order 
+						specified
+				dict: {column:value} for each column in 
+						the dataframe
 			Drawing style of lines
 				solid
 				dash
 				dashdot
 				dot
 		mode : dict, list or string
+				string : applies to all traces
+				list : applies to each trace in the order 
+						specified
+				dict: {column:value} for each column in 
+						the dataframe
 			Plotting mode for scatter trace
 				lines
 				markers
@@ -278,6 +293,11 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				markers+text
 				lines+markers+text		
 		symbol : dict, list or string
+				string : applies to all traces
+				list : applies to each trace in the order 
+						specified
+				dict: {column:value} for each column in 
+						the dataframe
 			The symbol that is drawn on the plot for each marker
 			Valid only when mode includes markers
 				dot
