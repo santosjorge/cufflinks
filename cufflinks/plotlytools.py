@@ -125,6 +125,11 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 				keys=list(df.keys())
 		else:
 			keys=list(df.keys())
+
+	for key in keys:
+		if type(key) not in (str, unicode):
+			key=str(key)
+
 	colors=get_colors(colors,colorscale,keys)
 	dash=get_items_as_list(dash,keys,'dash')
 	symbol=get_items_as_list(symbol,keys,'symbol')
@@ -134,7 +139,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 		lines[key]={}
 		lines[key]["x"]=x
 		lines[key]["y"]=df[key].fillna('').values
-		lines[key]["name"]=key
+		lines[key]["name"]=str(key)
 		if text is not None:
 			lines[key]["text"]=text
 		if 'bar' in kind:
