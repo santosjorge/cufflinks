@@ -95,7 +95,8 @@ def heatmap_input_argument_tests():
 		self._iplot(self.df, kind='heatmap', **kwargs)
 		df=cf.datagen.heatmap()
 		df.index=cf.pd.period_range('1/1/2016',periods=5)
-		df.iplot(kind='heatmap')
+		self._iplot(df,kind='heatmap', **kwargs)
+		# df.iplot(kind='heatmap')
 
 	_generate_tests(TestIPlot, heatmap_test, 'heatmap', options)
 
