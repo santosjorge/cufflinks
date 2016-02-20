@@ -11,3 +11,14 @@ def go_online():
 
 def is_offline():
 	return py_offline.__PLOTLY_OFFLINE_INITIALIZED
+
+def upgrade(url=None):
+	from .auth import get_config_file
+	if not url:
+		if 'http' not in get_config_file()['offline_url']:
+			raise Exception("No default offline URL set \n"
+							"Please run cf.set_config_file(offline_url=xx) to set \n"
+							"the default offline URL.")
+		else:
+			url=get_config_file()['offline_url']
+	py_offline.download_plotlyjs(url)
