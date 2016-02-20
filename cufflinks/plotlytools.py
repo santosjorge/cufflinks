@@ -126,10 +126,6 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 		else:
 			keys=list(df.keys())
 
-	for key in keys:
-		if type(key) not in (str, unicode):
-			key=str(key)
-
 	colors=get_colors(colors,colorscale,keys)
 	dash=get_items_as_list(dash,keys,'dash')
 	symbol=get_items_as_list(symbol,keys,'symbol')
