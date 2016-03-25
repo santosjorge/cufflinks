@@ -59,8 +59,11 @@ def rsi(df,periods=14,column=None,include=True,str=None,detail=False,**kwargs):
 		df,_df,column=validate(df,column)
 		_df['Up']=df[column].diff().apply(lambda x:x if x>0 else 0)
 		_df['Down']=df[column].diff().apply(lambda x:-x if x<0 else 0)
-		_df['UpAvg']=pd.rolling_mean(_df['Up'],window=periods)
-		_df['DownAvg']=pd.rolling_mean(_df['Down'],window=periods)
+
+		_df['UpAvg']=_df['Up'].rolling(window=periods).mean()
+		_df['DownAvg']= df['Down'].rolling(window=periods).mean()
+
+		
 		_df['RSI']=100-(100/(1+_df['UpAvg']/_df['DownAvg']))
 		return rename(df,_df,study,periods,column,include,str,detail)
 	column=_make_list(column)
@@ -78,7 +81,10 @@ def sma(df,periods=21,column=None,include=True,str=None,detail=False,**sma_kwarg
 	def _sma(df,periods=21,column=None,include=True,str=None,detail=False,**sma_kwargs):
 		study='SMA'
 		df,_df,column=validate(df,column)
-		_df['SMA']=pd.rolling_mean(df[column],periods,**sma_kwargs)
+
+		_df['SMA'] = df[column].rolling(window=periods,**sma_kwargs).mean()
+
+		
 		str=str if str else '{name}({period})'
 		return rename(df,_df,study,periods,column,include,str,detail)
 	column=_make_list(column)
@@ -100,7 +106,9 @@ def correl(df,periods=21,columns=None,include=True,str=None,detail=False,how='va
 	def _correl(df,periods=21,columns=None,include=True,str=None,detail=False,**correl_kwargs):
 		study='CORREL'
 		df,_df,columns=validate(df,columns)
-		_df['CORREL']=pd.rolling_corr(df[columns[0]],df[columns[1]],periods,**correl_kwargs)
+
+		_df['CORREL'] = df[columns[0]].rolling(window=periods,**correl_kwargs).corr(df[columns[1]])
+
 		str=str if str else 'CORREL({column1},{column2},{period})'.format(column1=columns[0],column2=columns[1],period=periods)
 		return rename(df,_df,study,periods,columns,include,str,detail)
 	columns=df.columns if not columns else columns
@@ -121,9 +129,11 @@ def boll(df,periods=20,boll_std=2,column=None,include=True,str=None,detail=False
 	def _boll(df,periods=21,column=None,include=True,str=None,detail=False,output=None,**boll_kwargs):
 		study='BOLL'
 		df,_df,column=validate(df,column)
-		_df['SMA']=pd.rolling_mean(df[column],periods)
-		_df['UPPER']=_df['SMA']+pd.rolling_std(df[column],periods)*boll_std
-		_df['LOWER']=_df['SMA']-pd.rolling_std(df[column],periods)*boll_std
+
+		_df['SMA']=df[column].rolling(window=periods).mean()
+		_df['UPPER']=_df['SMA']+df[column].rolling(window=periods).std()*boll_std
+		_df['LOWER']=_df['SMA']-df[column].rolling(window=periods).std()*boll_std
+
 		str=str if str else '{name}({period})'
 		return rename(df,_df,study,periods,column,include,str,detail,output=output)
 	column=_make_list(column)
