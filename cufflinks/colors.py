@@ -503,7 +503,31 @@ cnames={'aliceblue': '#F0F8FF',
  'white':			 '#FFFFFF',
  'whitesmoke':		 '#F5F5F5',
  'yellow':			 '#ffff33',
- 'yellowgreen':		 '#9ACD32'}		
+ 'yellowgreen':		 '#9ACD32',
+ "henanigans_bg":      "#242424",
+ "henanigans_blue1":   "#5F95DE",
+ "henanigans_blue2":   "#93B6E6",
+ "henanigans_cyan1":   "#7EC4CF",
+ "henanigans_cyan2":   "#B6ECF3",
+ "henanigans_dark1":   "#040404",
+ "henanigans_dark2":   "#141414",
+ "henanigans_dialog1": "#444459",
+ "henanigans_dialog2": "#5D5D7A",
+ "henanigans_green1":  "#8BD155",
+ "henanigans_green2":  "#A0D17B",
+ "henanigans_grey1":   "#343434",
+ "henanigans_grey2":   "#444444",
+ "henanigans_light1":  "#A4A4A4",
+ "henanigans_light2":  "#F4F4F4",
+ "henanigans_orange1": "#EB9E58",
+ "henanigans_orange2": "#EBB483",
+ "henanigans_purple1": "#C98FDE",
+ "henanigans_purple2": "#AC92DE",
+ "henanigans_red1":    "#F77E70",
+ "henanigans_red2":    "#DE958E",
+ "henanigans_yellow1": "#E8EA7E",
+ "henanigans_yellow2": "#E9EABE"
+}
 
 # Custom Color Scales
 # ---------------------------------
