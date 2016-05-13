@@ -20,7 +20,9 @@ This tutorial assumes that the plotly user credentials have already been configu
 ### v0.8.0
 
 * 'cf.datagen.choropleth()' to for sample choropleth data. 
-* 'get_colorscale' for maps and plotly objects that support colorscales
+* 'cf.datagen.scattergeo()' to for sample scattergeo data. 
+* Support for choropleth and scattergeo figures in `iplot`
+* 'cf.get_colorscale' for maps and plotly objects that support colorscales
 
 ### v0.7.1
 
