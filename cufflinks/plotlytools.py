@@ -596,6 +596,8 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 	if isinstance(colors,str):
 		colors=[colors]
 	opacity=kwargs['opacity'] if 'opacity' in kwargs else 0.8
+	if not dimensions:
+		dimensions=auth.get_config_file()['dimensions']
 
 	# Get values from config theme
 	if theme is None:
@@ -936,6 +938,8 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 	if asFigure:
 		return figure
 	elif asImage:
+		if not dimensions:
+			dimensions=(1000,500)
 		try:
 			py.image.save_as(figure,filename='img/'+filename,format='png',
 				width=dimensions[0],height=dimensions[1])

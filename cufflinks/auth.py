@@ -30,7 +30,8 @@ _FILE_CONTENT = {
 				 		"offline_url":'',
 				 		"offline_show_link" : True,
 				 		"offline_link_text" : 'Export to plot.ly',
-				 		"datagen_mode" : 'stocks'
+				 		"datagen_mode" : 'stocks',
+				 		"dimensions" : None
 						}
 				 }
 
@@ -110,12 +111,14 @@ def set_config_file(sharing=None,theme=None,colorscale=None,offline=None,
 			by the datagen module
 				stocks : random stock names are used for the index
 				abc : alphabet values are used for the index
+	dimensions : tuple
+			Sets the default (width,height) of the chart
 
 	"""
 	if not _file_permissions:
 		raise Exception("You don't have proper file permissions "
 									 "to run this function.")
-	valid_kwargs=['world_readable']
+	valid_kwargs=['world_readable','dimensions']
 	for key in list(kwargs.keys()):
 		if key not in valid_kwargs:
 			raise Exception("Invalid keyword : '{0}'".format(key))
@@ -145,6 +148,8 @@ def set_config_file(sharing=None,theme=None,colorscale=None,offline=None,
 		config['offline_show_link']=offline_show_link
 	if offline_link_text:
 		config['offline_link_text']=offline_link_text
+	if 'dimensions' in kwargs:
+		config['dimensions']=kwargs['dimensions']	
 	save_json_dict(CONFIG_FILE, config)
 	ensure_local_files()  
 
