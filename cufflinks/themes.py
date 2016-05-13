@@ -206,6 +206,45 @@ THEMES = {
 					'zerolinecolor'  : 'pearl04'
 				}
 			}
+		},
+		'henanigans' : {
+			'colorscale':'dflt',
+			'linewidth':1.3,
+			'bargap' : .01,
+			'layout' : {
+				'legend' : {'bgcolor':'henanigans_bg','font':{'color':'henanigans_light2'}},
+				'paper_bgcolor' : 'henanigans_bg',
+				'plot_bgcolor' : 'henanigans_bg',
+				'yaxis1' : YAxis({
+					'tickfont' : {'color':'henanigans_light1'},
+					'gridcolor' : 'henanigans_grey1',
+					'titlefont' : {'color':'henanigans_light1'},
+					'zerolinecolor' : 'henanigans_grey2',
+					'showgrid' : True
+				}),
+				'xaxis1' : XAxis({
+					'tickfont' : {'color':'henanigans_light1'},
+					'gridcolor' : 'henanigans_grey1',
+					'titlefont' : {'color':'henanigans_light1'},
+					'zerolinecolor' : 'henanigans_grey2',
+					'showgrid' : True
+				}),
+				'titlefont' : {'color':'henanigans_light2'}
+			},
+			'annotations' : {
+				'fontcolor' : 'henanigans_orange2',
+				'arrowcolor' : 'henanigans_orange2'
+			},
+			'3d' : {
+				'yaxis1' : {
+					'gridcolor' : 'henanigans_grey1',
+					'zerolinecolor'  : 'henanigans_grey1'
+				},
+				'xaxis1' : {
+					'gridcolor' : 'henanigans_grey1',
+					'zerolinecolor'  : 'henanigans_grey1'
+				}
+			}
 		}
 	}
 
