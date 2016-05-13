@@ -5,7 +5,7 @@ import copy
 from plotly.graph_objs import *
 from collections import defaultdict
 from IPython.display import display,Image
-from .colors import normalize,get_scales,colorgen,to_rgba
+from .colors import normalize,get_scales,colorgen,to_rgba,get_colorscale
 from .utils import check_kwargs, deep_update, kwargs_from_keyword
 from . import tools 
 from . import offline
@@ -195,8 +195,8 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
 			bestfit_colors=None,mean=False,mean_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,
 			zerolinecolor=None,margin=None,labels=None,values=None,secondary_y='',subplots=False,shape=None,error_x=None,
-			error_y=None,error_type='data',asFrame=False,asDates=False,asFigure=False,
-			asImage=False,dimensions=(1116,587),asPlot=False,asUrl=False,online=None,**kwargs):
+			error_y=None,error_type='data',locations=None,lon=None,lat=None,asFrame=False,asDates=False,asFigure=False,
+			asImage=False,dimensions=None,asPlot=False,asUrl=False,online=None,**kwargs):
 	"""
 	Returns a plotly chart either as inline chart, image of Figure object
 
@@ -233,7 +233,9 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				histogram
 				bubble
 				bubble3d
-				scatter3d		
+				scatter3d	
+				scattergeo
+				choroplet	
 		title : string
 			Chart Title				
 		xTitle : string
@@ -566,14 +568,15 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 	"""
 
 	# Look for invalid kwargs
-	valid_kwargs = ['color','opacity','column','columns','labels','text','world_readable']
+	valid_kwargs = ['color','opacity','column','columns','labels','text','world_readable','colorbar']
 	PIE_KWARGS=['sort','pull','hole','textposition','textinfo','linecolor']
 	OHLC_KWARGS=['up_color','down_color']
 	SUBPLOT_KWARGS=['horizontal_spacing', 'vertical_spacing',
 					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles']
+	GEO_KWARGS=['locationmode','locationsrc','geo','lon','lat']
 	ERROR_KWARGS=['error_trace','error_values_minus','error_color','error_thickness',
 					'error_width','error_opacity']
-	kwargs_list = [tools.__LAYOUT_KWARGS,OHLC_KWARGS,PIE_KWARGS,SUBPLOT_KWARGS,ERROR_KWARGS]
+	kwargs_list = [tools.__LAYOUT_KWARGS,OHLC_KWARGS,PIE_KWARGS,SUBPLOT_KWARGS,GEO_KWARGS,ERROR_KWARGS]
 	[valid_kwargs.extend(_) for _ in kwargs_list]
 
 	dict_modifiers_keys = ['line']
@@ -613,16 +616,28 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 		keys=[kwargs['columns']] if isinstance(kwargs['columns'],str) else kwargs['columns']
 	kind='line' if kind=='lines' else kind
 
+	# Figure generators
+	def get_marker(marker={}):
+		if 'line' in dict_modifiers:
+			if 'color' not in dict_modifiers['line']:
+				if 'linecolor' in tools.getTheme(theme=theme):
+					linecolor=normalize(tools.getTheme(theme=theme)['linecolor'])
+				else: 
+					linecolor=tools.getLayout(theme=theme)['xaxis1']['titlefont']['color']
+				dict_modifiers['line']['color']=linecolor			
+			dict_modifiers['line']=tools.updateColors(dict_modifiers['line'])
+			marker['line']=deep_update(marker['line'],dict_modifiers['line'])
+		return marker
+
 	# We assume we are good citizens
 	validate=True
-
 	
 
 	if not layout:
 		l_kwargs=dict([(k,kwargs[k]) for k in tools.__LAYOUT_KWARGS if k in kwargs])
 		if annotations:
 				annotations=tools.getAnnotations(self.copy(),annotations)
-		layout=tools.getLayout(theme=theme,xTitle=xTitle,yTitle=yTitle,zTitle=zTitle,title=title,barmode=barmode,
+		layout=tools.getLayout(kind=kind,theme=theme,xTitle=xTitle,yTitle=yTitle,zTitle=zTitle,title=title,barmode=barmode,
 								bargap=bargap,bargroupgap=bargroupgap,annotations=annotations,gridcolor=gridcolor,
 							   dimensions=dimensions,
 								zerolinecolor=zerolinecolor,margin=margin,is3d='3d' in kind,**l_kwargs)
@@ -752,15 +767,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 								opacity=kwargs['opacity'] if 'opacity' in kwargs else .8, histfunc=histfunc,
 								histnorm=histnorm)
 
-						if 'line' in dict_modifiers:
-							if 'color' not in dict_modifiers['line']:
-								if 'linecolor' in tools.getTheme(theme=theme):
-									linecolor=normalize(tools.getTheme(theme=theme)['linecolor'])
-								else: 
-									linecolor=tools.getLayout(theme=theme)['xaxis1']['titlefont']['color']
-								dict_modifiers['line']['color']=linecolor
-							dict_modifiers['line']=tools.updateColors(dict_modifiers['line'])
-						__['marker']['line']=deep_update(__['marker']['line'],dict_modifiers['line'])
+						__['marker']=get_marker(__['marker'])
 
 						if orientation=='h':
 							__['y']=__['x']
@@ -771,6 +778,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 							else:
 								__.update(nbinsx=bins)
 					data.append(__)
+
 			elif kind in ('heatmap','surface'):
 				if x:
 					x=self[x].values.tolist()
@@ -787,6 +795,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 					data=Data([Heatmap(z=z,x=x,y=y,colorscale=colorscale)])
 				else:
 					data=Data([Surface(z=z,x=x,y=y,colorscale=colorscale)])
+
 			elif kind in ('scatter3d','bubble3d'):
 				data=Data()
 				keys=self[text].values if text else list(range(len(self)))
@@ -804,6 +813,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				if text:
 					_data.update(text=keys)
 				data.append(_data)
+
 			elif kind=='pie':
 				labels=self[labels].values.tolist()
 				values=self[values].values.tolist()
@@ -825,7 +835,8 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				del layout['yaxis1']
 				data.append(pie)
 				validate=False
-			elif kind in ['candle','ohlc']:
+
+			elif kind in ('candle','ohlc'):
 				d=tools._ohlc_dict(self)
 				if len(list(d.keys()))!=4:
 					raise Exception("OHLC type of charts require an Open, High, Low and Close column")				
@@ -840,6 +851,29 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 					fig['data'].append(bf[1])
 				data=fig['data']
 				layout=fig['layout']
+
+			elif kind in ('choropleth','scattergeo'):
+				kw=check_kwargs(kwargs,GEO_KWARGS)
+				if kind=='choropleth':
+					if not all([x!=None for x in (locations,z)]):
+						raise Exception("Choropleth maps require a 'location' and 'z' column names specified")
+					geo_data={'type':'choropleth','locations':self[locations],'z':self[z],
+							'colorscale':get_colorscale(colorscale),
+							'marker':get_marker(Marker(line=Line(width=width)))}
+				elif kind=='scattergeo':
+					if not all([x!=None for x in (lon,lat,z)]):
+						raise Exception("Scattergeo maps require a 'lon' and 'lat' column names specified")
+					geo_data={'type':'scattergeo','lat':self[lat],'lon':self[lon],
+							'marker':get_marker(Marker(line=Line(width=width),
+												symbol=symbol,colorscale=get_colorscale(colorscale),color=self[z]))}
+				if 'colorbar' in kwargs:
+					geo_data['colorbar']=kwargs['colorbar']
+				geo_data.update(kw)
+				if text:
+					geo_data.update(text=self[text])
+				validate=False
+				data=Data()
+				data.append(geo_data)
 	
 ## Sharing Values
 	if all(['world_readable' in kwargs,sharing is None]):
@@ -995,6 +1029,19 @@ def _figure(self,**kwargs):
 	"""
 	kwargs['asFigure']=True
 	return self.iplot(**kwargs)
+
+def _layout(self,**kwargs):
+	"""
+	Generates a Plotly layout for the given DataFrame
+
+	Parameters:
+	-----------
+			All properties avaialbe can be seen with
+			help(cufflinks.pd.DataFrame.iplot)
+	"""
+	kwargs['asFigure']=True
+	return self.iplot(**kwargs)['layout']
+
 
 def iplot(data_or_figure,validate=True,sharing=None,filename='',online=None,**kwargs):
 	"""
@@ -1231,6 +1278,7 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 pd.DataFrame.to_iplot=_to_iplot
 pd.DataFrame.scatter_matrix=_scatter_matrix
 pd.DataFrame.figure=_figure
+pd.DataFrame.layout=_layout
 pd.DataFrame.ta_plot=_ta_plot
 pd.DataFrame.iplot=_iplot
 pd.DataFrame.ta_figure=_ta_figure

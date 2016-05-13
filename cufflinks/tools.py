@@ -4,13 +4,20 @@ from plotly.graph_objs import *
 from .colors import normalize,to_rgba
 from .themes import THEMES
 from . import auth
-from .utils import merge_dict,deep_update
+from .utils import merge_dict,deep_update, check_kwargs,kwargs_from_keyword
 import numpy as np
 import copy
 
-__LAYOUT_KWARGS = ['legend','vline','hline','vspan','hspan','shapes','logx','logy','layout_update',
+__LAYOUT_VALID_KWARGS = ['legend','vline','hline','vspan','hspan','shapes','logx','logy','layout_update',
 					'xrange','yrange','zrange']
 
+__GEO_KWARGS=['projection','showframe','showlakes','coastlinecolor','countrywidth','countrycolor',
+			 'showsubunits','bgcolor','showrivers','subunitcolor','showcountries','riverwidth','scope',
+			 'rivercolor','lataxis','subunitwidth','showocean','oceancolor','lakecolor','showland','lonaxis',
+			 'framecolor','coastlinewidth','landcolor','showcoastlines','framewidth','resolution','projection_type']
+
+__LAYOUT_KWARGS = []
+[__LAYOUT_KWARGS.extend(_) for _ in [__LAYOUT_VALID_KWARGS,__GEO_KWARGS]]
 
 def getTheme(theme):
 	"""
@@ -30,7 +37,7 @@ def getThemes():
 	"""
 	return list(THEMES.keys())
 
-def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
+def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
 			  gridcolor=None,zerolinecolor=None,margin=None, dimensions=None, width=None, height=None,
 			  annotations=False,is3d=False,**kwargs):
 	"""
@@ -126,8 +133,7 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 				dictionary
 
 	"""
-
-
+	
 
 	for key in list(kwargs.keys()):
 		if key not in __LAYOUT_KWARGS:
@@ -299,6 +305,22 @@ def getLayout(theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',barga
 
 
 		layout['shapes']=shapes
+
+	# Maps
+	if kind in ('choropleth','scattergeo'):
+		kw=check_kwargs(kwargs,__GEO_KWARGS)
+		defaults={'projection':{'type':'equirectangular'},'showframe':False,'showcoastlines':False}
+		for k,v in list(defaults.items()):
+			if k not in kw:
+				kw[k]=v
+		kw_=kwargs_from_keyword(kw,{},'projection')
+		deep_update(kw,kw_)
+		layout['geo']=kw
+		del layout['xaxis1']
+		del layout['yaxis1']
+		if not margin:
+			layout['margin']={'autoexpand':True}
+
 
 	# Explicit Updates
 

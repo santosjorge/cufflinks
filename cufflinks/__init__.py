@@ -17,7 +17,7 @@ from . import ta
 
 from .plotlytools import *
 from plotly.plotly import plot
-from .colors import cnames
+from .colors import cnames, get_colorscale
 from .utils import pp
 from .tools import subplots,scatter_matrix,figures,getLayout,getThemes,getTheme
 from .extract import to_df

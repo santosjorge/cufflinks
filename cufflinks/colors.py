@@ -660,7 +660,32 @@ def get_scales(scale=None,n=None):
 				d[k]=v
 		return d
 
+def get_colorscale(scale):
+	"""
+	Returns a color scale to be used for a plotly figure
 
+	Parameters:
+	-----------
+		scale : str or list
+			Color scale name
+			If the color name is preceded by a minus (-) 
+			then the scale is inversed.
+			Also accepts a list of colors (rgb,rgba,hex)
+
+	Example:
+		get_colorscale('accent')
+		get_colorscale(['rgb(127,201,127)','rgb(190,174,212)','rgb(253,192,134)'])
+	"""	
+
+	if type(scale) in (str,unicode):
+		scale=get_scales(scale)
+	else:
+		if type(scale)!=list:
+			raise Exception("scale needs to be either a scale name or list of colors")
+		
+	cs=[[1.0*c/(len(scale)-1),scale[c]] for c in range(len(scale))]
+	cs.sort()
+	return cs  
 
 reset_scales()
 

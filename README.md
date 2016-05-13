@@ -17,6 +17,11 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 ### Release Notes
 
+### v0.8.0
+
+* 'cf.datagen.choropleth()' to for sample choropleth data. 
+* 'get_colorscale' for maps and plotly objects that support colorscales
+
 ### v0.7.1
 
 * `xrange`, `yrange` and `zrange` can be specified in `iplot` and `getLayout`

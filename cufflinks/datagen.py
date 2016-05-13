@@ -2,9 +2,32 @@ import numpy as np
 import pandas as pd
 import string
 from .auth import get_config_file
+import os
 
 class CufflinksError(Exception):
 		pass
+
+
+def scattergeo():
+	"""
+	Returns 
+	"""
+	path=os.path.join(os.path.dirname(__file__), '../data/scattergeo.csv')
+	df=pd.read_csv(path)
+	del df['Unnamed: 0']
+	df['text'] = df['airport'] + ' ' + df['city'] + ', ' + df['state'] + ' ' + 'Arrivals: ' + df['cnt'].astype(str)
+	df=df.rename(columns={'cnt':'z','long':'lon'})
+	return df
+
+def choropleth():
+	"""
+	Returns 
+	"""
+	path=os.path.join(os.path.dirname(__file__), '../data/choropleth.csv')
+	df=pd.read_csv(path)
+	del df['Unnamed: 0']
+	df['z']=[np.random.randint(0,100) for _ in range(len(df))]
+	return df
 
 def scatter3d(n_categories=5,n=10,prefix='category',mode=None):
 	"""
