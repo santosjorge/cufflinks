@@ -534,12 +534,12 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				indicated x position(s)
 				Extra parameters can be passed in
 				the form of a dictionary (see shapes)
-			hline : [y0,y1]
+			hpsan : (y0,y1)
 				Draws a horizontal rectangle at the 
 				indicated (y0,y1) positions.
 				Extra parameters can be passed in
 				the form of a dictionary (see shapes)
-			vline : [x0,x1]
+			vspan : (x0,x1)
 				Draws a vertical rectangle at the 
 				indicated (x0,x1) positions.
 				Extra parameters can be passed in
