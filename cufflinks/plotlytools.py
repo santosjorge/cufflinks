@@ -844,9 +844,9 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 					raise Exception("OHLC type of charts require an Open, High, Low and Close column")				
 				ohlc_kwargs=check_kwargs(kwargs,OHLC_KWARGS)
 				if kind=='candle':					
-					fig=tools.get_candle(self,theme=theme,**ohlc_kwargs)
+					fig=tools.get_candle(self,theme=theme,layout=layout,**ohlc_kwargs)
 				else:
-					fig=tools.get_ohlc(self,theme=theme,**ohlc_kwargs)
+					fig=tools.get_ohlc(self,theme=theme,layout=layout,**ohlc_kwargs)
 				if bestfit:
 					df=self.copy()
 					bf=_to_iplot(self[d['close']],bestfit=True,bestfit_colors=bestfit_colors,asTimestamp=True)

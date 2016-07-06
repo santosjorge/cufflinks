@@ -741,7 +741,8 @@ def _ohlc_dict(df):
 				c_dir[_]=c
 	return c_dir
 
-def get_ohlc(df,up_color=None,down_color=None,theme=None,**kwargs):
+def get_ohlc(df,up_color=None,down_color=None,theme=None,layout=layout,**kwargs):
+	layout=getLayout(theme=theme) if not layout else layout
 	ohlc=['open','high','low','close']
 	if not theme:
 		theme = auth.get_config_file()['theme']    
@@ -758,15 +759,14 @@ def get_ohlc(df,up_color=None,down_color=None,theme=None,**kwargs):
 	if down_color:
 		data[1]['line'].update(color=normalize(down_color))
 	ohlc_bars['layout']['hovermode']='closest'
-	layout=getLayout(theme=theme)
 	ohlc_bars['layout']=merge_dict(layout,ohlc_bars['layout'])
 	return ohlc_bars
 
-def get_candle(df,up_color=None,down_color=None,theme=None,**kwargs):
+def get_candle(df,up_color=None,down_color=None,theme=None,layout=None,**kwargs):
+	layout=getLayout(theme=theme) if not layout else layout
 	ohlc=['open','high','low','close']
 	if not theme:
 		theme = auth.get_config_file()['theme']    
-	layout=getLayout(theme=theme)
 	c_dir=_ohlc_dict(df)
 	args=[df[c_dir[_]] for _ in ohlc]
 	args.append(df.index)
@@ -783,7 +783,6 @@ def get_candle(df,up_color=None,down_color=None,theme=None,**kwargs):
 	if down_color:
 		update_color(1,down_color)
 	candle['layout']['hovermode']='closest'
-	layout=getLayout(theme=theme)
 	candle['layout']=merge_dict(layout,candle['layout'])
 	return candle
 
