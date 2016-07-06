@@ -741,7 +741,7 @@ def _ohlc_dict(df):
 				c_dir[_]=c
 	return c_dir
 
-def get_ohlc(df,up_color=None,down_color=None,theme=None,layout=layout,**kwargs):
+def get_ohlc(df,up_color=None,down_color=None,theme=None,layout=None,**kwargs):
 	layout=getLayout(theme=theme) if not layout else layout
 	ohlc=['open','high','low','close']
 	if not theme:
