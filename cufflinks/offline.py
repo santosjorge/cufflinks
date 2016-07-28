@@ -2,8 +2,8 @@ import plotly.offline as py_offline
 
 ### Offline Mode	
 
-def go_offline():
-	py_offline.init_notebook_mode()
+def go_offline(connected=False):
+	py_offline.init_notebook_mode(connected)
 	py_offline.__PLOTLY_OFFLINE_INITIALIZED=True
 
 def go_online():
