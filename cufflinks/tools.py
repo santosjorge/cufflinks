@@ -23,7 +23,7 @@ def getTheme(theme):
 	"""
 	Returns a theme definition.
 
-	To see the colors translated (hex) use 
+	To see the colors translated (hex) use
 	cufflinks.getLayout(theme) instead.
 	"""
 	if theme in THEMES:
@@ -59,7 +59,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		zTitle : string
 			Z Axis Title
 			Applicable only for 3d charts
-		barmode : string 
+		barmode : string
 			Mode when displaying bars
 				group
 				stack
@@ -71,7 +71,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		bargroupgap : float
 			Set the gap between groups
 				[0,1)
-			Applicabe for bar and histogram plots			
+			Applicabe for bar and histogram plots
 		gridcolor : string
 				grid color
 		zerolinecolor : string
@@ -93,27 +93,27 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 
 		Shapes
 			hline : int, list or dict
-				Draws a horizontal line at the 
+				Draws a horizontal line at the
 				indicated y position(s)
 				Extra parameters can be passed in
 				the form of a dictionary (see shapes)
 			vline : int, list or dict
-				Draws a vertical line at the 
+				Draws a vertical line at the
 				indicated x position(s)
 				Extra parameters can be passed in
 				the form of a dictionary (see shapes)
 			hline : [y0,y1]
-				Draws a horizontal rectangle at the 
+				Draws a horizontal rectangle at the
 				indicated (y0,y1) positions.
 				Extra parameters can be passed in
 				the form of a dictionary (see shapes)
 			vline : [x0,x1]
-				Draws a vertical rectangle at the 
+				Draws a vertical rectangle at the
 				indicated (x0,x1) positions.
 				Extra parameters can be passed in
 				the form of a dictionary (see shapes)
 			shapes : dict or list(dict)
-				List of dictionaries with the 
+				List of dictionaries with the
 				specifications of a given shape.
 				See help(cufflinks.tools.get_shape)
 				for more information
@@ -128,17 +128,17 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 
 		Explicit Layout Updates
 			layout_update : dict
-				The layout will be modified with all 
-				the explicit values stated in the 
+				The layout will be modified with all
+				the explicit values stated in the
 				dictionary
 
 	"""
-	
+
 
 	for key in list(kwargs.keys()):
 		if key not in __LAYOUT_KWARGS:
 			raise Exception("Invalid keyword : '{0}'".format(key))
-	
+
 	if not theme:
 		theme = auth.get_config_file()['theme']
 
@@ -163,7 +163,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		update_annotations(annotations,
 						theme_data['annotations']['fontcolor'],
 						theme_data['annotations']['arrowcolor'])
-	
+
 	if barmode:
 		layout.update({'barmode':barmode})
 	if bargroupgap:
@@ -231,7 +231,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		if kwargs['logx']:
 			layout['xaxis1']['type']='log'
 
-	# Shapes 
+	# Shapes
 
 	if any(k in kwargs for k in ['vline','hline','shapes','hspan','vspan']):
 		shapes=[]
@@ -244,7 +244,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 					if isinstance(x_i,dict):
 						x_i['kind']='line'
 						shapes.append(get_shape(**x_i))
-					else:						
+					else:
 						if orientation=='h':
 							shapes.append(get_shape(kind='line',y=x_i))
 						else:
@@ -253,9 +253,9 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 				shapes.append(get_shape(**xline))
 			else:
 				if orientation=='h':
-					shapes.append(get_shape(kind='line',y=xline))			
+					shapes.append(get_shape(kind='line',y=xline))
 				else:
-					shapes.append(get_shape(kind='line',x=xline))			
+					shapes.append(get_shape(kind='line',x=xline))
 
 		def get_span(xspan):
 			orientation=xspan[0]
@@ -353,7 +353,7 @@ def getAnnotations(df,annotations):
 	-----------
 		df : DataFrame
 			Original DataFrame of values
-		annotations : dictionary 
+		annotations : dictionary
 			Dictionary of annotations
 			{x_point : text}
 	"""
@@ -432,8 +432,8 @@ def figures(df,specs,asList=False):
 		df : DataFrame
 			Pandas DataFrame
 		specs : list(dict)
-			List of dictionaries with the properties 
-			of each figure. 
+			List of dictionaries with the properties
+			of each figure.
 			All properties avaialbe can be seen with
 			help(cufflinks.pd.DataFrame.iplot)
 	"""
@@ -488,15 +488,15 @@ def subplots(figures,shape=None,
 			Layout Theme
 				solar
 				pearl
-				white		
-			see cufflinks.getThemes() for all 
+				white
+			see cufflinks.getThemes() for all
 			available themes
 		base_layout : layout (dict)
-			Layout to be used as base where the subplots will be 
+			Layout to be used as base where the subplots will be
 			added
 		subplot_titles : list(string)
 			List of strings that contains the titles of each
-			plot. 
+			plot.
 		horizontal_spacing : float
 				[0,1]
 			Space between subplot columns.
@@ -600,7 +600,7 @@ def subplots(figures,shape=None,
 		if d['type']=='pie':
 			d['domain']={}
 			d['domain']['x']=layout['xaxis{0}'.format(d['xaxis'][1:])]['domain']
-			d['domain']['y']=layout['yaxis{0}'.format(d['yaxis'][1:])]['domain'] 
+			d['domain']['y']=layout['yaxis{0}'.format(d['yaxis'][1:])]['domain']
 	return sp
 
 
@@ -614,7 +614,7 @@ def get_subplots(rows=1,cols=1,
 
 	Parameters:
 	-----------
-		rows : int 
+		rows : int
 			Number of rows
 		cols : int
 			Number of cols
@@ -635,8 +635,8 @@ def get_subplots(rows=1,cols=1,
 			Layout Theme
 				solar
 				pearl
-				white		
-			see cufflinks.getThemes() for all 
+				white
+			see cufflinks.getThemes() for all
 			available themes
 		horizontal_spacing : float
 				[0,1]
@@ -709,7 +709,7 @@ def get_subplots(rows=1,cols=1,
 	for k,v in list(layout.items()):
 		if not isinstance(v,XAxis) and not isinstance(v,YAxis):
 			sp['layout'].update({k:v})
-			
+
 	if 'subplot_titles' in kwargs:
 		if 'annotations' in layout:
 			annotation=sp['layout']['annotations'][0]
@@ -727,7 +727,7 @@ def get_subplots(rows=1,cols=1,
 			update_items(v,layout,'xaxis1')
 		elif isinstance(v,YAxis):
 			update_items(v,layout,'xaxis1')
-			
+
 	return sp
 
 # Candlesticks and OHLC
@@ -745,7 +745,7 @@ def get_ohlc(df,up_color=None,down_color=None,theme=None,layout=None,**kwargs):
 	layout=getLayout(theme=theme) if not layout else layout
 	ohlc=['open','high','low','close']
 	if not theme:
-		theme = auth.get_config_file()['theme']    
+		theme = auth.get_config_file()['theme']
 	c_dir=_ohlc_dict(df)
 	args=[df[c_dir[_]] for _ in ohlc]
 	args.append(df.index)
@@ -766,7 +766,7 @@ def get_candle(df,up_color=None,down_color=None,theme=None,layout=None,**kwargs)
 	layout=getLayout(theme=theme) if not layout else layout
 	ohlc=['open','high','low','close']
 	if not theme:
-		theme = auth.get_config_file()['theme']    
+		theme = auth.get_config_file()['theme']
 	c_dir=_ohlc_dict(df)
 	args=[df[c_dir[_]] for _ in ohlc]
 	args.append(df.index)
@@ -788,7 +788,7 @@ def get_candle(df,up_color=None,down_color=None,theme=None,layout=None,**kwargs)
 
 def scatter_matrix(df,theme=None,bins=10,color='grey',size=2):
 	"""
-	Displays a matrix with scatter plot for each pair of 
+	Displays a matrix with scatter plot for each pair of
 	Series in the DataFrame.
 	The diagonal shows a histogram for each of the Series
 
@@ -807,7 +807,7 @@ def scatter_matrix(df,theme=None,bins=10,color='grey',size=2):
 	"""
 	if not theme:
 		theme = auth.get_config_file()['theme']
-	
+
 	figs=[]
 	for i in df.columns:
 		for j in df.columns:
@@ -906,7 +906,7 @@ def axis(self):
 			'def':get_def(self),
 			'len':get_len(self),
 			'which':get_which(self),
-			'dom':get_dom(self)}    
+			'dom':get_dom(self)}
 
 ### Set Axis
 
@@ -919,9 +919,9 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 	Parameters:
 	-----------
 		traces : list(str)
-			List of trace names 
+			List of trace names
 		on : string
-			The axis in which the traces should be placed. 
+			The axis in which the traces should be placed.
 			If this is not indicated then a new axis will be
 			created
 		side : string
@@ -989,15 +989,15 @@ def get_shape(kind='line',x=None,y=None,x0=None,y0=None,x1=None,y1=None,span=0,c
 				line
 				rect
 				circle
-		x : float 
-			x values for the shape. 
+		x : float
+			x values for the shape.
 			This assumes x0=x1
 		x0 : float
 			x0 value for the shape
 		x1 : float
 			x1 value for the shape
-		y : float 
-			y values for the shape. 
+		y : float
+			y values for the shape.
 			This assumes y0=y1
 		y0 : float
 			y0 value for the shape
@@ -1010,25 +1010,25 @@ def get_shape(kind='line',x=None,y=None,x0=None,y0=None,x1=None,y1=None,span=0,c
 				solid
 				dash
 				dashdot
-				dot 
+				dot
 		width : int
 			line width
 		fillcolor : string
 			shape fill color
 		fill : bool
-			If True then fill shape 
-			If not fillcolor then the 
+			If True then fill shape
+			If not fillcolor then the
 			line color will be used
 		opacity : float [0,1]
-			opacity of the fill 
+			opacity of the fill
 		xref : string
-			Sets the x coordinate system 
+			Sets the x coordinate system
 			which this object refers to
 				'x'
 				'paper'
 				'x2' etc
 		yref : string
-			Sets the y coordinate system 
+			Sets the y coordinate system
 			which this object refers to
 				'y'
 				'paper'
@@ -1062,18 +1062,18 @@ def get_shape(kind='line',x=None,y=None,x0=None,y0=None,x1=None,y1=None,span=0,c
 				'line' : {
 					'color':normalize(color),
 					'width':width,
-					'dash':dash				
+					'dash':dash
 					},
 				'xref':xref,
 				'yref':yref
 				}
 
-	if kind=='line':	
+	if kind=='line':
 		shape['type']='line'
 
 	elif kind=='circle':
 		shape['type']='circle'
-		
+
 	elif kind=='rect':
 		shape['type']='rect'
 	else:
@@ -1142,7 +1142,7 @@ def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=N
 				y_down=trace['y']*(1-value/100.00)
 			else:
 				y_up=trace['y']+value
-				y_down=trace['y']-value            
+				y_down=trace['y']-value
 			y=trace['y']
 			upper=Scatter(y=y_up,mode='lines',showlegend=False,
 							 line=Line(width=width),x=trace['x'])
@@ -1169,7 +1169,7 @@ def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=N
 		for i in traces:
 				trace=figure['data'][i]
 				upper,lower=get_traces(trace,values,type,color=color,width=width,opacity=opacity)
-				figure['data'].extend([upper,lower]) 
+				figure['data'].extend([upper,lower])
 	return figure
 
 
@@ -1193,9 +1193,9 @@ def updateColors(d):
 
 ### Offline
 
-def go_offline(offline=True):
+def go_offline(connected = False, offline=True):
 	if offline:
-		py_offline.init_notebook_mode()
+		py_offline.init_notebook_mode(connected)
 		py_offline.__PLOTLY_OFFLINE_INITIALIZED=True
 	else:
 		py_offline.__PLOTLY_OFFLINE_INITIALIZED=False
@@ -1205,5 +1205,5 @@ def is_offline():
 
 
 Figure.axis=axis
-Figure.trace_dict=trace_dict	  
-Figure.set_axis=_set_axis 
+Figure.trace_dict=trace_dict
+Figure.set_axis=_set_axis
