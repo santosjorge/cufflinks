@@ -194,7 +194,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 			dash='solid',mode='lines',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
 			bestfit_colors=None,mean=False,mean_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,
-			zerolinecolor=None,margin=None,labels=None,values=None,secondary_y='',subplots=False,shape=None,error_x=None,
+			zerolinecolor=None,margin=None,labels=None,values=None,secondary_y='',secondary_y_title='',subplots=False,shape=None,error_x=None,
 			error_y=None,error_type='data',locations=None,lon=None,lat=None,asFrame=False,asDates=False,asFigure=False,
 			asImage=False,dimensions=None,asPlot=False,asUrl=False,online=None,**kwargs):
 	"""
@@ -419,6 +419,8 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 		secondary_y : string or list(string)
 			Name(s) of the column to be charted on the 
 			right hand side axis
+		secondary_y_title : string
+			Title of the secondary axis
 		subplots : bool
 			If true then each trace is placed in 
 			subplot layout
@@ -904,6 +906,8 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 ## Check secondary axis
 	if secondary_y:
 		figure=figure.set_axis(secondary_y,side='right')
+		if secondary_y_title:
+			figure.layout.yaxis2.title=secondary_y_title
 
 ## Error Bars
 	if kind in ('scatter','bar','barh','lines'):
