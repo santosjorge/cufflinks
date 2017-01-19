@@ -6,6 +6,7 @@ It also provides tools for color generation and transformation.
 Author: @jorgesantos
 
 """
+from __future__ import absolute_import
 
 from . import date_tools
 from . import utils
