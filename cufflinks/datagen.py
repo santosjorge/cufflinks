@@ -248,7 +248,8 @@ def ohlc(n=100):
 	df=pd.DataFrame(data,index=index,
 		columns=['a'])
 	df=df.cumsum()  
-	df=df.resample('1d',how='ohlc')
+	# df=df.resample('1d',how='ohlc')
+	df=df.resample('1d').ohlc()
 	# df.index=df.index.date
 	return df['a']
 
