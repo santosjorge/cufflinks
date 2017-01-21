@@ -235,6 +235,9 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				bubble3d
 				scatter3d	
 				scattergeo
+				ohlc
+				candle
+				pie
 				choroplet	
 		title : string
 			Chart Title				
