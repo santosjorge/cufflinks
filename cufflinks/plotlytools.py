@@ -843,8 +843,8 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				data.append(pie)
 				validate=False
 
-			elif kind in ('candle','ohlc'):
-				d=tools._ohlc_dict(self)
+			elif kind in ('old_candle','old_ohlc'):
+				d=ta._ohlc_dict(self)
 				if len(list(d.keys()))!=4:
 					raise Exception("OHLC type of charts require an Open, High, Low and Close column")				
 				ohlc_kwargs=check_kwargs(kwargs,OHLC_KWARGS)
@@ -859,8 +859,8 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				data=fig['data']
 				layout=fig['layout']
 
-			elif kind in ('ncandle'):
-				d=tools._ohlc_dict(self)
+			elif kind in ('candle','ohlc'):
+				d=ta._ohlc_dict(self)
 				if len(list(d.keys()))!=4:
 					raise Exception("OHLC type of charts require an Open, High, Low and Close column")				
 				ohlc_kwargs=check_kwargs(kwargs,OHLC_KWARGS)

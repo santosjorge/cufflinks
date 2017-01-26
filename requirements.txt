@@ -19,3 +19,4 @@ simplegeneric==0.8.1
 six==1.9.0
 traitlets==4.0.0
 wheel==0.24.0
+statsmodels==0.5.0

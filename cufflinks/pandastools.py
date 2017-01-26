@@ -1,5 +1,6 @@
 import pandas as pd
 import re
+import statsmodels.api as sm
 
 def _screen(self,include=True,**kwargs):
 	"""
@@ -52,9 +53,15 @@ def bestfit(self):
 		of the bestfit line. 
 	"""
 	x=pd.Series(list(range(1,len(self)+1)),index=self.index)
-	model=pd.ols(x=x,y=self,intercept=True)
-	best_fit=model.y_fitted
-	best_fit.formula='%.2f*x+%.2f' % (model.beta.x,model.beta.intercept)
+	x=sm.add_constant(x)
+	model=sm.OLS(self,x)
+	fit=model.fit()
+	vals=fit.params.values
+	best_fit=fit.fittedvalues
+	# the below methods have been deprecated in Pandas
+	# model=pd.ols(x=x,y=self,intercept=True)
+	# best_fit=model.y_fitted
+	best_fit.formula='%.2f*x+%.2f' % (vals[0],vals[1])
 	return best_fit
 
 def normalize(self,asOf=None,multiplier=100):

@@ -1,10 +1,58 @@
 ## TECHNICHAL ANALYSIS
 import pandas as pd
 import numpy as np
+from plotly.graph_objs import Figure
 
 class StudyError(Exception):
 	pass
 
+def _ohlc_dict(df_or_figure,open='',high='',low='',close='',volume=''):
+	"""
+	Returns a dictionary with the actual column names that 
+	correspond to each of the OHLCV values.
+
+	df_or_figure :  DataFrame or Figure
+	open : string
+		Column name to be used for OPEN values
+	high : string
+		Column name to be used for HIGH values
+	low : string
+		Column name to be used for LOW values
+	close : string
+		Column name to be used for CLOSE values
+	volume : string
+		Column name to be used for VOLUME values
+	"""
+	c_dir={}
+	ohlcv=['open','high','low','close','volume']
+	if type(df_or_figure)==pd.DataFrame:
+		cnames=df_or_figure.columns
+	elif type(df_or_figure)==Figure:
+		cnames=df_or_figure.axis['ref'].keys()
+	c_min=dict([(v.lower(),v) for v in cnames])
+	for _ in ohlcv:
+		if _ in c_min.keys():
+			c_dir[_]=c_min[_]
+		else:
+			for c in cnames:
+				if _ in c.lower():
+					c_dir[_]=c
+
+	if open:
+		c_dir['open']=open
+	if high:
+		c_dir['high']=high
+	if low:
+		c_dir['low']=low
+	if close:
+		c_dir['close']=close
+	if volume:
+		c_dir['volume']=volume
+		
+	for k,v in c_dir.items():
+		if v not in cnames:
+			raise Exception('{0} is not a valid column name'.format(v))
+	return c_dir
 
 def _make_list(val):
 	return val if isinstance(val,list) else [val]
