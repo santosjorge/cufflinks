@@ -5,6 +5,7 @@ import numpy as np
 class StudyError(Exception):
 	pass
 
+
 def _make_list(val):
 	return val if isinstance(val,list) else [val]
 

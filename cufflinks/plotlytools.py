@@ -859,6 +859,27 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				data=fig['data']
 				layout=fig['layout']
 
+			elif kind in ('ncandle'):
+				d=tools._ohlc_dict(self)
+				if len(list(d.keys()))!=4:
+					raise Exception("OHLC type of charts require an Open, High, Low and Close column")				
+				ohlc_kwargs=check_kwargs(kwargs,OHLC_KWARGS)
+				_d=dict(type='candlestick',
+							open=self[d['open']],
+							high=self[d['high']],
+							low=self[d['low']],
+							close=self[d['close']],
+							x=self.index					)
+				if 'up_color' in kwargs:
+					_d['increasing']=dict(line=dict(color=kwargs['up_color']))
+				if 'down_color' in kwargs:
+					_d['decreasing']=dict(line=dict(color=kwargs['down_color']))
+				if title:
+					_d['name']=title
+				data=[_d]
+
+
+
 			elif kind in ('choropleth','scattergeo'):
 				kw=check_kwargs(kwargs,GEO_KWARGS)
 				if kind=='choropleth':
@@ -1285,6 +1306,31 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 	else: 
 		return iplot(figure,sharing=sharing,filename=filename)
 
+def _fig_iplot(self,validate=True,sharing=None,filename='',online=None,**kwargs):
+	"""
+	Plots a figure in IPython
+
+	validate : bool
+		If True then all values are validated before 
+		it is charted
+	sharing : string
+		Sets the sharing level permission
+			public - anyone can see this chart
+			private - only you can see this chart
+			secret - only people with the link can see the chart
+	filename : string
+		Name to be used to save the file in the server
+	online : bool
+		If True then charts are rendered in the server 
+
+	Other Kwargs
+	============
+
+		legend : bool
+			If False then the legend will not be shown		
+	"""
+	return iplot(self,validate=True,sharing=None,filename='',online=None,**kwargs)
+
 
 pd.DataFrame.to_iplot=_to_iplot
 pd.DataFrame.scatter_matrix=_scatter_matrix
@@ -1298,5 +1344,6 @@ pd.Series.ta_plot=_ta_plot
 pd.Series.figure=_figure
 pd.Series.to_iplot=_to_iplot
 pd.Series.iplot=_iplot
+Figure.iplot=_fig_iplot
 
 

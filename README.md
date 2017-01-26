@@ -17,6 +17,10 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 ### Release Notes
 
+### v0.9.0
+
+* `Figure.iplot()` to plot figures
+
 ### v0.8.0
 
 * 'cf.datagen.choropleth()' to for sample choropleth data. 
