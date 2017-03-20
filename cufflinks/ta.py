@@ -6,7 +6,8 @@ from plotly.graph_objs import Figure
 class StudyError(Exception):
 	pass
 
-def _ohlc_dict(df_or_figure,open='',high='',low='',close='',volume=''):
+def _ohlc_dict(df_or_figure,open='',high='',low='',close='',volume='',
+			   validate='',**kwargs):
 	"""
 	Returns a dictionary with the actual column names that 
 	correspond to each of the OHLCV values.
@@ -22,6 +23,11 @@ def _ohlc_dict(df_or_figure,open='',high='',low='',close='',volume=''):
 		Column name to be used for CLOSE values
 	volume : string
 		Column name to be used for VOLUME values
+	validate : string
+		Validates that the stated column exists
+		Example:
+			validate='ohv' | Will ensure Open, High
+							 and close values exist. 
 	"""
 	c_dir={}
 	ohlcv=['open','high','low','close','volume']
@@ -51,7 +57,19 @@ def _ohlc_dict(df_or_figure,open='',high='',low='',close='',volume=''):
 		
 	for k,v in c_dir.items():
 		if v not in cnames:
-			raise Exception('{0} is not a valid column name'.format(v))
+			raise StudyError('{0} is not a valid column name'.format(v))
+
+	if validate:
+			errs=[]
+			val=validate.lower()
+			s_names=dict([(_[0],_) for _ in ohlcv])
+			cols=[_[0] for _ in c_dir.keys()]
+			for _ in val:
+				if _ not in cols:
+					errs.append(s_names[_])
+			if errs:
+				raise StudyError('Missing Columns: {0}'.format(', '.join(errs)))
+
 	return c_dir
 
 def _make_list(val):

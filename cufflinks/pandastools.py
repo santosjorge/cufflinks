@@ -87,8 +87,18 @@ def normalize(self,asOf=None,multiplier=100):
 		x0=self.ix[asOf]
 	return self/x0*multiplier
 
+def read_google(url,**kwargs):
+	"""
+	Reads a google sheet
+	"""
+	if url[-1]!='/':
+		url+='/'
+	return pd.read_csv(url+'export?gid=0&format=csv',**kwargs)
+
 pd.DataFrame.screen=_screen
 pd.DataFrame.swapcolumns=_swapcolumns
 pd.DataFrame.normalize=normalize
+pd.read_google=read_google
 pd.Series.normalize=normalize
 pd.Series.bestfit=bestfit
+

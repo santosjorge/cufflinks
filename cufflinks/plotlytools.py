@@ -575,7 +575,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 	# Look for invalid kwargs
 	valid_kwargs = ['color','opacity','column','columns','labels','text','world_readable','colorbar']
 	PIE_KWARGS=['sort','pull','hole','textposition','textinfo','linecolor']
-	OHLC_KWARGS=['up_color','down_color']
+	OHLC_KWARGS=['up_color','down_color','open','high','low','close','volume','name']
 	SUBPLOT_KWARGS=['horizontal_spacing', 'vertical_spacing',
 					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles']
 	GEO_KWARGS=['locationmode','locationsrc','geo','lon','lat']
@@ -848,7 +848,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				if len(list(d.keys()))!=4:
 					raise Exception("OHLC type of charts require an Open, High, Low and Close column")				
 				ohlc_kwargs=check_kwargs(kwargs,OHLC_KWARGS)
-				if kind=='candle':					
+				if kind=='old_candle':					
 					fig=tools.get_candle(self,theme=theme,layout=layout,**ohlc_kwargs)
 				else:
 					fig=tools.get_ohlc(self,theme=theme,layout=layout,**ohlc_kwargs)
@@ -859,23 +859,28 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				data=fig['data']
 				layout=fig['layout']
 
-			elif kind in ('candle','ohlc'):
-				d=ta._ohlc_dict(self)
-				if len(list(d.keys()))!=4:
-					raise Exception("OHLC type of charts require an Open, High, Low and Close column")				
-				ohlc_kwargs=check_kwargs(kwargs,OHLC_KWARGS)
-				_d=dict(type='candlestick',
+			elif kind in ('candle','ohlc','candlestick'):
+				kind='candlestick' if kind=='candle' else kind
+				kw=check_kwargs(kwargs,OHLC_KWARGS)
+				d=ta._ohlc_dict(self,validate='ohlc',**kw)
+				_d=dict(type=kind,
 							open=self[d['open']],
 							high=self[d['high']],
 							low=self[d['low']],
 							close=self[d['close']],
-							x=self.index					)
-				if 'up_color' in kwargs:
-					_d['increasing']=dict(line=dict(color=kwargs['up_color']))
-				if 'down_color' in kwargs:
-					_d['decreasing']=dict(line=dict(color=kwargs['down_color']))
+							x=self.index
+												)
+				if 'name' in kw:
+					_d['name']=kw['name']
+				legend=kwargs['legend'] if 'legend' in kwargs else False
+				if 'up_color' in kw:
+					_d['increasing']=dict(line=dict(color=kw['up_color']),showlegend=legend)
+				if 'down_color' in kw:
+					_d['decreasing']=dict(line=dict(color=kw['down_color']),showlegend=legend)
 				if title:
 					_d['name']=title
+				#Not sure if we should always stick it on y2
+				_d['yaxis']='y2'
 				data=[_d]
 
 

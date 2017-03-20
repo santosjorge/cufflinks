@@ -134,3 +134,11 @@ def deep_update(d,d_update):
 		else:
 			d[k]=v
 	return d
+
+def read_google(self,url,**kwargs):
+	"""
+	Reads a google sheet
+	"""
+	if url[-1]!='/':
+		url+='/'
+	return self.read_csv(url+'export?gid=0&format=csv',**kwargs)

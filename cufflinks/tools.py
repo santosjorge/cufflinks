@@ -4,6 +4,7 @@ from plotly.graph_objs import *
 from .colors import normalize,to_rgba
 from .themes import THEMES
 from . import auth
+from . import ta
 from .utils import merge_dict,deep_update, check_kwargs,kwargs_from_keyword
 import numpy as np
 import copy
@@ -738,7 +739,7 @@ def get_ohlc(df,up_color=None,down_color=None,theme=None,layout=None,**kwargs):
 	ohlc=['open','high','low','close']
 	if not theme:
 		theme = auth.get_config_file()['theme']
-	c_dir=_ohlc_dict(df)
+	c_dir=ta._ohlc_dict(df)
 	args=[df[c_dir[_]] for _ in ohlc]
 	args.append(df.index)
 	fig=py.plotly.tools.FigureFactory.create_ohlc(*args,**kwargs)
@@ -759,7 +760,7 @@ def get_candle(df,up_color=None,down_color=None,theme=None,layout=None,**kwargs)
 	ohlc=['open','high','low','close']
 	if not theme:
 		theme = auth.get_config_file()['theme']
-	c_dir=_ohlc_dict(df)
+	c_dir=ta._ohlc_dict(df)
 	args=[df[c_dir[_]] for _ in ohlc]
 	args.append(df.index)
 	fig=py.plotly.tools.FigureFactory.create_candlestick(*args,**kwargs)

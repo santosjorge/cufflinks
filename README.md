@@ -23,6 +23,7 @@ This tutorial assumes that the plotly user credentials have already been configu
 * New high performing **candle** and **ohlc** plots
 	* `cf.datagen.ohlc().iplot(kind='candle')`	
 
+
 ### v0.8.0
 
 * 'cf.datagen.choropleth()' to for sample choropleth data. 
