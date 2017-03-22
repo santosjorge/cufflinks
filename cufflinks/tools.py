@@ -1079,6 +1079,91 @@ def get_shape(kind='line',x=None,y=None,x0=None,y0=None,x1=None,y1=None,span=0,c
 
 	return shape
 
+### Range Selector
+
+def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',font_size=13,x=0,y=0.9):
+	"""
+	Returns a range selector
+	Reference: https://plot.ly/python/reference/#layout-xaxis-rangeselector
+	
+	Parameters:
+	-----------
+		steps : string or list(string)
+			Steps for the range
+				Examples:
+					['1y','2 months','5 weeks','ytd','2mtd']
+		bgocolor : string or tuple(color,alpha)
+			Background color
+				Examples:
+					'cyan'
+					'rgba(232,214,10,.5)'
+					('blue',.3)
+		font_size : int
+			Font size
+		x : float
+			Position along the x axis
+			Domain (0,1)
+		y : float
+			Position along the y axis
+			Domain (0,1)	
+	"""
+	import string
+
+	def get_step(s):
+
+
+		term=[]
+		stepmode='backward'
+		_s=s
+		_s=_s.replace(' ','')
+		_s=_s.lower()
+		if _s in ['reset','all']:
+			return {'count':1,'label':s,'step':'all'}
+		if _s[-2:]=='td':
+			_s=_s[:-2]
+			stepmode='todate'
+			if _s[0] not in string.digits:				
+				_s='1'+_s
+		if _s[0] not in string.digits:
+			raise Exception('Invalid step format: {0}'.format(s))
+		while _s[-1] not in string.digits:
+			term.append(_s[-1])
+			_s=_s[:-1]
+		term.reverse()
+		term=''.join(term)
+		cnt=int(_s)
+		term=term[:-1] if (term[-1]=='s' and len(term)>1) else term		
+		if term in ['y','year','yr']:
+					steps='year'
+		elif term in ['w','week','wk']:
+			steps='week'
+		elif term in ['m','month','mth','mnth','mo']:
+			steps='month'
+		elif term in ['hr','hour']:
+			steps='hour'
+		elif term in ['min','minute','mn']:
+			steps='minute'
+		elif term in ['sec','sc','s']:
+			steps='second'
+		else:
+			raise Exception('Invalid step format: {0}'.format(s))
+		return {'count':cnt,'label':s,'step':steps,'stepmode':stepmode}
+
+	rangeselector={
+		'bgcolor':to_rgba(bgcolor,1),
+		'font':{'size':font_size},
+		'x':x,
+		'y':y,
+		'visible':True
+	}
+	buttons=[]
+	if type(steps) not in (list,tuple):
+		steps=[steps]
+	for s in steps:
+		buttons.append(get_step(s))
+	rangeselector['buttons']=buttons
+	return rangeselector
+
 ### Error Bars
 
 def get_error_bar(axis='y',type='data',values=None,values_minus=None,color=None,thickness=1,width=5,
