@@ -10,7 +10,7 @@ import numpy as np
 import copy
 
 __LAYOUT_VALID_KWARGS = ['legend','vline','hline','vspan','hspan','shapes','logx','logy','layout_update',
-					'xrange','yrange','zrange']
+					'xrange','yrange','zrange','rangeselector']
 
 __GEO_KWARGS=['projection','showframe','showlakes','coastlinecolor','countrywidth','countrycolor',
 			 'showsubunits','bgcolor','showrivers','subunitcolor','showcountries','riverwidth','scope',
@@ -160,6 +160,10 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	layout=theme_data['layout']
 	layout['xaxis1'].update({'title':xTitle})
 	layout['yaxis1'].update({'title':yTitle})
+
+
+
+
 	if annotations:
 		update_annotations(annotations,
 						theme_data['annotations']['fontcolor'],
@@ -218,6 +222,10 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 			else:
 				layout['{0}axis1'.format(r)].update(range=kwargs['{0}range'.format(r)])
 
+	# Need to update this for an add_axis approach. 
+	if kind in ('candlestick','ohlc'):
+		layout['yaxis2']=layout['yaxis1'].copy()
+		layout['yaxis1'].update(showticklabels=False)
 
 	## Kwargs
 
@@ -321,6 +329,17 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		del layout['yaxis1']
 		if not margin:
 			layout['margin']={'autoexpand':True}
+
+	# Range Selector
+	if 'rangeselector' in kwargs:
+		rs=kwargs['rangeselector']
+		if 'axis' in rs:
+			_axis=rs['axis']
+			del rs['axis']
+		else:
+			axis='xaxis1'
+		layout[axis]['rangeselector']=get_range_selector(**rs)
+
 
 
 	# Explicit Updates
@@ -1081,7 +1100,8 @@ def get_shape(kind='line',x=None,y=None,x0=None,y0=None,x1=None,y1=None,span=0,c
 
 ### Range Selector
 
-def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',font_size=13,x=0,y=0.9):
+def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',font_size=13,x=0,y=0.9,
+						visible=True):
 	"""
 	Returns a range selector
 	Reference: https://plot.ly/python/reference/#layout-xaxis-rangeselector
@@ -1154,7 +1174,7 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',font
 		'font':{'size':font_size},
 		'x':x,
 		'y':y,
-		'visible':True
+		'visible':visible
 	}
 	buttons=[]
 	if type(steps) not in (list,tuple):
@@ -1269,6 +1289,17 @@ def updateColors(d):
 						d[k]=normalize(v)
 	return d
 
+def _nodata(self):
+	d=[]
+	# _=copy.deepcopy(self)
+	for _ in self:
+		d.append(copy.deepcopy(_))
+	for _ in d:	
+		for k,v in list(_.items()):
+			if k in ('x','y','open','close','high','low','index'):
+				_[k]=[]
+	return d
+
 ### Offline
 
 def go_offline(connected = False, offline=True):
@@ -1282,6 +1313,8 @@ def is_offline():
 	return py_offline.__PLOTLY_OFFLINE_INITIALIZED
 
 
+
 Figure.axis=axis
 Figure.trace_dict=trace_dict
 Figure.set_axis=_set_axis
+Data.nodata=_nodata
