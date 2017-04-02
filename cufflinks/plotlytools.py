@@ -872,11 +872,18 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 												)
 				if 'name' in kw:
 					_d['name']=kw['name']
-				legend=kwargs['legend'] if 'legend' in kwargs else False
-				if 'up_color' in kw:
-					_d['increasing']=dict(line=dict(color=kw['up_color']),showlegend=legend)
-				if 'down_color' in kw:
-					_d['decreasing']=dict(line=dict(color=kw['down_color']),showlegend=legend)
+				
+				showlegend=False
+				if 'showlegend' in kwargs:
+					showlegend=kwargs['showlegend']
+				else:
+					if 'legend' in kwargs:
+						if type(kwargs['legend'])==bool:
+							showlegend=kwargs['legend']
+				
+				_d['increasing']=dict(line=dict(color=kw['up_color']) if 'up_color' in kw else dict(),showlegend=showlegend)
+				_d['decreasing']=dict(line=dict(color=kw['down_color']) if 'down_color' in kw else dict(),showlegend=showlegend)
+				
 				if title:
 					_d['name']=title
 				#Not sure if we should always stick it on y2

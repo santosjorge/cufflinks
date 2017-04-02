@@ -88,11 +88,13 @@ def kwargs_from_keyword(from_kwargs,to_kwargs,keyword,clean_origin=True):
 				del from_kwargs[k]
 	return to_kwargs
 
-def check_kwargs(global_kwargs,values,local_kwargs=None):
+def check_kwargs(global_kwargs,values,local_kwargs=None,clean_origin=False):
 	local_kwargs={} if not local_kwargs else local_kwargs
 	for kw in values:
 		if kw in global_kwargs:
 			local_kwargs[kw]=global_kwargs[kw]
+			if clean_origin:
+				del global_kwargs[kw]
 	return local_kwargs
 
 def save_pickle(obj,filename):

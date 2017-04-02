@@ -10,7 +10,7 @@ import numpy as np
 import copy
 
 __LAYOUT_VALID_KWARGS = ['legend','vline','hline','vspan','hspan','shapes','logx','logy','layout_update',
-					'xrange','yrange','zrange','rangeselector']
+					'xrange','yrange','zrange','rangeselector','rangeslider','showlegend']
 
 __GEO_KWARGS=['projection','showframe','showlakes','coastlinecolor','countrywidth','countrycolor',
 			 'showsubunits','bgcolor','showrivers','subunitcolor','showcountries','riverwidth','scope',
@@ -230,7 +230,14 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	## Kwargs
 
 	if 'legend' in kwargs:
-		layout['showlegend']=kwargs['legend']
+		if type(kwargs['legend'])==bool:
+			layout['showlegend']=kwargs['legend']
+		else:
+			layout['legend']=kwargs['legend']
+			layout['showlegend']=True
+
+	if 'showlegend' in kwargs:
+		layout['showlegend']=kwargs['showlegend']
 
 	if 'logy' in kwargs:
 		if kwargs['logy']:
@@ -339,6 +346,13 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		else:
 			axis='xaxis1'
 		layout[axis]['rangeselector']=get_range_selector(**rs)
+
+	# Range Slider
+	if 'rangeslider' in kwargs:
+		if type(kwargs['rangeslider'])==bool:
+			layout['xaxis1']['rangeslider']=dict(visible=kwargs['rangeslider'])
+		else:
+			layout['xaxis1']['rangeslider']=kwargs['rangeslider']
 
 
 
