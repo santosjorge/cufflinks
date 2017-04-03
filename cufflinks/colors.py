@@ -78,6 +78,8 @@ def normalize(color):
 	Example:
 		normalize('#f03')
 	"""
+	if type(color)==tuple:
+		color=to_rgba(*color)	
 	if 'rgba' in color:
 		return rgb_to_hex(rgba_to_rgb(color))
 	elif 'rgb' in color:

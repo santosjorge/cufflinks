@@ -133,6 +133,25 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 				the explicit values stated in the
 				dictionary
 
+		Range Selector
+			rangeselector : dict
+				Defines a rangeselector object
+				see help(cf.tools.get_range_selector) for more information
+				Example:
+					{'steps':['1y','2 months','5 weeks','ytd','2mtd'],
+					 'axis':'xaxis1', 'bgcolor' : ('blue',.3),
+					 'x': 0.2 , 'y' : 0.9}
+
+		Range Slider
+			rangeslider : bool or dict
+				Defines if a rangeslider is displayed
+				If bool: 
+					True : Makes it visible
+				if dict:
+					Rangeslider object
+				Example:
+					{'bgcolor':('blue',.3),'autorange':True}
+
 	"""
 
 
