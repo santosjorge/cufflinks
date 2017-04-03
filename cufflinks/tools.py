@@ -17,16 +17,23 @@ __GEO_KWARGS=['projection','showframe','showlakes','coastlinecolor','countrywidt
 			 'rivercolor','lataxis','subunitwidth','showocean','oceancolor','lakecolor','showland','lonaxis',
 			 'framecolor','coastlinewidth','landcolor','showcoastlines','framewidth','resolution','projection_type']
 
-__LAYOUT_KWARGS = []
-[__LAYOUT_KWARGS.extend(_) for _ in [__LAYOUT_VALID_KWARGS,__GEO_KWARGS]]
+__ANN_KWARGS=['xref','yref','text','showarrow',
+				 'arrowhead','ax','ay','textangle','arrowsize',
+				 'arrowwidth','arrowcolor','fontcolor','fontsize','xanchor','yanchor','align']
 
-def getTheme(theme):
+__LAYOUT_KWARGS = []
+[__LAYOUT_KWARGS.extend(_) for _ in [__LAYOUT_VALID_KWARGS,__GEO_KWARGS,__ANN_KWARGS]]
+
+def getTheme(theme=None):
 	"""
 	Returns a theme definition.
 
 	To see the colors translated (hex) use
 	cufflinks.getLayout(theme) instead.
 	"""
+	if not theme:
+		theme = auth.get_config_file()['theme']
+
 	if theme in THEMES:
 		return copy.deepcopy(THEMES[theme])
 	else:
@@ -40,7 +47,7 @@ def getThemes():
 
 def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
 			  gridcolor=None,zerolinecolor=None,margin=None, dimensions=None, width=None, height=None,
-			  annotations=False,is3d=False,**kwargs):
+			  annotations=None,is3d=False,**kwargs):
 	"""
 	Generates a plotly Layout
 
@@ -83,9 +90,11 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 				right, bottom and top margins
 		dimensions : tuple
 			Dimensions of figure
-		annotations : dictionary
+		annotations : dict or list
 			Dictionary of annotations
-			{x_point : text}
+				{x_point : text}
+			or
+			List of Plotly Annotations
 		is3d : bool
 			Indicates if the layout is for a 3D chart
 
@@ -152,6 +161,15 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 				Example:
 					{'bgcolor':('blue',.3),'autorange':True}
 
+		Annotations
+			fontcolor : str
+				Text color for annotations
+			fontsize : int
+				Text size for annotations
+			textangle : int
+				Textt angle 
+			See https://plot.ly/python/reference/#layout-annotations 
+			for a complete list of valid parameters.
 	"""
 
 
@@ -162,31 +180,11 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	if not theme:
 		theme = auth.get_config_file()['theme']
 
-	size=None
-	if annotations:
-		if 'font' in annotations:
-			if 'size' in annotations['font']:
-				size=annotations['font']['size']
-
-	def update_annotations(annotations,font_color,arrow_color):
-		if annotations:
-			if isinstance(annotations,dict):
-				annotations=[annotations]
-			for i in annotations:
-				i.update(dict(arrowcolor=arrow_color,font={'color':font_color}))
-
 	theme_data = getTheme(theme)
 	layout=theme_data['layout']
 	layout['xaxis1'].update({'title':xTitle})
 	layout['yaxis1'].update({'title':yTitle})
 
-
-
-
-	if annotations:
-		update_annotations(annotations,
-						theme_data['annotations']['fontcolor'],
-						theme_data['annotations']['arrowcolor'])
 
 	if barmode:
 		layout.update({'barmode':barmode})
@@ -197,8 +195,6 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	if title:
 		layout.update({'title':title})
 	if annotations:
-		if size:
-			annotations['font']['size']=size
 		layout.update({'annotations':annotations})
 	if gridcolor:
 		for k in layout:
@@ -242,7 +238,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 				layout['{0}axis1'.format(r)].update(range=kwargs['{0}range'.format(r)])
 
 	# Need to update this for an add_axis approach. 
-	if kind in ('candlestick','ohlc'):
+	if kind in ('candlestick','ohlc','candle'):
 		layout['yaxis2']=layout['yaxis1'].copy()
 		layout['yaxis1'].update(showticklabels=False)
 
@@ -398,7 +394,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	return updateColors(layout)
 
 
-def getAnnotations(df,annotations):
+def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 	"""
 	Generates an annotations object
 
@@ -406,43 +402,88 @@ def getAnnotations(df,annotations):
 	-----------
 		df : DataFrame
 			Original DataFrame of values
-		annotations : dictionary
+		annotations : dict or list
 			Dictionary of annotations
 			{x_point : text}
+			or
+			List of Plotly annotations
 	"""
+	
+
+
+	
+
+	for key in list(kwargs.keys()):
+		if key not in __ANN_KWARGS:
+			raise Exception("Invalid keyword : '{0}'".format(key))
+
 	l=[]
-	if 'title' in annotations:
-		l.append(
-				Annotation(
-						text=annotations['title'],
-						showarrow=False,
-						x=0,
-						y=1,
-						xref='paper',
-						yref='paper',
-						font={'size':24}
-					)
-			)
-	else:
-		for k,v in list(annotations.items()):
-			maxv=df.ix[k].sum() if k in df.index else 0
+	theme_data = getTheme(theme)
+
+	kwargs['fontcolor']=kwargs['fontcolor'] if 'fontcolor' in kwargs else theme_data['annotations']['fontcolor']
+	kwargs['arrowcolor']=kwargs['arrowcolor'] if 'arrowcolor' in kwargs else theme_data['annotations']['arrowcolor']
+	kwargs['fontsize']=kwargs['fontsize'] if 'fontsize' in kwargs else 12
+
+	if type(annotations) not in (list,tuple):
+
+		if 'title' in annotations:
 			l.append(
-					 Annotation(
-								x=k,
-								y=maxv,
-								xref='x',
-								yref='y',
-								text=v,
-								showarrow=True,
-								arrowhead=7,
-								ax=0,
-								ay=-100,
-								textangle=-90
-								)
-					 )
-		values=['x','y','xref','yref','text','showarrow',
-				 'arrowhead','ax','ay','textangle','arrowsize',
-				 'arrowwidth','arrowcolor']
+					Annotation(	
+							text=annotations['title'],
+							showarrow=False,
+							x=0,
+							y=1,
+							xref='paper',
+							yref='paper',
+							font={'size':24 if not 'fontsize' in kwargs else kwargs['fontsize']}
+						)
+				)
+			del annotations['title']
+		
+		for k,v in list(annotations.items()):
+			if kind in ('candlestick','ohlc','candle'):
+				d=ta._ohlc_dict(df)
+				maxv=df[d['high']].ix[k]
+				yref='y2'
+			else:
+				maxv=df.ix[k].sum() if k in df.index else 0
+				yref='y1'
+			ann=Annotation(
+							x=k,
+							y=maxv,
+							xref='x',
+							yref=yref,
+							text=v,
+							showarrow=True,
+							arrowhead=7,
+							ax=0,
+							ay=-100,
+							textangle=-90
+							)
+			l.append(ann)
+
+	else:
+		l=annotations
+
+	for i in l:
+		for _k,_v in list(kwargs.items()):
+			if 'font' in _k:
+				k=_k.replace('font','')
+				if 'font' in i:
+					i['font'].update({k:_v})
+				else:
+					i['font']={k:_v}
+				# i=deep_update({'font':{_k.replace('font',''):_v}},i)
+
+			else:
+				i[_k]=_v
+
+	"""
+	1. font no se esta cambiando en el dict. no esta tomando el valor default del theme
+
+
+	"""
+		
 	return Annotations(l)
 
 def strip_figures(figure):
