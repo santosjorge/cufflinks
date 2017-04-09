@@ -17,6 +17,25 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 ### Release Notes
 
+### v0.10.0
+
+* `rangslider` to display a date range slider at the bottom
+	* `cf.datagen.ohlc().iplot(kind='candle',rangeslider=True)`	
+* `rangeselector` to display buttons to change the date range displayed
+	* `cf.datagen.ohlc(500).iplot(kind='candle', rangeselector={ 'steps':['1y','2 months','5 weeks','ytd','2mtd','reset'], 
+     'bgcolor' : ('grey',.3), 'x': 0.3 , 'y' : 0.95})`	
+* Customise annotions, with `fontsize`,`fontcolor`,`textangle`
+	* Label mode
+		* `cf.datagen.lines(1,mode='stocks').iplot(kind='line',
+					annotations={'2015-02-02':'Market Crash',
+	                 		     '2015-03-01':'Recovery'},
+	                textangle=-70,fontsize=13,fontcolor='grey')`
+	* Explicit mode
+		* `cf.datagen.lines(1,mode='stocks').iplot(kind='line',
+				annotations=[{'text':'exactly here','x':'0.2',
+				'xref':'paper','arrowhead':2,
+				'textangle':-10,'ay':150,'arrowcolor':'red'}])`
+
 ### v0.9.0
 
 * `Figure.iplot()` to plot figures

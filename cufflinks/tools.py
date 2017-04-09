@@ -356,7 +356,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	if 'rangeselector' in kwargs:
 		rs=kwargs['rangeselector']
 		if 'axis' in rs:
-			_axis=rs['axis']
+			axis=rs['axis']
 			del rs['axis']
 		else:
 			axis='xaxis1'
@@ -368,6 +368,9 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 			layout['xaxis1']['rangeslider']=dict(visible=kwargs['rangeslider'])
 		else:
 			layout['xaxis1']['rangeslider']=kwargs['rangeslider']
+	else:
+		if kind in ('ohlc','candle','candlestick'):
+			layout['xaxis1']['rangeslider']=dict(visible=False)
 
 
 
@@ -461,28 +464,31 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 							textangle=-90
 							)
 			l.append(ann)
+			explicit=False
 
 	else:
 		l=annotations
+		explicit=True
 
 	for i in l:
 		for _k,_v in list(kwargs.items()):
+			
 			if 'font' in _k:
 				k=_k.replace('font','')
-				if 'font' in i:
-					i['font'].update({k:_v})
-				else:
+				if 'font' not in i:
 					i['font']={k:_v}
-				# i=deep_update({'font':{_k.replace('font',''):_v}},i)
-
+				else:
+					if explicit:
+						if k not in i['font']:	
+							i['font'].update({k:_v})
 			else:
-				i[_k]=_v
+				if explicit:
+					if _k not in i: 			
+						i[_k]=_v
+				else:
+					i[_k]=_v
 
-	"""
-	1. font no se esta cambiando en el dict. no esta tomando el valor default del theme
 
-
-	"""
 		
 	return Annotations(l)
 
