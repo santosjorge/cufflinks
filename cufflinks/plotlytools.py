@@ -603,6 +603,14 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 	"""
 
 	# Look for invalid kwargs
+	_native_iplot = ['layout','filename','sharing',
+			'kind','title','xTitle','yTitle','zTitle','theme','colors','colorscale','fill','width',
+			'dash','mode','symbol','size','barmode','sortbars','bargap','bargroupgap','bins','histnorm',
+			'histfunc','orientation','boxpoints','annotations','keys','bestfit',
+			'bestfit_colors','mean','mean_colors','categories','x','y','z','text','gridcolor',
+			'zerolinecolor','margin','labels','values','secondary_y','secondary_y_title','subplots','shape','error_x',
+			'error_y','error_type','locations','lon','lat','asFrame','asDates','asFigure',
+			'asImage','dimensions','asPlot','asUrl','online']
 	valid_kwargs = ['color','opacity','column','columns','labels','text','world_readable','colorbar']
 	PIE_KWARGS=['sort','pull','hole','textposition','textinfo','linecolor']
 	OHLC_KWARGS=['up_color','down_color','open','high','low','close','volume','name']
@@ -611,7 +619,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 	GEO_KWARGS=['locationmode','locationsrc','geo','lon','lat']
 	ERROR_KWARGS=['error_trace','error_values_minus','error_color','error_thickness',
 					'error_width','error_opacity']
-	kwargs_list = [tools.__LAYOUT_KWARGS,OHLC_KWARGS,PIE_KWARGS,SUBPLOT_KWARGS,GEO_KWARGS,ERROR_KWARGS]
+	kwargs_list = [_native_iplot,tools.__LAYOUT_KWARGS,OHLC_KWARGS,PIE_KWARGS,SUBPLOT_KWARGS,GEO_KWARGS,ERROR_KWARGS]
 	[valid_kwargs.extend(_) for _ in kwargs_list]
 
 	dict_modifiers_keys = ['line']

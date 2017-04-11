@@ -1376,9 +1376,14 @@ def _nodata(self):
 		d.append(copy.deepcopy(_))
 	for _ in d:	
 		for k,v in list(_.items()):
-			if k in ('x','y','open','close','high','low','index'):
+			if k in ('x','y','open','close','high','low','index','volume'):
 				_[k]=[]
 	return d
+
+def _figure_no_data(self):
+	return {'data':self.data.nodata(),
+	'layout':self.layout}
+
 
 ### Offline
 
@@ -1397,4 +1402,5 @@ def is_offline():
 Figure.axis=axis
 Figure.trace_dict=trace_dict
 Figure.set_axis=_set_axis
+Figure.nodata=_figure_no_data
 Data.nodata=_nodata
