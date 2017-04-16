@@ -1376,8 +1376,11 @@ def _nodata(self):
 		d.append(copy.deepcopy(_))
 	for _ in d:	
 		for k,v in list(_.items()):
-			if k in ('x','y','open','close','high','low','index','volume'):
-				_[k]=[]
+			if k in ('x','y','open','close','high','low','index','volume','line','marker'):
+				try:
+					_[k]=[]
+				except:
+					_[k]={}
 	return d
 
 def _figure_no_data(self):
