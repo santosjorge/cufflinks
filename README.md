@@ -1,5 +1,5 @@
 
-##Cufflinks
+## Cufflinks
 
 This library binds the power of [plotly](http://www.plot.ly) with the flexibility of [pandas](http://pandas.pydata.org/) for easy plotting.
 
@@ -7,7 +7,7 @@ This library is available on [https://github.com/santosjorge/cufflinks](https://
 
 This tutorial assumes that the plotly user credentials have already been configured as stated on the [getting started](https://plot.ly/python/getting-started/) guide.
 
-###Tutorials:
+### Tutorials:
 
 * [Chart Gallery](http://nbviewer.ipython.org/gist/santosjorge/b278ce0ae2448f47c31d)
 * [Pandas Like Visualization](http://nbviewer.ipython.org/gist/santosjorge/aba934a0d20023a136c2)
