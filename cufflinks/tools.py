@@ -9,8 +9,10 @@ from .utils import merge_dict,deep_update, check_kwargs,kwargs_from_keyword
 import numpy as np
 import copy
 
-__LAYOUT_VALID_KWARGS = ['legend','vline','hline','vspan','hspan','shapes','logx','logy','layout_update',
+__LAYOUT_VALID_KWARGS = ['legend','logx','logy','layout_update',
 					'xrange','yrange','zrange','rangeselector','rangeslider','showlegend']
+
+__SHAPES_KWARGS = ['vline','hline','shapes','hspan','vspan']
 
 __GEO_KWARGS=['projection','showframe','showlakes','coastlinecolor','countrywidth','countrycolor',
 			 'showsubunits','bgcolor','showrivers','subunitcolor','showcountries','riverwidth','scope',
@@ -22,7 +24,7 @@ __ANN_KWARGS=['xref','yref','text','showarrow',
 				 'arrowwidth','arrowcolor','fontcolor','fontsize','xanchor','yanchor','align']
 
 __LAYOUT_KWARGS = []
-[__LAYOUT_KWARGS.extend(_) for _ in [__LAYOUT_VALID_KWARGS,__GEO_KWARGS,__ANN_KWARGS]]
+[__LAYOUT_KWARGS.extend(_) for _ in [__LAYOUT_VALID_KWARGS,__SHAPES_KWARGS,__GEO_KWARGS,__ANN_KWARGS]]
 
 def getTheme(theme=None):
 	"""
@@ -365,12 +367,17 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	# Range Slider
 	if 'rangeslider' in kwargs:
 		if type(kwargs['rangeslider'])==bool:
-			layout['xaxis1']['rangeslider']=dict(visible=kwargs['rangeslider'])
+			if kwargs['rangeslider']:
+				layout['xaxis1']['rangeslider']=dict(visible=kwargs['rangeslider'])
+			else:
+				layout['xaxis1']['rangeslider']=dict(visible=False)
+				# layout['yaxis1'].update(domain=(0,0))
 		else:
 			layout['xaxis1']['rangeslider']=kwargs['rangeslider']
 	else:
 		if kind in ('ohlc','candle','candlestick'):
 			layout['xaxis1']['rangeslider']=dict(visible=False)
+			# layout['yaxis1'].update(domain=(0,0))
 
 
 

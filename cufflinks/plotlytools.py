@@ -613,7 +613,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 	# 		'asImage','dimensions','asPlot','asUrl','online']
 	valid_kwargs = ['color','opacity','column','columns','labels','text','world_readable','colorbar']
 	PIE_KWARGS=['sort','pull','hole','textposition','textinfo','linecolor']
-	OHLC_KWARGS=['up_color','down_color','open','high','low','close','volume','name']
+	OHLC_KWARGS=['up_color','down_color','open','high','low','close','volume','name','decreasing','increasing']
 	SUBPLOT_KWARGS=['horizontal_spacing', 'vertical_spacing',
 					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles']
 	GEO_KWARGS=['locationmode','locationsrc','geo','lon','lat']
@@ -924,6 +924,9 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				
 				_d['increasing']=dict(line=dict(color=kw['up_color']) if 'up_color' in kw else dict(),showlegend=showlegend)
 				_d['decreasing']=dict(line=dict(color=kw['down_color']) if 'down_color' in kw else dict(),showlegend=showlegend)
+				for k in ('increasing','decreasing'):
+					if k in kw:
+						_d[k]=deep_update(_d[k],kw[k])
 				
 				if title:
 					_d['name']=title

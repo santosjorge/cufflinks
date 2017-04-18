@@ -128,7 +128,7 @@ def rsi(df,periods=14,column=None,include=True,str=None,detail=False,**kwargs):
 		_df['Down']=df[column].diff().apply(lambda x:-x if x<0 else 0)
 
 		_df['UpAvg']=_df['Up'].rolling(window=periods).mean()
-		_df['DownAvg']= df['Down'].rolling(window=periods).mean()
+		_df['DownAvg']= _df['Down'].rolling(window=periods).mean()
 
 		
 		_df['RSI']=100-(100/(1+_df['UpAvg']/_df['DownAvg']))
