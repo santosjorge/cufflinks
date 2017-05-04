@@ -97,6 +97,28 @@ def check_kwargs(global_kwargs,values,local_kwargs=None,clean_origin=False):
 				del global_kwargs[kw]
 	return local_kwargs
 
+def dict_replace_keyword(d,keyword,kwargs,forceupdate=True):
+	d=d.copy()
+	for _k,_v in list(kwargs.items()):
+				if keyword in _k:
+					k=_k.replace(keyword,'')
+					if keyword not in d:
+						d[keyword]={k:_v}
+					else:
+						if forceupdate:
+							d[keyword].update({k:_v})
+						else:
+							if k not in d[keyword]:	
+								d[keyword].update({k:_v})
+				else:
+					if forceupdate:
+						d[_k]=_v
+					else:
+						if _k not in d: 			
+							d[_k]=_v
+						
+	return d
+
 def save_pickle(obj,filename):
 	"""
 	Serializes a given object

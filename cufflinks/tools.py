@@ -1,16 +1,17 @@
 import plotly.plotly as py
 import plotly.offline as py_offline
+import pandas as pd
 from plotly.graph_objs import *
 from .colors import normalize,to_rgba
 from .themes import THEMES
 from . import auth
 from . import ta
-from .utils import merge_dict,deep_update, check_kwargs,kwargs_from_keyword
+from .utils import merge_dict,deep_update, check_kwargs,kwargs_from_keyword,dict_replace_keyword
 import numpy as np
 import copy
 
 __LAYOUT_VALID_KWARGS = ['legend','logx','logy','layout_update',
-					'xrange','yrange','zrange','rangeselector','rangeslider','showlegend']
+					'xrange','yrange','zrange','rangeselector','rangeslider','showlegend','fontfamily']
 
 __SHAPES_KWARGS = ['vline','hline','shapes','hspan','vspan']
 
@@ -23,8 +24,20 @@ __ANN_KWARGS=['xref','yref','text','showarrow',
 				 'arrowhead','ax','ay','textangle','arrowsize',
 				 'arrowwidth','arrowcolor','fontcolor','fontsize','xanchor','yanchor','align']
 
+__LAYOUT_AXIS=['autorange','autotick','backgroundcolor','categoryarray','categoryarraysrc','categoryorder',
+			   'dtick','exponentformat','fixedrange','gridcolor','gridwidth','hoverformat','linecolor','linewidth',
+			   'mirror','nticks','showaxeslabels','showbackground','showexponent','showgrid','showline','showspikes',
+			   'showticklabels','showtickprefix','showticksuffix','spikecolor','spikesides','spikethickness',
+			   'tick0','tickangle','tickcolor','tickfont','tickformat','ticklen','tickmode','tickprefix','ticks',
+			   'ticksuffix','ticktext','ticktextsrc','tickvals','tickvalssrc','tickwidth','titlefont',
+			   'zeroline','zerolinecolor','zerolinewidth']
+
+__LAYOUT_AXIS_X=['xaxis_'+_ for _ in XAxis().__dir__()]
+__LAYOUT_AXIS_Y=['yaxis_'+_ for _ in YAxis().__dir__()]
+
 __LAYOUT_KWARGS = []
-[__LAYOUT_KWARGS.extend(_) for _ in [__LAYOUT_VALID_KWARGS,__SHAPES_KWARGS,__GEO_KWARGS,__ANN_KWARGS]]
+[__LAYOUT_KWARGS.extend(_) for _ in [__LAYOUT_VALID_KWARGS,__SHAPES_KWARGS,__GEO_KWARGS,__ANN_KWARGS,__LAYOUT_AXIS,
+									 __LAYOUT_AXIS_X,__LAYOUT_AXIS_Y]]
 
 def getTheme(theme=None):
 	"""
@@ -48,7 +61,7 @@ def getThemes():
 	return list(THEMES.keys())
 
 def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
-			  gridcolor=None,zerolinecolor=None,margin=None, dimensions=None, width=None, height=None,
+			  margin=None, dimensions=None, width=None, height=None,
 			  annotations=None,is3d=False,**kwargs):
 	"""
 	Generates a plotly Layout
@@ -114,12 +127,12 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 				indicated x position(s)
 				Extra parameters can be passed in
 				the form of a dictionary (see shapes)
-			hline : [y0,y1]
+			hspan : (y0,y1)
 				Draws a horizontal rectangle at the
 				indicated (y0,y1) positions.
 				Extra parameters can be passed in
 				the form of a dictionary (see shapes)
-			vline : [x0,x1]
+			vspan : (x0,x1)
 				Draws a vertical rectangle at the
 				indicated (x0,x1) positions.
 				Extra parameters can be passed in
@@ -183,9 +196,13 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		theme = auth.get_config_file()['theme']
 
 	theme_data = getTheme(theme)
-	layout=theme_data['layout']
+	layout=Layout(theme_data['layout'])
 	layout['xaxis1'].update({'title':xTitle})
 	layout['yaxis1'].update({'title':yTitle})
+
+	fontfamily=kwargs.pop('fontfamily',None)
+	if fontfamily:
+		deep_update(layout,{'font':{'family':fontfamily}})
 
 
 	if barmode:
@@ -198,14 +215,25 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		layout.update({'title':title})
 	if annotations:
 		layout.update({'annotations':annotations})
-	if gridcolor:
-		for k in layout:
-			if 'axis' in k:
-				layout[k].update(gridcolor=normalize(gridcolor))
-	if zerolinecolor:
-		for k in layout:
-			if 'axis' in k:
-				layout[k].update(zerolinecolor=normalize(zerolinecolor))
+
+
+	def update_axis(layout,axis='xy',**vals):
+		for _x in axis:
+			for k,v in list(vals.items()):
+				if v==None:
+					vals.pop(k)
+			for k in layout:
+				if '{0}{1}'.format(_x,'axis') in k:
+					layout[k].update(**vals)
+		return layout
+
+	axis_kwargs=check_kwargs(kwargs,__LAYOUT_AXIS,{},True)
+	xaxis_kwargs=kwargs_from_keyword(kwargs,{},'xaxis',True)
+	yaxis_kwargs=kwargs_from_keyword(kwargs,{},'yaxis',True)
+	
+	for _x,_vals in (('xy',axis_kwargs),('x',xaxis_kwargs),('y',yaxis_kwargs)):
+		layout=update_axis(layout,_x,**_vals)
+
 	if margin:
 		if isinstance(margin,dict):
 			margin=margin
@@ -249,6 +277,12 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	if 'legend' in kwargs:
 		if type(kwargs['legend'])==bool:
 			layout['showlegend']=kwargs['legend']
+		elif type(kwargs['legend'])==str:
+			if kwargs['legend']=='top':
+				layout['legend'].update(orientation='h',yanchor='bottom',x=.3,y=.95)
+			elif kwargs['legend']=='bottom':
+				layout['legend'].update(orientation='h',yanchor='bottom',x=.3,y=-0.5)
+			layout['showlegend']=True
 		else:
 			layout['legend']=kwargs['legend']
 			layout['showlegend']=True
@@ -430,74 +464,149 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 	l=[]
 	theme_data = getTheme(theme)
 
-	kwargs['fontcolor']=kwargs['fontcolor'] if 'fontcolor' in kwargs else theme_data['annotations']['fontcolor']
-	kwargs['arrowcolor']=kwargs['arrowcolor'] if 'arrowcolor' in kwargs else theme_data['annotations']['arrowcolor']
-	kwargs['fontsize']=kwargs['fontsize'] if 'fontsize' in kwargs else 12
+	kwargs['fontcolor']=kwargs.pop('fontcolor',theme_data['annotations']['fontcolor'])
+	kwargs['arrowcolor']=kwargs.pop('arrowcolor',theme_data['annotations']['arrowcolor'])
+	kwargs['fontsize']=kwargs.pop('fontsize',12)
 
-	if type(annotations) not in (list,tuple):
-
-		if 'title' in annotations:
-			l.append(
-					Annotation(	
-							text=annotations['title'],
-							showarrow=False,
-							x=0,
-							y=1,
-							xref='paper',
-							yref='paper',
-							font={'size':24 if not 'fontsize' in kwargs else kwargs['fontsize']}
-						)
-				)
-			del annotations['title']
-		
-		for k,v in list(annotations.items()):
-			if kind in ('candlestick','ohlc','candle'):
-				d=ta._ohlc_dict(df)
-				maxv=df[d['high']].ix[k]
-				yref='y2'
-			else:
-				maxv=df.ix[k].sum() if k in df.index else 0
-				yref='y1'
-			ann=Annotation(
-							x=k,
-							y=maxv,
-							xref='x',
-							yref=yref,
-							text=v,
-							showarrow=True,
-							arrowhead=7,
-							ax=0,
-							ay=-100,
-							textangle=-90
-							)
-			l.append(ann)
-			explicit=False
-
-	else:
-		l=annotations
-		explicit=True
-
-	for i in l:
-		for _k,_v in list(kwargs.items()):
+	def check_ann(annotation):
+		local_list=[]
+		try:
+			_annotation=dict_replace_keyword({},'font',annotation,False)
+			_annotation=dict_replace_keyword(_annotation,'font',kwargs,False)
+			local_list.append(Annotation(_annotation))
 			
-			if 'font' in _k:
-				k=_k.replace('font','')
-				if 'font' not in i:
-					i['font']={k:_v}
+		except:
+			if 'title' in annotation:
+				local_list.append(
+						Annotation(	
+								text=annotation['title'],
+								showarrow=False,
+								x=0,
+								y=1,
+								xref='paper',
+								yref='paper',
+								font={'size':24 if not 'fontsize' in kwargs else kwargs['fontsize']}
+							)
+					)
+				del annotation['title']
+		
+			for k,v in list(annotation.items()):
+				if kind in ('candlestick','ohlc','candle'):
+					d=ta._ohlc_dict(df)
+					maxv=df[d['high']].ix[k]
+					yref='y2'
 				else:
-					if explicit:
-						if k not in i['font']:	
-							i['font'].update({k:_v})
-			else:
-				if explicit:
-					if _k not in i: 			
-						i[_k]=_v
-				else:
-					i[_k]=_v
+					maxv=df.ix[k].sum() if k in df.index else 0
+					yref='y1'
+				ann=Annotation(
+								x=k,
+								y=maxv,
+								xref='x',
+								yref=yref,
+								text=v,
+								showarrow=True,
+								arrowhead=7,
+								ax=0,
+								ay=-100,
+								textangle=-90
+								)
+				local_list.append(ann)
+
+			_l=[]
+			for i in local_list:
+				_l.append(dict_replace_keyword(i,'font',kwargs,True))
+			
+			local_list=_l
+
+		# for i in local_list:
+		# 	for _k,_v in list(kwargs.items()):
+		# 		if 'font' in _k:
+		# 			k=_k.replace('font','')
+		# 			if 'font' not in i:
+		# 				i['font']={k:_v}
+		# 			else:
+		# 				if explicit:
+		# 					if k not in i['font']:	
+		# 						i['font'].update({k:_v})
+		# 		else:
+		# 			if explicit:
+		# 				if _k not in i: 			
+		# 					i[_k]=_v
+		# 			else:
+		# 				i[_k]=_v
+		return local_list
+
+	if not isinstance(annotations,list):
+		annotations=[annotations]	
+	_list_ann=[]
+	for ann in annotations:
+		_list_ann.extend(check_ann(ann))
+	return Annotations(_list_ann)
+
+	# if type(annotations) not in (list,tuple):
+
+	# 	if 'title' in annotations:
+	# 		l.append(
+	# 				Annotation(	
+	# 						text=annotations['title'],
+	# 						showarrow=False,
+	# 						x=0,
+	# 						y=1,
+	# 						xref='paper',
+	# 						yref='paper',
+	# 						font={'size':24 if not 'fontsize' in kwargs else kwargs['fontsize']}
+	# 					)
+	# 			)
+	# 		del annotations['title']
+		
+	# 	for k,v in list(annotations.items()):
+	# 		if kind in ('candlestick','ohlc','candle'):
+	# 			d=ta._ohlc_dict(df)
+	# 			maxv=df[d['high']].ix[k]
+	# 			yref='y2'
+	# 		else:
+	# 			maxv=df.ix[k].sum() if k in df.index else 0
+	# 			yref='y1'
+	# 		ann=Annotation(
+	# 						x=k,
+	# 						y=maxv,
+	# 						xref='x',
+	# 						yref=yref,
+	# 						text=v,
+	# 						showarrow=True,
+	# 						arrowhead=7,
+	# 						ax=0,
+	# 						ay=-100,
+	# 						textangle=-90
+	# 						)
+	# 		l.append(ann)
+	# 		explicit=False
+
+	# else:
+	# 	l=annotations
+	# 	explicit=True
+
+	# for i in l:
+	# 	for _k,_v in list(kwargs.items()):
+			
+	# 		if 'font' in _k:
+	# 			k=_k.replace('font','')
+	# 			if 'font' not in i:
+	# 				i['font']={k:_v}
+	# 			else:
+	# 				if explicit:
+	# 					if k not in i['font']:	
+	# 						i['font'].update({k:_v})
+	# 		else:
+	# 			if explicit:
+	# 				if _k not in i: 			
+	# 					i[_k]=_v
+	# 			else:
+	# 				i[_k]=_v
 
 
 		
-	return Annotations(l)
+	# return Annotations(l)
 
 def strip_figures(figure):
 	"""
@@ -817,13 +926,13 @@ def get_subplots(rows=1,cols=1,
 		if not isinstance(v,XAxis) and not isinstance(v,YAxis):
 			sp['layout'].update({k:v})
 
-	if 'subplot_titles' in kwargs:
-		if 'annotations' in layout:
-			annotation=sp['layout']['annotations'][0]
-		else:
-			annotation=getLayout(theme,annotations=Annotation(text=''))['annotations']
-		for ann in sp['layout']['annotations']:
-			ann['font'].update(color=annotation['font']['color'])
+	# if 'subplot_titles' in kwargs:
+	# 	if 'annotations' in layout:
+	# 		annotation=sp['layout']['annotations'][0]
+	# 	else:
+	# 		annotation=getLayout(theme,annotations=[Annotation(text='')])['annotations']
+	# 	for ann in sp['layout']['annotations']:
+	# 		ann.update(font=dict(color=annotation['font']['color']))
 
 	def update_items(sp_item,layout,axis):
 		for k,v in list(layout[axis].items()):
@@ -1076,6 +1185,75 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 
 ### Shapes
 
+# def _get_shapes(d):
+
+# 	def get_shapes(xline):
+# 		orientation=xline[0]
+# 		xline=d[xline]
+# 		if type(xline) in (list,tuple):
+# 			for x_i in xline:
+# 				if isinstance(x_i,dict):
+# 					x_i['kind']='line'
+# 					return get_shape(**x_i)
+# 				else:
+# 					if orientation=='h':
+# 						return get_shape(kind='line',y=x_i)
+# 					else:
+# 						return get_shape(kind='line',x=x_i)
+# 		elif isinstance(xline,dict):
+# 			return get_shape(**xline)
+# 		else:
+# 			if orientation=='h':
+# 				return get_shape(kind='line',y=xline)
+# 			else:
+# 				return get_shape(kind='line',x=xline)
+
+# 	def get_span(xspan):
+# 		orientation=xspan[0]
+# 		xspan=d[xspan]
+# 		if isinstance(xspan,list):
+# 			for x_i in xspan:
+# 				if isinstance(x_i,dict):
+# 					x_i['kind']='rect'
+# 					return get_shape(**x_i)
+# 				else:
+# 					v0,v1=x_i
+# 					if orientation=='h':
+# 						get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5)
+# 					else:
+# 						get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5)
+# 		elif isinstance(xspan,dict):
+# 			xspan['kind']='rect'
+# 			return get_shape(**xspan)
+# 		elif isinstance(xspan,tuple):
+# 			v0,v1=xspan
+# 			if orientation=='h':
+# 				return get_shape(kind='rect',y0=v0,y1=v1,fill=True,opacity=.5)
+# 			else:
+# 				return get_shape(kind='rect',x0=v0,x1=v1,fill=True,opacity=.5)
+# 		else:
+# 			raise Exception('Invalid value for {0}span: {1}'.format(orientation,xspan))
+
+# 	if 'hline' in d:
+# 		return get_shapes('hline')
+# 	if 'vline' in d:
+# 		return get_shapes('vline')
+# 	if 'hspan' in d:
+# 		get_span('hspan')
+# 	if 'vspan' in d:
+# 		get_span('vspan')
+# 	if 'shapes' in d:
+# 		shapes_=kwargs['shapes']
+# 		if isinstance(shapes_,list):
+# 			for i in shapes_:
+# 				shp=i if 'type' in i else get_shape(**i)
+# 				shapes.append(shp)
+# 		elif isinstance(shapes_,dict):
+# 				shp=shapes_ if 'type' in shapes_ else get_shape(**shapes_)
+# 				shapes.append(shp)
+# 		else:
+# 			raise Exception("Shapes need to be either a dict or list of dicts")
+
 def get_shape(kind='line',x=None,y=None,x0=None,y0=None,x1=None,y1=None,span=0,color='red',dash='solid',width=1,
 				fillcolor=None,fill=False,opacity=1,xref='x',yref='y'):
 	"""
@@ -1185,10 +1363,21 @@ def get_shape(kind='line',x=None,y=None,x0=None,y0=None,x1=None,y1=None,span=0,c
 
 	return shape
 
+### Advanced Shapes
+
+def get_trendline(df,date0,date1,column='close',**kwargs):
+	df=pd.DataFrame(df[column])
+	d={'x0':date0,
+	   'x1':date1,
+	   'y0':df.ix[date0].values[0],
+	   'y1':df.ix[date1].values[0]}
+	d.update(**kwargs)
+	return d
+
 ### Range Selector
 
-def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',font_size=13,x=0,y=0.9,
-						visible=True):
+def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,y=0.9,
+						visible=True,**kwargs):
 	"""
 	Returns a range selector
 	Reference: https://plot.ly/python/reference/#layout-xaxis-rangeselector
@@ -1258,11 +1447,15 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',font
 
 	rangeselector={
 		'bgcolor':to_rgba(bgcolor,1),
-		'font':{'size':font_size},
 		'x':x,
 		'y':y,
 		'visible':visible
 	}
+
+	kwargs['fontsize']=kwargs.get('fontsize',13)
+
+	rangeselector=dict_replace_keyword(rangeselector,'font',kwargs,False)
+
 	buttons=[]
 	if type(steps) not in (list,tuple):
 		steps=[steps]
@@ -1394,6 +1587,23 @@ def _figure_no_data(self):
 	return {'data':self.data.nodata(),
 	'layout':self.layout}
 
+def _update_traces(self,**kwargs):
+	for _ in self.data:
+		_.update(**kwargs)
+
+def _move_axis(self,xaxis=None,yaxis=None):
+	def update_axis(self,axis):
+		_axis=axis[0]
+		from_axis=self.data[0].pop('{0}axis'.format(_axis),'{0}1'.format(_axis))
+		from_axis=_axis+'axis'+from_axis[1:]
+		to_axis=_axis+'axis'+axis[1:]
+		self.layout[to_axis]=self.layout.pop(from_axis)
+		self.update_traces(**{'{0}axis'.format(_axis):axis})
+	
+	if xaxis:
+		update_axis(self,xaxis)
+	if yaxis:
+		update_axis(self,yaxis)
 
 ### Offline
 
@@ -1412,5 +1622,7 @@ def is_offline():
 Figure.axis=axis
 Figure.trace_dict=trace_dict
 Figure.set_axis=_set_axis
+Figure.update_traces=_update_traces
+Figure.move_axis=_move_axis
 Figure.nodata=_figure_no_data
 Data.nodata=_nodata

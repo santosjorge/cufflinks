@@ -1,5 +1,11 @@
 import datetime as dt
 
+
+def getDatefromDate(date,delta,strfmt='%Y%m%d'):
+	if type(date)==str:
+		date=stringToDate(date,strfmt)
+	return (date + dt.timedelta(delta)).strftime(strfmt)
+
 def getDateFromToday(delta,strfmt='%Y%m%d'):
 	""" Returns a string that represents a date n numbers of days from today.
 	Parameters:
@@ -45,5 +51,12 @@ def dateToInt(date,strfmt='%Y%m%d'):
 		dateToInt(dt.date(2015,10,23),'%Y')
 	"""
 	return int(date.strftime(strfmt))
+
+def dateToString(date,strfmt='%Y%m%d'):
+	return dt.datetime.strftime(date,strfmt)
+
+def stringToString(date,from_strfmt='%d%b%y',to_strfmt='%Y%m%d'):
+	return dt.datetime.strftime(stringToDate(date,from_strfmt),to_strfmt)
+
 
 	
