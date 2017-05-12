@@ -951,11 +951,12 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 							'colorscale':get_colorscale(colorscale),
 							'marker':get_marker(Marker(line=Line(width=width)))}
 				elif kind=='scattergeo':
-					if not all([x!=None for x in (lon,lat,z)]):
+					if not all([x!=None for x in (lon,lat)]):
 						raise Exception("Scattergeo maps require a 'lon' and 'lat' column names specified")
 					geo_data={'type':'scattergeo','lat':self[lat],'lon':self[lon],
 							'marker':get_marker(Marker(line=Line(width=width),
-												symbol=symbol,colorscale=get_colorscale(colorscale),color=self[z]))}
+												symbol=symbol,colorscale=get_colorscale(colorscale),
+												color=self[z] if z else None))}
 				if 'colorbar' in kwargs:
 					geo_data['colorbar']=kwargs['colorbar']
 				geo_data.update(kw)
@@ -1332,29 +1333,43 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 	study_kwargs=check_kwargs(iplot_kwargs,__TA_KWARGS,{},clean_origin=True)
 	iplot_study_kwargs=kwargs_from_keyword(iplot_kwargs,{},'study')
 
+	study_kwargs.update({'periods':periods})
+
+	ta_funcs = {
+		'rsi':ta.rsi,
+		'macd':ta.macd,
+		'boll':ta.boll,
+		'sma':ta.sma,
+		'correl':ta.correl
+	}
+
+	inset=study in ('sma','boll')
+	figure=get_study(self,ta_funcs[study],iplot_kwargs,iplot_study_kwargs,include=include,
+				     column=column,str=str,inset=inset)
+
 	if study=='rsi':
-		study_kwargs.update({'periods':periods})
-		figure=get_study(self,ta.rsi,iplot_kwargs,iplot_study_kwargs,include=include,column=column,str=str,inset=False)
+		# study_kwargs.update({'periods':periods})
+		# figure=get_study(self,ta.rsi,iplot_kwargs,iplot_study_kwargs,include=include,column=column,str=str,inset=False)
 		rsi_upper=study_kwargs['rsi_upper'] if 'rsi_upper' in study_kwargs else 70
 		rsi_lower=study_kwargs['rsi_lower'] if 'rsi_lower' in study_kwargs else 30
 		yref='y2' if include else 'y1'
 		shapes=[tools.get_shape(y=i,yref=yref,color=j,dash='dash') for (i,j) in [(rsi_lower,'green'),(rsi_upper,'red')]]
 		figure['layout']['shapes']=shapes
 
-	if study=='macd':
-		figure=get_study(self,ta.macd,iplot_kwargs,iplot_study_kwargs,include=include,column=column,str=str,inset=False)
+	# if study=='macd':
+	# 	figure=get_study(self,ta.macd,iplot_kwargs,iplot_study_kwargs,include=include,column=column,str=str,inset=False)
 	
-	if study=='sma':
-		study_kwargs.update({'periods':periods})
-		figure=get_study(self,ta.sma,iplot_kwargs,iplot_study_kwargs,include=include,column=column,str=str,inset=True)
+	# if study=='sma':
+	# 	study_kwargs.update({'periods':periods})
+	# 	figure=get_study(self,ta.sma,iplot_kwargs,iplot_study_kwargs,include=include,column=column,str=str,inset=True)
 
-	if study=='boll':
-		study_kwargs.update({'periods':periods})
-		figure=get_study(self,ta.boll,iplot_kwargs,iplot_study_kwargs,include=include,column=column,str=str,inset=True)
+	# if study=='boll':
+	# 	study_kwargs.update({'periods':periods})
+	# 	figure=get_study(self,ta.boll,iplot_kwargs,iplot_study_kwargs,include=include,column=column,str=str,inset=True)
 
-	if study=='correl':
-		study_kwargs.update({'periods':periods})
-		figure=get_study(self,ta.correl,iplot_kwargs,iplot_study_kwargs,include=include,column=column,str=str,inset=False)	
+	# if study=='correl':
+	# 	study_kwargs.update({'periods':periods})
+	# 	figure=get_study(self,ta.correl,iplot_kwargs,iplot_study_kwargs,include=include,column=column,str=str,inset=False)	
 
 
 	## Exports

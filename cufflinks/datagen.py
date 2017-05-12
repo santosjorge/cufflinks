@@ -243,6 +243,7 @@ def ohlc(n=100):
 	df=df.cumsum()  
 	df=df.resample('1d').ohlc()
 	df.index=df.index.date
+	df.index=pd.to_datetime(df.index)
 	return df['a']
 
 def box(n_traces=5,n=100,mode=None):

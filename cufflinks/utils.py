@@ -1,6 +1,30 @@
 import pickle
+import six
+import copy
+
+
+def is_string(val):
+	return isinstance(val,six.string_types)
+
+def is_list(val):
+	return type(val) in (list,tuple)
+
+def is_dict(val):
+	return isinstance(val,dict)
+
+def make_list(val):
+	return [val] if not is_list(val) else val
+
+def make_string(val):
+	return str(val) if not is_string(val) else val
+
+def make_dict_from_list(val):
+	return dict([(_,None) for _ in val])
 
 def merge_dict(d1,d2):
+	"""
+		d1 <-- d2
+	"""
 	d=d2.copy()
 	for k,v in list(d1.items()):
 		if k not in d:
@@ -10,6 +34,44 @@ def merge_dict(d1,d2):
 				d[k]=merge_dict(d1[k],d[k])
 	return d
 
+def dict_path(from_d,to_d={},l=[]):
+	"""
+	Returns a dictionary with the path in which each of the keys is found
+
+	Parameters:
+		from_d : dict
+			Dictionary that contains all the keys, values
+		to_d : dict
+			Dictionary to which the results will be appended
+
+	Example: 
+		dict_path({'level1':{'level2':{'level3':'value'}}})
+		Returns
+			{'level1': [],
+		 	 'level2': ['level1'],
+		 	 'level3': ['level1', 'level2']
+		 	}
+	"""
+	for k,v in list(from_d.items()):
+		if isinstance(v,dict):
+			to_d[k]=l
+			_l=copy.deepcopy(l)
+			_l.append(k)
+			to_d=dict_path(from_d[k],to_d,_l)
+		else:
+			to_d[k]=l
+	_to_d=to_d.copy()
+	to_d={}
+	return _to_d
+
+def dict_update(d,k,val,d_ref=None):
+    d_ref=d if not d_ref else d
+    path=dict_path(d_ref)
+    if path:
+        reduce(dict.get, path[k],d).update({k:val})
+    else:
+        d.update(k=val)
+    return d
 
 def pp(el,preString=''):
 	""" 
@@ -155,6 +217,8 @@ def deep_update(d,d_update):
 				deep_update(d[k],v)
 			else:
 				d[k]=v
+		elif isinstance(d,list):
+			d.append({k:v})
 		else:
 			d[k]=v
 	return d

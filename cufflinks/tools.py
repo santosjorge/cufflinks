@@ -10,7 +10,7 @@ from .utils import merge_dict,deep_update, check_kwargs,kwargs_from_keyword,dict
 import numpy as np
 import copy
 
-__LAYOUT_VALID_KWARGS = ['legend','logx','logy','layout_update',
+__LAYOUT_VALID_KWARGS = ['legend','logx','logy','layout_update','title',
 					'xrange','yrange','zrange','rangeselector','rangeslider','showlegend','fontfamily']
 
 __SHAPES_KWARGS = ['vline','hline','shapes','hspan','vspan']
