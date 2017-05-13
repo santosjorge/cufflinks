@@ -934,9 +934,6 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 					if k in kw:
 						_d[k]=deep_update(_d[k],kw[k])
 				
-				if title:
-					_d['name']=title
-				#Not sure if we should always stick it on y2
 				_d['yaxis']='y2'
 				data=[_d]
 

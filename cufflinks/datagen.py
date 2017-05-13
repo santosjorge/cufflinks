@@ -227,7 +227,8 @@ def bars(n=3,n_categories=3,prefix='category',columns=None,mode='abc'):
 def ohlc(n=100):
 	"""
 	Returns a DataFrame with the required format for 
-	a scatter (lines) plot
+	a candlestick or ohlc plot
+	df[['open','high','low','close']]
 
 	Parameters:
 	-----------
@@ -245,6 +246,22 @@ def ohlc(n=100):
 	df.index=df.index.date
 	df.index=pd.to_datetime(df.index)
 	return df['a']
+
+def ohlcv(n=100):
+	"""
+	Returns a DataFrame with the required format for 
+	a candlestick or ohlc plot
+	df[['open','high','low','close','volume']
+
+	Parameters:
+	-----------
+		n : int
+			Number of ohlc points
+		
+	"""	
+	df=ohlc()
+	df['volume']=[np.random.randint(1000,10000) for _ in range(len(df))]
+	return df
 
 def box(n_traces=5,n=100,mode=None):
 	"""

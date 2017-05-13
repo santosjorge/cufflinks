@@ -430,6 +430,7 @@ class QuantFig(object):
 			base=df[self._d[params['base']]]
 			up_color=colors.normalize(display['up_color']) if 'rgba' not in display['up_color'] else display['up_color']
 			down_color=colors.normalize(display['down_color']) if 'rgba' not in display['down_color'] else display['down_color']
+			study_kwargs=utils.kwargs_from_keyword(kwargs,{},'study')
 			
 			for i in range(len(base)):
 				if i != 0:
@@ -439,7 +440,7 @@ class QuantFig(object):
 						bar_colors.append(down_color)
 				else:
 					bar_colors.append(down_color)
-			fig=df[params['column']].figure(kind='bar',theme=params['theme'])
+			fig=df[params['column']].figure(kind='bar',theme=params['theme'],**kwargs)
 			fig.data[0].update(marker=dict(color=bar_colors,line=dict(color=bar_colors)),
 					  opacity=0.8)
 
@@ -493,7 +494,7 @@ class QuantFig(object):
 		asFigure=kwargs.pop('asFigure',False)
 		showstudies=kwargs.pop('showstudies',True)
 		study_kwargs=utils.kwargs_from_keyword(kwargs,{},'study',True)
-		datalegend=data.pop('datalegend',data.pop('showlegend',True))
+		datalegend=kwargs.pop('datalegend',data.pop('datalegend',data.pop('showlegend',True)))
 		_slice=data.pop('slice')
 		_resample=data.pop('resample')
 		
