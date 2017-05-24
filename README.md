@@ -21,7 +21,7 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 ### v0.10.0
 
-* `rangslider` to display a date range slider at the bottom
+* `rangeslider` to display a date range slider at the bottom
 	* `cf.datagen.ohlc().iplot(kind='candle',rangeslider=True)`	
 * `rangeselector` to display buttons to change the date range displayed
 	* `cf.datagen.ohlc(500).iplot(kind='candle', rangeselector={ 'steps':['1y','2 months','5 weeks','ytd','2mtd','reset'], 
