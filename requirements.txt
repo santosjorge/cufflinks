@@ -20,3 +20,4 @@ traitlets==4.0.0
 wheel==0.24.0
 scipy>=0.18.0
 statsmodels>=0.5.0
+TA-Lib==0.4.10

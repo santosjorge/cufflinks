@@ -158,6 +158,35 @@ def sma(df,periods=21,column=None,include=True,str='{name}({column},{period})',d
 	else:
 		return __df
 
+def ema(df,periods=21,column=None,include=True,str='{name}({column},{period})',detail=False):
+	def _ema(df,periods,column,include,str,detail=False):
+		study='EMA'
+		df,_df,column=validate(df,column)
+		_df['EMA']=pd.Series(talib.EMA(df[column].values,periods),index=df.index)
+		return rename(df,_df,study,periods,column,include,str,detail)
+	column=make_list(column)
+	periods=make_list(periods)
+	__df=pd.concat([_ema(df,column=x,periods=y,include=False,str=str) for y in periods for x in column],axis=1)
+	if include:
+		return pd.concat([df,__df],axis=1)
+	else:
+		return __df
+
+def atr(df,periods=21,high='high',low='low',close='close',include=True,str='{name}({period})',**kwargs):
+	def _atr(df,periods,high,low,close,include,str,detail=False):
+		study='ATR'
+		_df=pd.DataFrame()
+		_df['ATR']=pd.Series(talib.ATR(df[high].values,
+									   df[low].values,
+									   df[close].values,
+									   periods),index=df.index)
+		return rename(df,_df,study,periods,'',include,str,detail)
+	periods=make_list(periods)
+	__df=pd.concat([_atr(df,periods=y,high=high,low=low,close=close,include=False,str=str) for y in periods],axis=1)
+	if include:
+		return pd.concat([df,__df],axis=1)
+	else:
+		return __df
 
 def correl(df,periods=21,columns=None,include=True,str=None,detail=False,how='value',**correl_kwargs):
 	"""

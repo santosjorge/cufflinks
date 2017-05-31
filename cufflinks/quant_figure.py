@@ -1,4 +1,17 @@
 
+"""
+
+QuantFigure allows you to create a persistent object. 
+Annotations and Technical Studies can be added on demand. 
+
+It accepts any dataframe with a timeseries index. 
+
+Try it out:
+	qf=cf.QuantFig(cf.datagen.ohlc())
+	qf.iplot()
+
+"""
+
 from __future__ import absolute_import
 
 import json
@@ -38,23 +51,32 @@ class QuantFig(object):
 		self.trendlines=[]
 		self.kwargs={}
 
-		self._d=ta._ohlc_dict(df,columns=columns)
+		# Set column names
+		if not columns:
+			columns={}
+			for _ in ['open','high','low','close','volume']:
+				columns[_]=kwargs.pop(_,'')
+		self._d=ta._ohlc_dict(df,**columns)
 		
+		# Set initial annotations
 		annotations={
 			'values':[],
 			'params':utils.check_kwargs(kwargs,get_annotation_kwargs(),{},clean_origin=True)
 		}
 
 		ann_values=kwargs.pop('annotations',None)
+		
 		if ann_values:
 			if utils.is_list(ann_values):
 				annotations['values'].extend(ann_values)
 			else:
 				annotations['values'].append(ann_values)
 
+		# self.data initial values 
 		self.data.update(datalegend=kwargs.pop('datalegend',True),name=kwargs.pop('name','Trace 1'),kind=kind)
 		self.data.update(slice=kwargs.pop('slice',(None,None)),resample=kwargs.pop('resample',None))
 
+		# self.layout initial values
 		self.layout['shapes']=utils.check_kwargs(kwargs,get_shapes_kwargs(),{},clean_origin=True)
 		for k,v in list(self.layout['shapes'].items()):
 			if not isinstance(v,list):
@@ -66,17 +88,24 @@ class QuantFig(object):
 		self.layout['showlegend']=kwargs.pop('showlegend',True)
 		self.layout.update(utils.check_kwargs(kwargs,get_layout_kwargs(),{},clean_origin=True))
 		
+		# self.theme initial values
 		self.theme['theme']=kwargs.pop('theme',auth.get_config_file()['theme'])
 		self.theme['up_color']=kwargs.pop('up_color','java')
 		self.theme['down_color']=kwargs.pop('down_color','grey')
 		
+		# self.panels initial values
 		self.panels['min_panel_size']=kwargs.pop('min_panel_size',.15)
 		self.panels['spacing']=kwargs.pop('spacing',.08)
 		self.panels['top_margin']=kwargs.pop('top_margin',0.9)
 		self.panels['bottom_margin']=kwargs.pop('top_margin',0)
 		self.update(**kwargs)
 
+
 	def _get_schema(self):
+		"""
+		Returns a dictionary with the schema for a QuantFigure
+
+		"""
 		d={}
 		layout_kwargs=dict((_,'') for _ in get_layout_kwargs())
 		for _ in ('data','layout','theme','panels'):
@@ -152,6 +181,11 @@ class QuantFig(object):
 			return df.resample(rule=rule,**kwargs).apply(how)
 
 	def update(self,**kwargs):
+		"""
+		Updates the values for a QuantFigure
+		The key-values are automatically assigned to the correct 
+		section of the QuantFigure
+		"""
 		if 'columns' in kwargs:
 			self._d=ta._ohlc_dict(self.df,columns=kwargs.pop('columns',None))
 		schema=self._get_schema()
@@ -166,6 +200,11 @@ class QuantFig(object):
 				self.kwargs.update({k:v})
 
 	def delete(self,*args):
+		"""
+		Deletes the values for a QuantFigure
+		The key-values are automatically deleted from the correct 
+		section of the QuantFigure
+		"""
 		if args:
 			args=args[0] if utils.is_list(args[0]) else args
 			path=utils.dict_path(self.__dict__)
@@ -175,16 +214,31 @@ class QuantFig(object):
 
 			for a in args:
 				try:
-					del reduce(dict.get, path[a],self.__dict__)[a]
+					if a in ('shapes'):
+						self.layout[a].clear()
+					elif a=='annotations':
+						self.layout['annotations']={'values':[],'params':{}}
+					else:
+						del reduce(dict.get, path[a],self.__dict__)[a]
 				except:
 					raise Exception('Key: {0} not found'.format(a))
 
 	
 	def figure(self,**kwargs):
+		"""
+		
+		Returns a Plotly figure
+
+		"""
 		kwargs['asFigure']=True
 		return self.iplot(**kwargs)
 	
-	def panel_domains(self,n=2,min_panel_size=.15,spacing=0.08,top_margin=1,bottom_margin=0):
+	def _panel_domains(self,n=2,min_panel_size=.15,spacing=0.08,top_margin=1,bottom_margin=0):
+		"""
+		
+		Returns the panel domains for each axis
+
+		"""
 		d={}
 		for _ in range(n+1,1,-1):
 			lower=round(bottom_margin+(min_panel_size+spacing)*(n+1-_),2)
@@ -193,8 +247,46 @@ class QuantFig(object):
 		d['yaxis2']['domain']=(top[0],top_margin)
 		return d
 	
-	def _get_trendline(self,date0=None,date1=None,on=None,kind='trend',to_strftm='%Y-%m-%d',from_strfmt='%d%b%y',**kwargs):
-		
+	def _get_trendline(self,date0=None,date1=None,on=None,kind='trend',to_strfmt='%Y-%m-%d',from_strfmt='%d%b%y',**kwargs):
+		"""
+		Returns a trendline (line), support or resistance
+
+		Parameters:
+			date0 : string
+				Trendline starting date			
+			date1 :  string
+				Trendline end date
+			on : string
+				Indicate the data series in which the 
+				trendline should be based.
+					'close'
+					'high'
+					'low'
+					'open'			
+			kind : string
+				Defines de kind of trendline
+					'trend'
+					'resistance'
+					'support'			
+			mode : string
+				Defines how the support/resistance will 
+				be drawn
+					'starttoened' : (x0,x1)
+					'fromstart' : (x0,date0)
+					'toend'	: (date0,x1)
+			text : string
+				If passed, then an annotation will be added 
+				to the trendline (at mid point)
+			from_strfmt : string
+				Defines the date formating in which 
+				date0 and date1 are stated. 
+				default: '%d%b%y'				
+			to_strfmt : string
+				Defines the date formatting 
+				to which it should be converted. 
+				This should match the same format as the timeseries index. 
+				default : '%Y-%m-%d'		
+		"""
 		ann_values=copy.deepcopy(get_annotation_kwargs())
 		ann_values.extend(['x','y'])
 		ann_kwargs=utils.check_kwargs(kwargs,ann_values,{},clean_origin=True)
@@ -202,10 +294,10 @@ class QuantFig(object):
 			return d0+(d1-d0)/2
 
 		date0=kwargs.pop('date',date0)    
-		date0=date_tools.stringToString(date0,from_strfmt,to_strftm) if '-' not in date0 else date0
+		date0=date_tools.stringToString(date0,from_strfmt,to_strfmt) if '-' not in date0 else date0
 		
 		if kind=='trend':
-			date1=date_tools.stringToString(date1,from_strfmt,to_strftm) if '-' not in date1 else date1
+			date1=date_tools.stringToString(date1,from_strfmt,to_strfmt) if '-' not in date1 else date1
 			on='close' if not on else on
 			df=pd.DataFrame(self.df[self._d[on]])
 			y0=kwargs.get('y0',df.ix[date0].values[0])
@@ -229,37 +321,162 @@ class QuantFig(object):
 				date0=df.index[0]
 
 		if isinstance(date0,pd.tslib.Timestamp):
-			date0=date_tools.dateToString(date0,to_strftm)
+			date0=date_tools.dateToString(date0,to_strfmt)
 		if isinstance(date1,pd.tslib.Timestamp):
-			date1=date_tools.dateToString(date1,to_strftm)
+			date1=date_tools.dateToString(date1,to_strfmt)
 		d={'x0':date0,'x1':date1,'y0':y0,'y1':y1}
 		d.update(**kwargs)
 		shape=tools.get_shape(**d)        
 
 		
 		if ann_kwargs.get('text',False):
-			ann_kwargs['x']=ann_kwargs.get('x',date_tools.dateToString(position(date_tools.stringToDate(date0,to_strftm),date_tools.stringToDate(date1,to_strftm)),to_strftm))
+			ann_kwargs['x']=ann_kwargs.get('x',date_tools.dateToString(position(date_tools.stringToDate(date0,to_strfmt),date_tools.stringToDate(date1,to_strfmt)),to_strfmt))
 			ann_kwargs['y']=ann_kwargs.get('y',position(shape['y0'],shape['y1']))
 		else:
 			ann_kwargs={}
 		return {'shape':shape,'annotation':ann_kwargs}
 
 	def add_trendline(self,date0,date1,on='close',text=None,**kwargs):
+		"""
+		Adds a trendline to the QuantFigure. 
+		Given 2 dates, the trendline is connected on the data points
+		that correspond to those dates. 
+
+		Parameters:
+			date0 : string
+				Trendline starting date
+			date1 :  string
+				Trendline end date
+			on : string
+				Indicate the data series in which the 
+				trendline should be based.
+					'close'
+					'high'
+					'low'
+					'open'
+			text : string
+				If passed, then an annotation will be added 
+				to the trendline (at mid point)
+
+		kwargs:
+			from_strfmt : string
+				Defines the date formating in which 
+				date0 and date1 are stated. 
+				default: '%d%b%y'					
+			to_strfmt : string
+				Defines the date formatting 
+				to which it should be converted. 
+				This should match the same format as the timeseries index. 
+				default : '%Y-%m-%d'		
+		"""
 		d={'kind':'trend','date0':date0,'date1':date1,'on':on,'text':text}
 		d.update(**kwargs)
 		self.trendlines.append(d)
 
 	def add_support(self,date,on='low',mode='starttoend',text=None,**kwargs):
+		"""
+		Adds a support line to the QuantFigure
+
+		Parameters:
+			date0 : string
+				The support line will be drawn at the 'y' level 
+				value that corresponds to this date. 
+			on : string
+				Indicate the data series in which the 
+				support line should be based.
+					'close'
+					'high'
+					'low'
+					'open'
+			mode : string
+				Defines how the support/resistance will 
+				be drawn
+					'starttoened' : (x0,x1)
+					'fromstart' : (x0,date)
+					'toend' : (date,x1)
+			text : string
+				If passed, then an annotation will be added 
+				to the support line (at mid point)
+		
+		kwargs:	
+			from_strfmt : string
+				Defines the date formating in which 
+				date0 and date1 are stated. 
+				default: '%d%b%y'					
+			to_strfmt : string
+				Defines the date formatting 
+				to which it should be converted. 
+				This should match the same format as the timeseries index. 
+				default : '%Y-%m-%d'		
+		"""
 		d={'kind':'support','date':date,'mode':mode,'on':on,'text':text}
 		d.update(**kwargs)
 		self.trendlines.append(d)
 
 	def add_resistance(self,date,on='high',mode='starttoend',text=None,**kwargs):
+		"""
+		Adds a resistance line to the QuantFigure
+
+		Parameters:
+			date0 : string
+				The resistance line will be drawn at the 'y' level 
+				value that corresponds to this date. 
+			on : string
+				Indicate the data series in which the 
+				resistance should be based.
+					'close'
+					'high'
+					'low'
+					'open'
+			mode : string
+				Defines how the support/resistance will 
+				be drawn
+					'starttoened' : (x0,x1)
+					'fromstart' : (x0,date)
+					'toend' : (date,x1)
+			text : string
+				If passed, then an annotation will be added 
+				to the resistance (at mid point)
+		
+		kwargs:	
+			from_strfmt : string
+				Defines the date formating in which 
+				date0 and date1 are stated. 
+				default: '%d%b%y'					
+			to_strfmt : string
+				Defines the date formatting 
+				to which it should be converted. 
+				This should match the same format as the timeseries index. 
+				default : '%Y-%m-%d'		
+		"""
 		d={'kind':'resistance','date':date,'mode':mode,'on':on,'text':text}
 		d.update(**kwargs)
 		self.trendlines.append(d)
 
 	def add_annotations(self,annotations,**kwargs):
+		"""
+		Add an annotation to the QuantFigure. 
+
+		Parameters:
+			annotations : dict or list(dict,)
+				Annotations can be on the form form of 
+					{'date' : 'text'}
+					and the text will automatically be placed at the 
+					right level on the chart 
+				or
+					A Plotly fully defined annotation
+
+		kwargs : 
+			fontcolor : str
+				Text color for annotations
+			fontsize : int
+				Text size for annotations
+			textangle : int
+				Textt angle 
+			See https://plot.ly/python/reference/#layout-annotations 
+			for a complete list of valid parameters.
+
+		"""
 		ann_kwargs=utils.check_kwargs(kwargs,get_annotation_kwargs(),{},clean_origin=True)
 		if type(annotations)==list:
 			self.layout['annotations']['values'].extend(annotations)
@@ -269,23 +486,66 @@ class QuantFig(object):
 			self.layout['annotations']['params'].update(**ann_kwargs)
 
 	def add_shapes(self,**kwargs):
+		"""
+		Add a shape to the QuantFigure. 
+
+		kwargs : 
+			hline : int, list or dict
+				Draws a horizontal line at the
+				indicated y position(s)
+				Extra parameters can be passed in
+				the form of a dictionary (see shapes)
+			vline : int, list or dict
+				Draws a vertical line at the
+				indicated x position(s)
+				Extra parameters can be passed in
+				the form of a dictionary (see shapes)
+			hspan : (y0,y1)
+				Draws a horizontal rectangle at the
+				indicated (y0,y1) positions.
+				Extra parameters can be passed in
+				the form of a dictionary (see shapes)
+			vspan : (x0,x1)
+				Draws a vertical rectangle at the
+				indicated (x0,x1) positions.
+				Extra parameters can be passed in
+				the form of a dictionary (see shapes)
+			shapes : dict or list(dict)
+				List of dictionaries with the
+				specifications of a given shape.
+				See help(cufflinks.tools.get_shape)
+				for more information
+			
+		"""
 		kwargs=utils.check_kwargs(kwargs,get_shapes_kwargs(),{},clean_origin=True)
 		for k,v in list(kwargs.items()):
 			if k in self.layout['shapes']:
-				self.layout['shapes'][k].append(v)
-			else:
-				self.layout['shapes'][k]=[v]
-
-	def add_study(self,name,params={}):
-		if 'kind' in params:
-				if params['kind'] in self._valid_studies:
-					self.studies[name]=params
+				if utils.is_list(v):
+					self.layout['shapes'][k].extend(v)	
 				else:
-					raise Exception('Invalid study: {0}'.format(params['kind']))
-		else:
-			raise Exception('Study kind required')
+					self.layout['shapes'][k].append(v)
+			else:
+				self.layout['shapes'][k]=utils.make_list(v)
+
+	# def add_study(self,name,params={}):
+	# 	if 'kind' in params:
+	# 			if params['kind'] in self._valid_studies:
+	# 				self.studies[name]=params
+	# 			else:
+	# 				raise Exception('Invalid study: {0}'.format(params['kind']))
+	# 	else:
+	# 		raise Exception('Study kind required')
 
 	def _add_study(self,study):
+		"""
+		Adds a study to QuantFigure.studies
+
+		Parameters:
+			study : dict
+				{'kind':study_kind,
+				 'params':study_parameters,
+				 'display':display_parameters}
+		"""
 		str='{study} {name}({period})' if study['params'].get('str',None)==None else study['params']['str']
 		study['params']['str']=str
 
@@ -293,7 +553,7 @@ class QuantFig(object):
 			study['name']=ta.get_column_name(study['kind'].upper(),study=study['kind'],
 												str=str,
 												period=study['params'].get('periods',None),
-												column=study['params']['column'])
+												column=study['params'].get('column',None))
 				
 
 		restore=study['display'].pop('restore',False)
@@ -302,7 +562,10 @@ class QuantFig(object):
 			_=self.studies.pop(study['kind'],None)
 
 		if study['kind'] in self.studies:
-			id='{0} ({1})'.format(study['kind'],study['params']['periods'])
+			try:
+				id='{0} ({1})'.format(study['kind'],study['params']['periods'])
+			except:
+				id='{0} ({1})'.format(study['kind'],'(2)')
 		else:
 			id=study['kind']
 
@@ -314,6 +577,38 @@ class QuantFig(object):
 		self.studies[id]=study
 	   
 	def add_volume(self,colorchange=True,column=None,name='',str='{name}',**kwargs):
+		"""
+		Add 'volume' study to QuantFigure.studies
+
+		Parameters:
+			colorchange : bool
+				If true then each volume bar will have a fill color 
+				depending on if 'base' had a positive or negative
+				change compared to the previous value
+			column :string
+				Defines the data column name that contains the volume data. 
+				Default: 'volume'
+			name : string
+				Name given to the study
+			str : string
+				Label factory for studies
+				The following wildcards can be used:
+					{name} : Name of the column
+					{study} : Name of the study
+					{period} : Period used
+				Examples:
+					'study: {study} - period: {period}'
+			
+		kwargs : 
+			base : string
+				Defines the column which will define the
+				positive/negative changes (if colorchange=True).
+				Default = 'close'
+			up_color : string
+				Color for positive bars
+			down_color : string
+				Color for negative bars
+		"""
 		if not column:
 			column=self._d['volume']
 		up_color=kwargs.pop('up_color',self.theme['up_color'])
@@ -326,7 +621,38 @@ class QuantFig(object):
 		self._add_study(study)
 
 	def add_macd(self,fast_period=12,slow_period=26,signal_period=9,column=None,
-				 str=None,name='',**kwargs):
+				 name='',str=None,**kwargs):
+		"""
+		Add Moving Average Convergence Divergence (MACD) study to QuantFigure.studies
+
+		Parameters:
+			fast_period : int
+				MACD Fast Period
+			slow_period : int
+				MACD Slow Period
+			signal_period : int
+				MACD Signal Period
+			column :string
+				Defines the data column name that contains the 
+				data over which the study will be applied. 
+				Default: 'close'
+			name : string
+				Name given to the study
+			str : string
+				Label factory for studies
+				The following wildcards can be used:
+					{name} : Name of the column
+					{study} : Name of the study
+					{period} : Period used
+				Examples:
+					'study: {study} - period: {period}'
+		kwargs: 
+			legendgroup : bool
+				If true, all legend items are grouped into a 
+				single one
+			All formatting values available on iplot()
+		"""
+
 		if not column:
 			column=self._d['close']
 		study={'kind':'macd',
@@ -339,8 +665,34 @@ class QuantFig(object):
 		self._add_study(study)
 
 	
-	def add_sma(self,periods=20,column=None,str=None,
-						   name='',**kwargs):
+	def add_sma(self,periods=20,column=None,name='',
+					str=None,**kwargs):
+		"""
+		Add Simple Moving Average (SMA) study to QuantFigure.studies
+
+		Parameters:
+			periods : int or list(int)
+				Number of periods
+			column :string
+				Defines the data column name that contains the 
+				data over which the study will be applied. 
+				Default: 'close'
+			name : string
+				Name given to the study
+			str : string
+				Label factory for studies
+				The following wildcards can be used:
+					{name} : Name of the column
+					{study} : Name of the study
+					{period} : Period used
+				Examples:
+					'study: {study} - period: {period}'
+		kwargs: 
+			legendgroup : bool
+				If true, all legend items are grouped into a 
+				single one
+			All formatting values available on iplot()
+		"""
 		if not column:
 			column=self._d['close']
 		study={'kind':'sma',
@@ -350,8 +702,43 @@ class QuantFig(object):
 			  'display':utils.merge_dict({'legendgroup':False},kwargs)}
 		self._add_study(study)
 		
-	def add_rsi(self,periods=20,rsi_upper=70,rsi_lower=30,showbands=True,column=None,str=None,
-						   name='',**kwargs):
+	def add_rsi(self,periods=20,rsi_upper=70,rsi_lower=30,showbands=True,column=None,
+						   name='',str=None,**kwargs):
+		"""
+		Add Relative Strength Indicator (RSI) study to QuantFigure.studies
+
+		Parameters:
+			periods : int or list(int)
+				Number of periods
+			rsi_upper : int 
+				bounds [0,100]
+				Upper (overbought) level
+			rsi_lower : int
+				bounds [0,100]
+				Lower (oversold) level
+			showbands : boolean
+				If True, then the rsi_upper and
+				rsi_lower levels are displayed
+			column :string
+				Defines the data column name that contains the 
+				data over which the study will be applied. 
+				Default: 'close'
+			name : string
+				Name given to the study
+			str : string
+				Label factory for studies
+				The following wildcards can be used:
+					{name} : Name of the column
+					{study} : Name of the study
+					{period} : Period used
+				Examples:
+					'study: {study} - period: {period}'
+		kwargs: 
+			legendgroup : bool
+				If true, all legend items are grouped into a 
+				single one
+			All formatting values available on iplot()
+		"""
 		if not column:
 			column=self._d['close']
 		str=str if str else '{name}({column},{period})'
@@ -364,8 +751,44 @@ class QuantFig(object):
 						 'rsi_lower':rsi_lower,'showbands':showbands},kwargs)}
 		self._add_study(study)
 	
-	def add_bollinger_bands(self,periods=20,boll_std=2,column=None,str='{name}({column},{period})',fill=True,
-						   name='',**kwargs):
+	def add_bollinger_bands(self,periods=20,boll_std=2,fill=True,column=None,name='',
+						   str='{name}({column},{period})',**kwargs):
+		"""
+		Add Bollinger Bands (BOLL) study to QuantFigure.studies
+
+		Parameters:
+			periods : int or list(int)
+				Number of periods
+			boll_std : int
+				Number of standard deviations for
+				the bollinger upper and lower bands
+			fill : boolean
+				If True, then the innner area of the 
+				bands will filled
+			column :string
+				Defines the data column name that contains the 
+				data over which the study will be applied. 
+				Default: 'close'
+			name : string
+				Name given to the study
+			str : string
+				Label factory for studies
+				The following wildcards can be used:
+					{name} : Name of the column
+					{study} : Name of the study
+					{period} : Period used
+				Examples:
+					'study: {study} - period: {period}'
+		kwargs: 
+			legendgroup : bool
+				If true, all legend items are grouped into a 
+				single one
+			fillcolor : string
+				Color to be used for the fill color.
+				Example:
+					'rgba(62, 111, 176, .4)'
+			All formatting values available on iplot()
+		"""
 		if not column:
 			column=self._d['close']
 		study={'kind':'boll',
@@ -375,9 +798,84 @@ class QuantFig(object):
 			  'display':utils.merge_dict({'legendgroup':True,'fill':fill},kwargs)}
 		self._add_study(study)
 
-	def add_ema(self):
-		pass
+	def add_ema(self,periods=20,column=None,str=None,
+						   name='',**kwargs):
+		"""
+		Add Exponential Moving Average (EMA) study to QuantFigure.studies
 
+		Parameters:
+			periods : int or list(int)
+				Number of periods
+			column :string
+				Defines the data column name that contains the 
+				data over which the study will be applied. 
+				Default: 'close'
+			name : string
+				Name given to the study
+			str : string
+				Label factory for studies
+				The following wildcards can be used:
+					{name} : Name of the column
+					{study} : Name of the study
+					{period} : Period used
+				Examples:
+					'study: {study} - period: {period}'
+		kwargs: 
+			legendgroup : bool
+				If true, all legend items are grouped into a 
+				single one
+			All formatting values available on iplot()
+		"""
+		if not column:
+			column=self._d['close']
+		study={'kind':'ema',
+			   'name':name,
+			   'params':{'periods':periods,'column':column,
+						 'str':str},
+			  'display':utils.merge_dict({'legendgroup':False},kwargs)}
+		self._add_study(study)
+
+	def add_atr(self,periods=14,high='high',low='low',close='close',str=None,
+					name='',**kwargs):
+		"""
+		Add Average True Range (ATR) study to QuantFigure.studies
+
+		Parameters:
+			periods : int or list(int)
+				Number of periods
+			high : string
+				Column that defines the high value
+			low : string
+				Column that defines the low value
+			close : string
+				Column that defines the close value
+			column :string
+				Defines the data column name that contains the 
+				data over which the study will be applied. 
+				Default: 'close'
+			name : string
+				Name given to the study
+			str : string
+				Label factory for studies
+				The following wildcards can be used:
+					{name} : Name of the column
+					{study} : Name of the study
+					{period} : Period used
+				Examples:
+					'study: {study} - period: {period}'
+		kwargs: 
+			legendgroup : bool
+				If true, all legend items are grouped into a 
+				single one
+			All formatting values available on iplot()
+		"""
+		study={'kind':'atr',
+			   'name':name,
+			   'params':{'periods':periods,'high':high,'low':low,'close':close,
+						 'str':str},
+			  'display':utils.merge_dict({'legendgroup':False},kwargs)}
+		self._add_study(study)		
+			
 	def add_cmci(self):
 		pass
 
@@ -392,7 +890,7 @@ class QuantFig(object):
 
 	def add_stochastic(self):
 		pass
-			
+
 	def _get_study_figure(self,study_id,**kwargs):
 		study=copy.deepcopy(self.studies[study_id])
 		kind=study['kind']
@@ -431,7 +929,7 @@ class QuantFig(object):
 			up_color=colors.normalize(display['up_color']) if 'rgba' not in display['up_color'] else display['up_color']
 			down_color=colors.normalize(display['down_color']) if 'rgba' not in display['down_color'] else display['down_color']
 			study_kwargs=utils.kwargs_from_keyword(kwargs,{},'study')
-			
+
 			for i in range(len(base)):
 				if i != 0:
 					if base[i] > base[i-1]:
@@ -444,7 +942,7 @@ class QuantFig(object):
 			fig.data[0].update(marker=dict(color=bar_colors,line=dict(color=bar_colors)),
 					  opacity=0.8)
 
-		if kind=='sma':
+		if kind in ('sma','ema','atr'):
 			local_kwargs,params=get_params([],params,display)
 			fig=df.ta_figure(study=kind,**params)
 
@@ -553,9 +1051,9 @@ class QuantFig(object):
 			kwargs.update(slice=_slice,resample=_resample)
 			for k,v in list(self.studies.items()):
 				study_fig=self._get_study_figure(k,**kwargs)
-				if v['kind'] in ('boll','sma'):
+				if v['kind'] in ('boll','sma','ema'):
 					study_fig.move_axis(yaxis='y2')                
-				if v['kind'] in ('rsi','volume','macd'):
+				if v['kind'] in ('rsi','volume','macd','atr'):
 					max_panel+=1
 					panel_data['n']+=1
 					study_fig.move_axis(yaxis='y{0}'.format(max_panel))
@@ -563,7 +1061,7 @@ class QuantFig(object):
 			figures.append(fig)
 			fig=tools.merge_figures(figures)
 			fig['layout']['xaxis1']['anchor']='y2'
-		domains=self.panel_domains(**panel_data)
+		domains=self._panel_domains(**panel_data)
 		fig.layout.update(**domains)
 		if not d.get('rangeslider',False):
 			try:

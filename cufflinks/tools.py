@@ -518,22 +518,6 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 			
 			local_list=_l
 
-		# for i in local_list:
-		# 	for _k,_v in list(kwargs.items()):
-		# 		if 'font' in _k:
-		# 			k=_k.replace('font','')
-		# 			if 'font' not in i:
-		# 				i['font']={k:_v}
-		# 			else:
-		# 				if explicit:
-		# 					if k not in i['font']:	
-		# 						i['font'].update({k:_v})
-		# 		else:
-		# 			if explicit:
-		# 				if _k not in i: 			
-		# 					i[_k]=_v
-		# 			else:
-		# 				i[_k]=_v
 		return local_list
 
 	if not isinstance(annotations,list):
@@ -543,70 +527,6 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 		_list_ann.extend(check_ann(ann))
 	return Annotations(_list_ann)
 
-	# if type(annotations) not in (list,tuple):
-
-	# 	if 'title' in annotations:
-	# 		l.append(
-	# 				Annotation(	
-	# 						text=annotations['title'],
-	# 						showarrow=False,
-	# 						x=0,
-	# 						y=1,
-	# 						xref='paper',
-	# 						yref='paper',
-	# 						font={'size':24 if not 'fontsize' in kwargs else kwargs['fontsize']}
-	# 					)
-	# 			)
-	# 		del annotations['title']
-		
-	# 	for k,v in list(annotations.items()):
-	# 		if kind in ('candlestick','ohlc','candle'):
-	# 			d=ta._ohlc_dict(df)
-	# 			maxv=df[d['high']].ix[k]
-	# 			yref='y2'
-	# 		else:
-	# 			maxv=df.ix[k].sum() if k in df.index else 0
-	# 			yref='y1'
-	# 		ann=Annotation(
-	# 						x=k,
-	# 						y=maxv,
-	# 						xref='x',
-	# 						yref=yref,
-	# 						text=v,
-	# 						showarrow=True,
-	# 						arrowhead=7,
-	# 						ax=0,
-	# 						ay=-100,
-	# 						textangle=-90
-	# 						)
-	# 		l.append(ann)
-	# 		explicit=False
-
-	# else:
-	# 	l=annotations
-	# 	explicit=True
-
-	# for i in l:
-	# 	for _k,_v in list(kwargs.items()):
-			
-	# 		if 'font' in _k:
-	# 			k=_k.replace('font','')
-	# 			if 'font' not in i:
-	# 				i['font']={k:_v}
-	# 			else:
-	# 				if explicit:
-	# 					if k not in i['font']:	
-	# 						i['font'].update({k:_v})
-	# 		else:
-	# 			if explicit:
-	# 				if _k not in i: 			
-	# 					i[_k]=_v
-	# 			else:
-	# 				i[_k]=_v
-
-
-		
-	# return Annotations(l)
 
 def strip_figures(figure):
 	"""
@@ -652,6 +572,10 @@ def figures(df,specs,asList=False):
 			of each figure.
 			All properties avaialbe can be seen with
 			help(cufflinks.pd.DataFrame.iplot)
+		asList : boolean
+			If True, then a list of figures is returned.
+			Otherwise a single (merged) figure is returned.
+			Default : False
 	"""
 	figs=[]
 	for spec in specs:
@@ -662,6 +586,14 @@ def figures(df,specs,asList=False):
 		return merge_figures(figs)
 
 def merge_figures(figures):
+	"""
+	Generates a single Figure from a list of figures
+
+	Parameters:
+	-----------
+		figures : list(Figures)
+			List of figures to be merged. 
+	"""
 	figure=Figure()
 	data=Data()
 	for fig in figures:

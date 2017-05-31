@@ -19,6 +19,41 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 ### Release Notes
 
+### v0.11.0
+
+** Note: ** This version requires TALib to be installed separately. 
+
+	brew install talib
+
+* `QuantFigure` is a new class that will generate a graph object with persistence. 
+Parameters can be added/modified at any given point. 
+
+This can be as easy as:
+
+```python
+df=cf.datagen.ohlc()
+qf=cf.QuantFig(df,title='First Quant Figure',legend='top',name='GS')
+qf.add_bollinger_bands()
+qf.iplot()
+
+```
+
+![QuantFigure](img/qf1.png)
+
+* **Technical Analysis Studies** can be added on demand. 
+
+```python
+qf.add_sma([10,20],width=2,color=['green','lightgreen'],legendgroup=True)
+qf.add_rsi(periods=20,color='java')
+qf.add_bollinger_bands(periods=20,boll_std=2,colors=['magenta','grey'],fill=True)
+qf.add_volume()
+qf.add_macd()
+qf.iplot()
+```
+
+![Technical Analysis](img/qf2.png)
+
+
 ### v0.10.0
 
 * `rangslider` to display a date range slider at the bottom
