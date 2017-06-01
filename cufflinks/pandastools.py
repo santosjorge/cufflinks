@@ -1,6 +1,7 @@
 import pandas as pd
 import re
-import statsmodels.api as sm
+
+
 
 def _screen(self,include=True,**kwargs):
 	"""
@@ -52,6 +53,16 @@ def bestfit(self):
 		called 'formula' which includes the string representation 
 		of the bestfit line. 
 	"""
+	# statsmodel cannot be included on requirements.txt
+	# see https://github.com/scikit-learn/scikit-learn/issues/4164
+	# which shares the same issue as statsmodel
+	try:
+		import statsmodels.api as sm
+	except:
+		raise Exception("statsmodels is required " \
+						"please run " \
+						"pip install statsmodels" )
+		
 	x=pd.Series(list(range(1,len(self)+1)),index=self.index)
 	x=sm.add_constant(x)
 	model=sm.OLS(self,x)
