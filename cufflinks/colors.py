@@ -2,16 +2,18 @@
 # Special thanks to @krey for the python3 support
 ##
 
-
+import operator
 from collections import deque
-from .auth import get_config_file
+from six import string_types
+
 import numpy as np
 import colorsys
 import colorlover as cl
-from .utils import inverseDict
-import operator
-from . import themes
 from IPython.display import HTML,display
+
+from .auth import get_config_file
+from .utils import inverseDict=
+from . import themes
 
 class CufflinksError(Exception):
 		pass
@@ -20,15 +22,13 @@ class CufflinksError(Exception):
 def to_rgba(color,alpha):
 	"""
 	Converts from hex|rgb to rgba
-
 	Parameters:
 	-----------
 		color : string
 			Color representation on hex or rgb
 		alpha : float
-			Value from 0 to 1.0 that represents the 
+			Value from 0 to 1.0 that represents the
 			alpha value.
-
 	Example:
 		to_rgba('#E1E5ED',0.6)
 		to_rgba('#f03',0.7)
@@ -51,12 +51,10 @@ def to_rgba(color,alpha):
 def hex_to_rgb(color):
 	"""
 	Converts from hex to rgb
-
 	Parameters:
 	-----------
 		color : string
 			Color representation on hex or rgb
-
 	Example:
 		hex_to_rgb('#E1E5ED')
 		hex_to_rgb('#f03')
@@ -68,18 +66,16 @@ def hex_to_rgb(color):
 
 def normalize(color):
 	"""
-	Returns an hex color 
-
+	Returns an hex color
 	Parameters:
 	-----------
 		color : string
 			Color representation in rgba|rgb|hex
-
 	Example:
 		normalize('#f03')
 	"""
 	if type(color)==tuple:
-		color=to_rgba(*color)	
+		color=to_rgba(*color)
 	if 'rgba' in color:
 		return rgb_to_hex(rgba_to_rgb(color))
 	elif 'rgb' in color:
@@ -100,12 +96,10 @@ def normalize(color):
 def rgb_to_hex(color):
 	"""
 	Converts from rgb to hex
-
 	Parameters:
 	-----------
 		color : string
 			Color representation on hex or rgb
-
 	Example:
 		rgb_to_hex('rgb(23,25,24)')
 	"""
@@ -116,17 +110,15 @@ def rgb_to_hex(color):
 def rgba_to_rgb(color,bg='rgb(255,255,255)'):
 	"""
 	Converts from rgba to rgb
-
 	Parameters:
 	-----------
 		color : string
 			Color representation in rgba
 		bg : string
 			Color representation in rgb
-
 	Example:
 		rgba_to_rgb('rgb(23,25,24,.4)''
-	"""	
+	"""
 	def c_tup(c):
 		return eval(c[c.find('('):])
 	color=c_tup(color)
@@ -139,12 +131,10 @@ def rgba_to_rgb(color,bg='rgb(255,255,255)'):
 def hex_to_hsv(color):
 	"""
 	Converts from hex to hsv
-
 	Parameters:
 	-----------
 		color : string
 			Color representation on color
-
 	Example:
 		hex_to_hsv('#ff9933')
 	"""
@@ -158,17 +148,15 @@ def hex_to_hsv(color):
 def color_range(color,N=20):
 	"""
 	Generates a scale of colours from a base colour
-
 	Parameters:
 	-----------
 		color : string
 			Color representation in hex
 		N   : int
 			number of colours to generate
-
 	Example:
 		color_range('#ff9933',20)
-	"""	
+	"""
 	color=normalize(color)
 	org=color
 	color=hex_to_hsv(color)
@@ -187,8 +175,7 @@ def color_range(color,N=20):
 
 def color_table(color,N=1,sort=False,sort_values=False,inline=False,as_html=False):
 	"""
-	Generates a colour table 
-
+	Generates a colour table
 	Parameters:
 	-----------
 		color : string | list | dict
@@ -197,25 +184,24 @@ def color_table(color,N=1,sort=False,sort_values=False,inline=False,as_html=Fals
 			are displayed in a table
 		N   : int
 			number of colours to generate
-			When color is not a list then it generaes 
+			When color is not a list then it generaes
 			a range of N colors
-		sort : bool 
+		sort : bool
 			if True then items are sorted
-		sort_values : bool 
+		sort_values : bool
 			if True then items are sorted by color values.
 			Only applies if color is a dictionary
 		inline : bool
 			if True it returns single line color blocks
 		as_html : bool
 			if True it returns the HTML code
-
 	Example:
 		color_table('#ff9933')
 		color_table(cufflinks.cnames)
 		color_table(['pink','salmon','yellow'])
 	Note:
 		This function only works in iPython Notebook
-	"""		
+	"""
 	if isinstance(color,list):
 		c_=''
 		rgb_tup=[normalize(c) for c in color]
@@ -245,9 +231,9 @@ def color_table(color,N=1,sort=False,sort_values=False,inline=False,as_html=Fals
 		if c==c_:
 			border=" border: 1px solid #ffffff;"
 		else:
-			border='' 
+			border=''
 		return color,shadow,border
-	
+
 	s='<ul style="list-style-type: none;">' if not inline else ''
 	for c in rgb_tup:
 		if isinstance(c,tuple):
@@ -256,10 +242,10 @@ def color_table(color,N=1,sort=False,sort_values=False,inline=False,as_html=Fals
 		else:
 			k=''
 		if inline:
-			s+='<div style="background-color:{0};height:20px;width:20px;display:inline-block;"></div>'.format(c)    
+			s+='<div style="background-color:{0};height:20px;width:20px;display:inline-block;"></div>'.format(c)
 		else:
 			color,shadow,border=_color(c)
-			s+="""<li style="text-align:center;"""+border+"""line-height:30px;background-color:"""+ c + """;"> 
+			s+="""<li style="text-align:center;"""+border+"""line-height:30px;background-color:"""+ c + """;">
 			<span style=" text-shadow:"""+shadow+"""; color:"""+color+""";">"""+k+c.upper()+"""</span>
 			</li>"""
 	s+='</ul>' if not inline else ''
@@ -274,12 +260,10 @@ def colorgen(colors=None,n=None,scale=None,theme=None):
 	"""
 	Returns a generator with a list of colors
 	and gradients of those colors
-
 	Parameters:
 	-----------
 		colors : list(colors)
 			List of colors to use
-
 	Example:
 		colorgen()
 		colorgen(['blue','red','pink'])
@@ -575,16 +559,14 @@ def interp(colors,N):
 def scales(scale=None):
 	"""
 	Displays a color scale (HTML)
-
 	Parameters:
 	-----------
 		scale : str
 			Color scale name
 			If no scale name is provided then all scales are returned
 				(max number for each scale)
-			If scale='all' then all scale combinations available 
+			If scale='all' then all scale combinations available
 				will be returned
-
 	Example:
 		scales('accent')
 		scales('all')
@@ -593,8 +575,8 @@ def scales(scale=None):
 	if scale:
 		if scale=='all':
 			display(HTML(cl.to_html(_scales)))
-		else:	
-			display(HTML(cl.to_html(get_scales(scale))))	
+		else:
+			display(HTML(cl.to_html(get_scales(scale))))
 	else:
 		s=''
 		keys=list(_scales_names.keys())
@@ -639,26 +621,24 @@ def reset_scales():
 				k__=k__.lower()
 				if k__ not in _scales_names:
 					_scales_names[k__]={}
-				_scales_names[k__][k]=v__            
+				_scales_names[k__][k]=v__
 
 
 def get_scales(scale=None,n=None):
 	"""
-	Returns a color scale 
-
+	Returns a color scale
 	Parameters:
 	-----------
 		scale : str
 			Color scale name
-			If the color name is preceded by a minus (-) 
+			If the color name is preceded by a minus (-)
 			then the scale is inversed
 		n : int
-			Number of colors 
-			If n < number of colors available for a given scale then 
-				the minimum number will be returned 
+			Number of colors
+			If n < number of colors available for a given scale then
+				the minimum number will be returned
 			If n > number of colors available for a given scale then
-				the maximum number will be returned 
-
+				the maximum number will be returned
 	Example:
 		get_scales('accent',8)
 		get_scales('pastel1')
@@ -692,31 +672,26 @@ def get_scales(scale=None,n=None):
 def get_colorscale(scale):
 	"""
 	Returns a color scale to be used for a plotly figure
-
 	Parameters:
 	-----------
 		scale : str or list
 			Color scale name
-			If the color name is preceded by a minus (-) 
+			If the color name is preceded by a minus (-)
 			then the scale is inversed.
 			Also accepts a list of colors (rgb,rgba,hex)
-
 	Example:
 		get_colorscale('accent')
 		get_colorscale(['rgb(127,201,127)','rgb(190,174,212)','rgb(253,192,134)'])
-	"""	
+	"""
 
-	if type(scale) in (str,unicode):
+	if type(scale) in string_types:
 		scale=get_scales(scale)
 	else:
 		if type(scale)!=list:
 			raise Exception("scale needs to be either a scale name or list of colors")
-		
+
 	cs=[[1.0*c/(len(scale)-1),scale[c]] for c in range(len(scale))]
 	cs.sort()
-	return cs  
+	return cs
 
 reset_scales()
-
-
-
