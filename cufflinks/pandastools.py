@@ -59,10 +59,10 @@ def bestfit(self):
 	try:
 		import statsmodels.api as sm
 	except:
-		raise Exception("statsmodels is required " \
+		raise Exception("statsmodels is required: " \
 						"please run " \
 						"pip install statsmodels" )
-		
+
 	x=pd.Series(list(range(1,len(self)+1)),index=self.index)
 	x=sm.add_constant(x)
 	model=sm.OLS(self,x)
