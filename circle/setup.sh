@@ -36,4 +36,7 @@ for version in ${PLOTLY_PYTHON_VERSIONS[@]}; do
     # install some test tools
     pip install nose coverage ||
         error_exit "${LINENO}: can't install test tools for Python ${version}"
+
+    brew install talib
+
 done
