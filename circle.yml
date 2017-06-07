@@ -23,7 +23,7 @@ dependencies:
 
   cache_directories:
     - "~/.pyenv/versions"  # attempt to just cache installed pyenv things
-    - "ta-lib-0.4.0-src"
+    - "ta-lib"
 
 test:
   override:
