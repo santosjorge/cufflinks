@@ -10,8 +10,7 @@ dependencies:
     # run all the pre-written installers (this will take a *while*)
     - wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
     - tar xvzf ta-lib-0.4.0-src.tar.gz
-    - ls
-    - cd ta-lib-0.4.0-src && make
+    - cd ta-lib && make
     - sudo make install
     - cd ~
     - bash circle/setup.sh
