@@ -10,9 +10,7 @@ dependencies:
     # run all the pre-written installers (this will take a *while*)
     - wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
     - tar xvzf ta-lib-0.4.0-src.tar.gz
-    - cd ta-lib
-    - pwd
-    - ./configure --prefix=/usr
+    - cd ta-lib && ./configure --prefix=/usr
     - make
     - cd..
     - bash circle/setup.sh
@@ -27,6 +25,7 @@ dependencies:
   cache_directories:
     - "~/.pyenv/versions"  # attempt to just cache installed pyenv things
     - "ta-lib-0.4.0-src"
+
 test:
   override:
 
