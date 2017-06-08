@@ -12,6 +12,7 @@ dependencies:
     - tar xvzf ta-lib-0.4.0-src.tar.gz
     - cd ta-lib && ./configure --prefix=/usr
     - cd ta-lib && make
+    - cd ta-lib && sudo make install
     - bash circle/setup.sh
 
     # install testing tools for circle's version of things
