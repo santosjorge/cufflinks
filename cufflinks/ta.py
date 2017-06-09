@@ -9,7 +9,7 @@ class StudyError(Exception):
 def _ohlc_dict(df_or_figure,open='',high='',low='',close='',volume='',
 			   validate='',**kwargs):
 	"""
-	Returns a dictionary with the actual column names that 
+	Returns a dictionary with the actual column names that
 	correspond to each of the OHLCV values.
 
 	df_or_figure :  DataFrame or Figure
@@ -27,7 +27,7 @@ def _ohlc_dict(df_or_figure,open='',high='',low='',close='',volume='',
 		Validates that the stated column exists
 		Example:
 			validate='ohv' | Will ensure Open, High
-							 and close values exist. 
+							 and close values exist.
 	"""
 	c_dir={}
 	ohlcv=['open','high','low','close','volume']
@@ -54,7 +54,7 @@ def _ohlc_dict(df_or_figure,open='',high='',low='',close='',volume='',
 		c_dir['close']=close
 	if volume:
 		c_dir['volume']=volume
-		
+
 	for k,v in c_dir.items():
 		if v not in cnames:
 			raise StudyError('{0} is not a valid column name'.format(v))
@@ -128,9 +128,9 @@ def rsi(df,periods=14,column=None,include=True,str=None,detail=False,**kwargs):
 		_df['Down']=df[column].diff().apply(lambda x:-x if x<0 else 0)
 
 		_df['UpAvg']=_df['Up'].rolling(window=periods).mean()
-		_df['DownAvg']= df['Down'].rolling(window=periods).mean()
+		_df['DownAvg']=_df['Down'].rolling(window=periods).mean()
 
-		
+
 		_df['RSI']=100-(100/(1+_df['UpAvg']/_df['DownAvg']))
 		return rename(df,_df,study,periods,column,include,str,detail)
 	column=_make_list(column)
@@ -151,7 +151,7 @@ def sma(df,periods=21,column=None,include=True,str=None,detail=False,**sma_kwarg
 
 		_df['SMA'] = df[column].rolling(window=periods,**sma_kwargs).mean()
 
-		
+
 		str=str if str else '{name}({period})'
 		return rename(df,_df,study,periods,column,include,str,detail)
 	column=_make_list(column)
@@ -179,7 +179,7 @@ def correl(df,periods=21,columns=None,include=True,str=None,detail=False,how='va
 		str=str if str else 'CORREL({column1},{column2},{period})'.format(column1=columns[0],column2=columns[1],period=periods)
 		return rename(df,_df,study,periods,columns,include,str,detail)
 	columns=df.columns if not columns else columns
-	if len(columns) != 2: 
+	if len(columns) != 2:
 		raise StudyError("2 Columns need to be specified for a correlation study")
 	periods=_make_list(periods)
 	if how=='pct_chg':
@@ -241,7 +241,7 @@ def macd(df,fast_period=12,slow_period=26,signal_period=9,column=None,include=Tr
 	output=['MACD','SIGNAL']
 	__df=pd.concat([_macd(df,column=x,include=False,str=str,detail=detail,
 		output=output) for x in column],axis=1)
-	
+
 
 	if include:
 		return pd.concat([df,__df],axis=1)
