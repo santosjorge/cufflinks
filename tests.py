@@ -208,6 +208,14 @@ def ta_tests():
 
 	_generate_tests(TestIPlot, ta_tests, 'ta', options)
 
+def quant_figure_tests():
+	df=cf.datagen.ohlc()
+	qf=cf.QuantFig(df)
+	qf.add_sma()
+	qf.add_atr()
+	qf.add_bollinger_bands()
+	return qf.figure()
+
 # test generators
 
 
@@ -254,6 +262,7 @@ subplot_input_argument_tests()
 shape_input_argument_tests()
 test_irregular_subplots()
 color_normalize_tests()
+quant_figure_tests()
 # ta_tests()
 
 
