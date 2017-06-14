@@ -12,9 +12,10 @@ from . import offline
 from . import auth
 from . import ta
 
-
 __TA_KWARGS = ['min_period','center','freq','how','rsi_upper','rsi_lower','boll_std','fast_period',
 			   'slow_period','signal_period']
+
+
 
 
 def iplot_to_dict(data):
@@ -153,7 +154,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 	else:
 		lines_plotly=[Scatter(lines[key]) for key in keys]
 	for trace in lines_plotly:
-		if isinstance(trace['name'],pd.tslib.Timestamp):
+		if isinstance(trace['name'], pd.Timestamp):
 			trace.update(name=str(trace['name']))
 
 	if bestfit:
