@@ -153,7 +153,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 	else:
 		lines_plotly=[Scatter(lines[key]) for key in keys]
 	for trace in lines_plotly:
-		if isinstance(trace['name'],pd.tslib.Timestamp):
+		if isinstance(trace['name'], pd.Timestamp):
 			trace.update(name=str(trace['name']))
 
 	if bestfit:
