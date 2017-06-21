@@ -835,6 +835,53 @@ class QuantFig(object):
 			  'display':utils.merge_dict({'legendgroup':False},kwargs)}
 		self._add_study(study)
 
+	def add_cci(self,periods=14,high='high',low='low',close='close',
+				cci_upper=100,cci_lower=-100,showbands=True,str=None,name='',**kwargs):
+		"""
+		Commodity Channel Indicator study to QuantFigure.studies
+
+		Parameters:
+			periods : int or list(int)
+				Number of periods
+			high : string
+				Column that defines the high value
+			low : string
+				Column that defines the low value
+			close : string
+				Column that defines the close value
+			cci_upper : int
+				Upper bands level
+				default : 100
+			cci_lower : int
+				Lower band level
+				default : -100
+			showbands : boolean
+				If True, then the cci_upper and
+				cci_lower levels are displayed
+			name : string
+				Name given to the study
+			str : string
+				Label factory for studies
+				The following wildcards can be used:
+					{name} : Name of the column
+					{study} : Name of the study
+					{period} : Period used
+				Examples:
+					'study: {study} - period: {period}'
+		kwargs: 
+			legendgroup : bool
+				If true, all legend items are grouped into a 
+				single one
+			All formatting values available on iplot()
+		"""
+		study={'kind':'cci',
+			   'name':name,
+			   'params':{'periods':periods,'high':high,'low':low,'close':close,
+						 'str':str},
+			  'display':utils.merge_dict({'legendgroup':True,'cci_upper':cci_upper,
+						 'cci_lower':cci_lower,'showbands':showbands},kwargs)}
+		self._add_study(study)		
+
 	def add_atr(self,periods=14,high='high',low='low',close='close',str=None,
 					name='',**kwargs):
 		"""
@@ -849,10 +896,6 @@ class QuantFig(object):
 				Column that defines the low value
 			close : string
 				Column that defines the close value
-			column :string
-				Defines the data column name that contains the 
-				data over which the study will be applied. 
-				Default: 'close'
 			name : string
 				Name given to the study
 			str : string
@@ -876,9 +919,6 @@ class QuantFig(object):
 			  'display':utils.merge_dict({'legendgroup':False},kwargs)}
 		self._add_study(study)		
 			
-	def add_cmci(self):
-		pass
-
 	def add_trender(self):
 		pass
 
@@ -958,17 +998,33 @@ class QuantFig(object):
 			locals_list=['rsi_lower','rsi_upper','showbands']
 			local_kwargs,params=get_params(locals_list,params,display)
 			fig=df.ta_figure(study=kind,**params)
-			del fig.layout['shapes']
-			if local_kwargs['showbands']:
-				up_color=kwargs.get('up_color',self.theme['up_color'])
-				down_color=kwargs.get('down_color',self.theme['down_color'])
-				for _ in ('rsi_lower','rsi_upper'):
-					trace=fig.data[0].copy()
-					trace.update(y=[local_kwargs[_] for x in trace['x']])
-					trace.update(name='')
-					color=down_color if 'lower' in _ else up_color
-					trace.update(line=dict(color=color,width=1))
-					fig.data.append(trace)
+			# del fig.layout['shapes']
+			# if local_kwargs['showbands']:
+			# 	up_color=kwargs.get('up_color',self.theme['up_color'])
+			# 	down_color=kwargs.get('down_color',self.theme['down_color'])
+			# 	for _ in ('rsi_lower','rsi_upper'):
+			# 		trace=fig.data[0].copy()
+			# 		trace.update(y=[local_kwargs[_] for x in trace['x']])
+			# 		trace.update(name='')
+			# 		color=down_color if 'lower' in _ else up_color
+			# 		trace.update(line=dict(color=color,width=1))
+			# 		fig.data.append(trace)
+		
+		if kind=='cci':
+			locals_list=['cci_lower','cci_upper','showbands']
+			local_kwargs,params=get_params(locals_list,params,display)
+			fig=df.ta_figure(study=kind,**params)
+			# del fig.layout['shapes']
+			# if local_kwargs['showbands']:
+			# 	up_color=kwargs.get('up_color',self.theme['up_color'])
+			# 	down_color=kwargs.get('down_color',self.theme['down_color'])
+			# 	for _ in ('cci_lower','cci_upper'):
+			# 		trace=fig.data[0].copy()
+			# 		trace.update(y=[local_kwargs[_] for x in trace['x']])
+			# 		trace.update(name='')
+			# 		color=down_color if 'lower' in _ else up_color
+			# 		trace.update(line=dict(color=color,width=1))
+			# 		fig.data.append(trace)
 		
 		if kind=='macd':
 			local_kwargs,params=get_params([],params,display)
@@ -978,6 +1034,23 @@ class QuantFig(object):
 			fig.update_traces(legendgroup=name,showlegend=False)
 			fig.data[0].update(showlegend=True,name=name)
 		
+		## Has Bands
+		if kind in ('rsi','cci'):
+			_upper='{0}_upper'.format(kind)
+			_lower='{0}_lower'.format(kind)
+			del fig.layout['shapes']
+			if local_kwargs['showbands']:
+				up_color=kwargs.get('up_color',self.theme['up_color'])
+				down_color=kwargs.get('down_color',self.theme['down_color'])
+				for _ in (_lower,_upper):
+					trace=fig.data[0].copy()
+					trace.update(y=[local_kwargs[_] for x in trace['x']])
+					trace.update(name='')
+					color=down_color if 'lower' in _ else up_color
+					trace.update(line=dict(color=color,width=1))
+					fig.data.append(trace)
+
+
 		return fig
 	
 	def iplot(self,**kwargs):
@@ -1053,7 +1126,7 @@ class QuantFig(object):
 				study_fig=self._get_study_figure(k,**kwargs)
 				if v['kind'] in ('boll','sma','ema'):
 					study_fig.move_axis(yaxis='y2')                
-				if v['kind'] in ('rsi','volume','macd','atr'):
+				if v['kind'] in ('rsi','volume','macd','atr','cci'):
 					max_panel+=1
 					panel_data['n']+=1
 					study_fig.move_axis(yaxis='y{0}'.format(max_panel))

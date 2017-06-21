@@ -172,6 +172,8 @@ def ema(df,periods=21,column=None,include=True,str='{name}({column},{period})',d
 	else:
 		return __df
 
+
+
 def atr(df,periods=21,high='high',low='low',close='close',include=True,str='{name}({period})',**kwargs):
 	def _atr(df,periods,high,low,close,include,str,detail=False):
 		study='ATR'
@@ -183,6 +185,22 @@ def atr(df,periods=21,high='high',low='low',close='close',include=True,str='{nam
 		return rename(df,_df,study,periods,'',include,str,detail)
 	periods=make_list(periods)
 	__df=pd.concat([_atr(df,periods=y,high=high,low=low,close=close,include=False,str=str) for y in periods],axis=1)
+	if include:
+		return pd.concat([df,__df],axis=1)
+	else:
+		return __df
+
+def cci(df,periods=14,high='high',low='low',close='close',include=True,str='{name}({period})',**kwargs):
+	def _cci(df,periods,high,low,close,include,str,detail=False):
+		study='CCI'
+		_df=pd.DataFrame()
+		_df['CCI']=pd.Series(talib.CCI(df[high].values,
+									   df[low].values,
+									   df[close].values,
+									   periods),index=df.index)
+		return rename(df,_df,study,periods,'',include,str,detail)
+	periods=make_list(periods)
+	__df=pd.concat([_cci(df,periods=y,high=high,low=low,close=close,include=False,str=str) for y in periods],axis=1)
 	if include:
 		return pd.concat([df,__df],axis=1)
 	else:

@@ -23,7 +23,7 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 ** Note: ** This version requires TALib to be installed separately. 
 
-	brew install talib
+	brew install ta-lib
 
 * `QuantFigure` is a new class that will generate a graph object with persistence. 
 Parameters can be added/modified at any given point. 

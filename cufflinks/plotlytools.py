@@ -153,7 +153,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 	else:
 		lines_plotly=[Scatter(lines[key]) for key in keys]
 	for trace in lines_plotly:
-		if isinstance(trace['name'],pd.tslib.Timestamp):
+		if isinstance(trace['name'],pd.Timestamp):
 			trace.update(name=str(trace['name']))
 
 	if bestfit:
@@ -1239,8 +1239,17 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 		RSI 
 			rsi_upper : int (0,100]
 				Level for the upper rsi band
+				default : 70
 			rsi_lower : int (0,100]
 				Level for the lower rsi band
+				default : 30
+		CCI 
+			cci_upper : int 
+				Level for the upper cci band
+				default : 100
+			cci_lower : int 
+				Level for the lower cci band
+				default : -100
 		BOLL
 			boll_std : int or float
 				Number of standard deviations
@@ -1338,12 +1347,29 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 	figure=get_study(self,ta_func,iplot_kwargs,iplot_study_kwargs,include=include,
 				     column=column,str=str,inset=inset)
 
-	if study=='rsi':
-		rsi_upper=study_kwargs['rsi_upper'] if 'rsi_upper' in study_kwargs else 70
-		rsi_lower=study_kwargs['rsi_lower'] if 'rsi_lower' in study_kwargs else 30
+	## Add Bands
+	if study in ('rsi','cci'):
+		bands= {'rsi':(30,70),
+			    'cci':(-100,100)}
+		_upper=study_kwargs.get('{0}_upper'.format(study),bands[study][0])
+		_lower=study_kwargs.get('{0}_lower'.format(study),bands[study][1])
 		yref='y2' if include else 'y1'
-		shapes=[tools.get_shape(y=i,yref=yref,color=j,dash='dash') for (i,j) in [(rsi_lower,'green'),(rsi_upper,'red')]]
+		shapes=[tools.get_shape(y=i,yref=yref,color=j,dash='dash') for (i,j) in [(_lower,'green'),(_upper,'red')]]
 		figure['layout']['shapes']=shapes
+
+	# if study=='rsi':
+	# 	rsi_upper=study_kwargs.get('rsi_upper',70)
+	# 	rsi_lower=study_kwargs.get('rsi_lower',30)
+	# 	yref='y2' if include else 'y1'
+	# 	shapes=[tools.get_shape(y=i,yref=yref,color=j,dash='dash') for (i,j) in [(rsi_lower,'green'),(rsi_upper,'red')]]
+	# 	figure['layout']['shapes']=shapes
+	
+	# if study=='cci':
+	# 	cci_upper=study_kwargs.get('cci_upper',100)
+	# 	cci_lower=study_kwargs.get('cci_lower',-100)
+	# 	yref='y2' if include else 'y1'
+	# 	shapes=[tools.get_shape(y=i,yref=yref,color=j,dash='dash') for (i,j) in [(cci_lower,'green'),(cci_upper,'red')]]
+	# 	figure['layout']['shapes']=shapes
 
 	## Exports
 
