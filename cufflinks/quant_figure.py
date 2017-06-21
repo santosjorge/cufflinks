@@ -25,6 +25,7 @@ from . import colors
 from . import auth
 from . import date_tools
 
+
 __QUANT_FIGURE_DATA = ['kind','showlegend','datalegend','name','slice','resample','bestfit',
 						'text','title','yTitle','secondary_y_title','bestfit_colors','kind',
 						'colorscale','xTitle','colors','secondary_y']
@@ -320,9 +321,9 @@ class QuantFig(object):
 				date1=date0
 				date0=df.index[0]
 
-		if isinstance(date0,pd.tslib.Timestamp):
+		if isinstance(date0, pd.Timestamp):
 			date0=date_tools.dateToString(date0,to_strfmt)
-		if isinstance(date1,pd.tslib.Timestamp):
+		if isinstance(date1, pd.Timestamp):
 			date1=date_tools.dateToString(date1,to_strfmt)
 		d={'x0':date0,'x1':date1,'y0':y0,'y1':y1}
 		d.update(**kwargs)
