@@ -18,10 +18,15 @@ This tutorial assumes that the plotly user credentials have already been configu
 ![3D Charts](img/ukswaps.gif)
 
 ### Release Notes
+### v0.12.0
+
+Removed dependecies on ta-lib. 
+This library is no longer required. 
+All studies have be rewritten in Python. 
 
 ### v0.11.0
 
-** Note: ** This version requires TALib to be installed separately. 
+** Note: ** This version requires ta-lib to be installed separately. 
 
 	brew install ta-lib
 
