@@ -200,6 +200,50 @@ def ema(df,periods=21,column=None,include=True,str='{name}({column},{period})',d
 		return __df
 
 
+def adx(df,periods=14,high='high',low='low',close='close',include=True,str='{name}({period})',**kwargs):
+	def _adx(df,periods,high,low,close,include,str,detail=False):
+		study='ADX'
+		_df=pd.DataFrame()
+		## === talib ==== 
+		# _df['ADX']=pd.Series(talib.ADX(df[high].values,
+		#					   df[low].values,df[close].values,
+		#     				   periods),index=df.index)
+		## === /talib ==== 
+
+		## === pure python ==== 
+		def smooth(col):
+			sm=col.rolling(periods).sum()
+			for _ in list(range(periods+1,len(col))):
+				sm.iloc[_]=sm.iloc[_-1]-(1.0*sm.iloc[_-1]/periods)+col.iloc[_]
+			return sm
+
+		def smooth2(col):
+			sm=col.rolling(periods).mean()
+			for _ in list(range(periods*2,len(col))):
+				sm.iloc[_]=((sm.iloc[_-1]*(periods-1))+col[_])/periods
+			return sm
+
+		_df['tr']=pd.DataFrame(dict(enumerate([df[high]-df[low],abs(df[high]-df[close].shift(1)),
+                             abs(df[low]-df[close].shift(1))]))).apply(max,axis=1)
+		__df=pd.DataFrame(dict(enumerate([df[high]-df[high].shift(1),df[low].shift(1)-df[low]])))
+		_df['dm_plus']=__df.apply(lambda x:max(x[0],0) if x[0]>x[1] else 0,axis=1)
+		_df['dm_minus']=__df.apply(lambda x:max(x[1],0) if x[1]>x[0] else 0,axis=1)
+		_df.iloc[0]=np.nan
+		_df_smooth=_df.apply(smooth)
+		__df=pd.DataFrame()
+		__df['di_plus']=100.0*_df_smooth['dm_plus']/_df_smooth['tr']
+		__df['di_minus']=100.0*_df_smooth['dm_minus']/_df_smooth['tr']
+		dx=pd.DataFrame(100*abs(__df['di_plus']-__df['di_minus'])/(__df['di_plus']+__df['di_minus']))
+		# _df=pd.DataFrame()
+		_df['ADX']=dx.apply(smooth2)[0]
+		## === /pure python ==== 
+		return rename(df,_df,study,periods,'',include,str,detail)
+	periods=make_list(periods)
+	__df=pd.concat([_adx(df,periods=y,high=high,low=low,close=close,include=False,str=str) for y in periods],axis=1)
+	if include:
+		return pd.concat([df,__df],axis=1)
+	else:
+		return __df
 
 def atr(df,periods=14,high='high',low='low',close='close',include=True,str='{name}({period})',**kwargs):
 	def _atr(df,periods,high,low,close,include,str,detail=False):

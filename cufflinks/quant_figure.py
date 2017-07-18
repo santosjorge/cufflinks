@@ -881,6 +881,43 @@ class QuantFig(object):
 			  'display':utils.merge_dict({'legendgroup':True,'cci_upper':cci_upper,
 						 'cci_lower':cci_lower,'showbands':showbands},kwargs)}
 		self._add_study(study)		
+	
+	def add_adx(self,periods=14,high='high',low='low',close='close',str=None,
+					name='',**kwargs):
+		"""
+		Add Average Directional Index (ADX) study to QuantFigure.studies
+
+		Parameters:
+			periods : int or list(int)
+				Number of periods
+			high : string
+				Column that defines the high value
+			low : string
+				Column that defines the low value
+			close : string
+				Column that defines the close value
+			name : string
+				Name given to the study
+			str : string
+				Label factory for studies
+				The following wildcards can be used:
+					{name} : Name of the column
+					{study} : Name of the study
+					{period} : Period used
+				Examples:
+					'study: {study} - period: {period}'
+		kwargs: 
+			legendgroup : bool
+				If true, all legend items are grouped into a 
+				single one
+			All formatting values available on iplot()
+		"""
+		study={'kind':'adx',
+			   'name':name,
+			   'params':{'periods':periods,'high':high,'low':low,'close':close,
+						 'str':str},
+			  'display':utils.merge_dict({'legendgroup':False},kwargs)}
+		self._add_study(study)
 
 	def add_atr(self,periods=14,high='high',low='low',close='close',str=None,
 					name='',**kwargs):
@@ -982,7 +1019,7 @@ class QuantFig(object):
 			fig.data[0].update(marker=dict(color=bar_colors,line=dict(color=bar_colors)),
 					  opacity=0.8)
 
-		if kind in ('sma','ema','atr'):
+		if kind in ('sma','ema','atr','adx'):
 			local_kwargs,params=get_params([],params,display)
 			fig=df.ta_figure(study=kind,**params)
 
@@ -1126,7 +1163,7 @@ class QuantFig(object):
 				study_fig=self._get_study_figure(k,**kwargs)
 				if v['kind'] in ('boll','sma','ema'):
 					study_fig.move_axis(yaxis='y2')                
-				if v['kind'] in ('rsi','volume','macd','atr','cci'):
+				if v['kind'] in ('rsi','volume','macd','atr','adx','cci'):
 					max_panel+=1
 					panel_data['n']+=1
 					study_fig.move_axis(yaxis='y{0}'.format(max_panel))
