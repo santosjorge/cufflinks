@@ -1322,7 +1322,7 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 		df_ta=func(df,column=column,include=False,str=str,**study_kwargs)	
 		kind=iplot_kwargs['kind'] if 'kind' in iplot_kwargs else ''
 		iplot_study_kwargs['kind']='scatter'
-		iplot_study_kwargs['colors']='blue' if 'colors' not in iplot_study_kwargs else iplot_study_kwargs['colors']
+		iplot_study_kwargs['colors']=iplot_study_kwargs.get('colors',['blue','green','red'] if study=='dmi' else 'blue')
 		fig_1=df_ta.figure(theme=theme,**iplot_study_kwargs)
 		if kind in ['candle','ohlc']:
 				for i in fig_1['data']:
