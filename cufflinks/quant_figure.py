@@ -906,6 +906,41 @@ class QuantFig(object):
 			  'display':utils.merge_dict({'legendgroup':False},kwargs)}
 		self._add_study(study)
 
+	def add_ptps(self,periods=14,af=0.2,initial='long',str=None,name='',**kwargs):
+		"""
+		Add Parabolic SAR (PTPS) study to QuantFigure.studies
+
+		Parameters:
+			periods : int or list(int)
+				Number of periods
+			af : float
+				acceleration factor
+			initial : 'long' or 'short'
+				Iniital position
+				default: long
+			name : string
+				Name given to the study
+			str : string
+				Label factory for studies
+				The following wildcards can be used:
+					{name} : Name of the column
+					{study} : Name of the study
+					{period} : Period used
+				Examples:
+					'study: {study} - period: {period}'
+		kwargs: 
+			legendgroup : bool
+				If true, all legend items are grouped into a 
+				single one
+			All formatting values available on iplot()
+		"""
+		study={'kind':'ptps',
+			   'name':name,
+			   'params':{'periods':periods,'high':self._d['high'],'low':self._d['low'],'af':af,'initial':initial,
+						 'str':str},
+			  'display':utils.merge_dict({'legendgroup':False},kwargs)}
+		self._add_study(study)
+
 	def add_atr(self,periods=14,str=None,name='',**kwargs):
 		"""
 		Add Average True Range (ATR) study to QuantFigure.studies
@@ -1019,7 +1054,7 @@ class QuantFig(object):
 			fig.data[0].update(marker=dict(color=bar_colors,line=dict(color=bar_colors)),
 					  opacity=0.8)
 
-		if kind in ('sma','ema','atr','adx','dmi'):
+		if kind in ('sma','ema','atr','adx','dmi','ptps'):
 			local_kwargs,params=get_params([],params,display)
 			fig=df.ta_figure(study=kind,**params)
 
@@ -1161,7 +1196,7 @@ class QuantFig(object):
 			kwargs.update(slice=_slice,resample=_resample)
 			for k,v in list(self.studies.items()):
 				study_fig=self._get_study_figure(k,**kwargs)
-				if v['kind'] in ('boll','sma','ema'):
+				if v['kind'] in ('boll','sma','ema','ptps'):
 					study_fig.move_axis(yaxis='y2')                
 				if v['kind'] in ('rsi','volume','macd','atr','adx','cci','dmi'):
 					max_panel+=1

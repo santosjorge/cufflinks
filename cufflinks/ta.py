@@ -275,6 +275,110 @@ def atr(df,periods=14,high='high',low='low',close='close',include=True,str='{nam
 	else:
 		return __df
 
+def ptps(df,periods=14,initial='long',af=.02,high='high',low='low',include=True,str='{name}({period})',**kwargs):
+	def _ptps(df,periods,high,low,include,str,detail):
+		study='PTPS'
+		_df=x=pd.DataFrame(columns=['SAR','LorS','EP','EP+-SAR','AF','AF_Diff','T_SAR','Reversal','LONG','SHORT'],
+              index=df.index)
+		_df=_df.reset_index()
+
+		_df.loc[0,'LorS']=initial
+		_df.loc[0,'T_SAR']=None
+		_df.loc[0,'EP']=df[high][0] if initial=='long' else df[low][0]
+		_df.loc[0,'AF']=af
+
+		for _ in range(1,len(df)):
+			# LorS - Long or Short
+			if _df['LorS'][_-1]=='long':
+				if _df['T_SAR'][_-1]>=df[low][_]:
+					_df.loc[_,'LorS']='short'
+				else:
+					_df.loc[_,'LorS']=_df.loc[_-1,'LorS']
+			else:
+				if _df['T_SAR'][_-1]<=df[high][_]:
+					_df.loc[_,'LorS']='long'
+				else:
+					_df.loc[_,'LorS']=_df.loc[_-1,'LorS']
+			# SAR - Stop and Reversal
+			if _==1:
+				_df.loc[1,'SAR']=df[low][0] if initial=='long' else df[high][0]
+			else:
+				_df.loc[_,'SAR']=_df['EP'][_-1] if _df['LorS'][_-1]!=_df['LorS'][_] else _df['T_SAR'][_-1]
+					
+			# EP - Extreme Price
+			if _df['LorS'][_]=='long':
+				if _df['SAR'][_]>=df[low][_]:
+					_df.loc[_,'EP']=df[low][_]
+				else:
+					_df.loc[_,'EP']=df[high][_] if df[high][_]>_df['EP'][_-1] else _df['EP'][_-1]
+			else:
+				if _df['SAR'][_]<=df[high][_]:
+					_df.loc[_,'EP']=df[high][_]
+				else:
+					_df.loc[_,'EP']=df[low][_] if df[low][_]<_df['EP'][_-1] else _df['EP'][_-1]
+					
+			# EP+-SAR - Extreme Price +/- Stop and Reversal
+			_df.loc[_,'EP+-SAR']=abs(_df['EP'][_]-_df['SAR'][_])
+			
+			# AF - Acceleration Factor
+			if _df['LorS'][_]!=_df['LorS'][_-1]:
+				_df.loc[_,'AF']=af
+			else:
+				if _df['LorS'][_]=='long':
+					if _df['SAR'][_]>=df[low][_]:
+						_df.loc[_,'AF']=af
+					else:
+						if (df[high][_]>_df['EP'][_-1] if _df['LorS'][_]=='long' else df[low][_]<_df['EP'][_-1]):
+							_df.loc[_,'AF']=min(0.2,af+_df['AF'][_-1])
+						else:
+							_df.loc[_,'AF']=_df['AF'][_-1]
+				else:
+					if _df['SAR'][_]<=df[high][_]:
+						_df.loc[_,'AF']=af
+					else:
+						if (df[high][_]>_df['EP'][_-1] if _df['LorS'][_]=='long' else df[low][_]<_df['EP'][_-1]):
+							_df.loc[_,'AF']=min(0.2,af+_df['AF'][_-1])
+						else:
+							_df.loc[_,'AF']=_df['AF'][_-1]
+			# AF Diff
+			_df.loc[_,'AF_Diff']=_df['EP+-SAR'][_]*_df['AF'][_]
+			
+			# T_SAR - Tomorrow's Stop and Reversal
+			if _df['LorS'][_]=='long':
+				if _df['SAR'][_]>=df[low][_]:
+					_df.loc[_,'T_SAR']=max(_df['SAR'][_]-_df['AF_Diff'][_],df[high][_],df[high][_-1])
+				else:
+					_df.loc[_,'T_SAR']=min(_df['SAR'][_]+_df['AF_Diff'][_],df[low][_],df[low][_-1])
+			else:
+				if _df['SAR'][_]<=df[high][_]:
+					_df.loc[_,'T_SAR']=min(_df['SAR'][_]+_df['AF_Diff'][_],df[low][_],df[low][_-1])
+				else:
+					_df.loc[_,'T_SAR']=max(_df['SAR'][_]-_df['AF_Diff'][_],df[low][_],df[low][_-1])
+					
+			# Reversal
+			if _df['LorS'][_-1]=='long':
+				if _df['T_SAR'][_-1]>=df[low][_]:
+					_df.loc[_,'Reversal']=_df['T_SAR'][_-1]
+			else:
+				if _df['T_SAR'][_-1]<=df[high][_]:
+					_df.loc[_,'Reversal']=_df['T_SAR'][_-1]
+		
+		
+		_df['LONG']=_df.apply(lambda x:x['T_SAR'] if x['LorS']=='long' else np.nan,axis=1)
+		_df['SHORT']=_df.apply(lambda x:x['T_SAR'] if x['LorS']=='short' else np.nan,axis=1)
+		_df=_df.set_index('index')
+		
+		return rename(df,_df,study,periods,'',include,str,detail,output=output)
+	detail=kwargs.get('detail',False)
+	periods=make_list(periods)
+	output=['LONG','SHORT']
+	__df=pd.concat([_ptps(df,periods=y,high=high,low=low,include=False,str=str,detail=detail) for y in periods],axis=1)
+	if include:
+		return pd.concat([df,__df],axis=1)
+	else:
+		return __df
+
+
 def cci(df,periods=14,high='high',low='low',close='close',include=True,str='{name}({period})',**kwargs):
 	def _cci(df,periods,high,low,close,include,str,detail=False):
 		study='CCI'

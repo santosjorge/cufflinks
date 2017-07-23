@@ -14,7 +14,7 @@ from . import ta
 
 
 __TA_KWARGS = ['min_period','center','freq','how','rsi_upper','rsi_lower','boll_std','fast_period',
-			   'slow_period','signal_period']
+			   'slow_period','signal_period','initial','af','open','high','low','close']
 
 
 def iplot_to_dict(data):
@@ -1343,7 +1343,7 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=Fals
 
 	ta_func = eval('ta.{0}'.format(study))
 
-	inset=study in ('sma','boll','ema','atr')
+	inset=study in ('sma','boll','ema','atr','ptps')
 	figure=get_study(self,ta_func,iplot_kwargs,iplot_study_kwargs,include=include,
 				     column=column,str=str,inset=inset)
 
