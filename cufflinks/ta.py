@@ -367,7 +367,7 @@ def ptps(df,periods=14,initial='long',af=.02,high='high',low='low',include=True,
 		_df['LONG']=_df.apply(lambda x:x['T_SAR'] if x['LorS']=='long' else np.nan,axis=1)
 		_df['SHORT']=_df.apply(lambda x:x['T_SAR'] if x['LorS']=='short' else np.nan,axis=1)
 		_df=_df.set_index('index')
-		
+			
 		return rename(df,_df,study,periods,'',include,str,detail,output=output)
 	detail=kwargs.get('detail',False)
 	periods=make_list(periods)

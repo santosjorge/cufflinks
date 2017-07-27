@@ -9,6 +9,7 @@ import operator
 import copy
 
 from collections import deque
+from six import string_types
 from IPython.display import HTML, display
 
 from . import themes
@@ -722,7 +723,7 @@ def get_colorscale(scale):
             get_colorscale(['rgb(127,201,127)','rgb(190,174,212)','rgb(253,192,134)'])
     """
 
-    if type(scale) in (str, unicode):
+    if type(scale) in string_types:
         scale = get_scales(scale)
     else:
         if type(scale) != list:
