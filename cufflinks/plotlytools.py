@@ -1201,7 +1201,7 @@ def _ta_figure(self,**kwargs):
 	return self.ta_plot(**kwargs)
 
 
-def _ta_plot(self,study,periods=14,column=None,include=True,str=None,detail=False,
+def _ta_plot(self,study,periods=14,column=None,include=True,str='{name}({period})',detail=False,
 			 theme=None,sharing=None,filename='',asFigure=False,**iplot_kwargs):
 	"""
 	Generates a Technical Study Chart
