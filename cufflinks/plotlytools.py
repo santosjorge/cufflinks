@@ -827,10 +827,20 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 							__['y']=__['x']
 							del __['x']
 						if bins:
-							if orientation=='h':
-								__.update(nbinsy=bins)	
+							if type(bins) in (tuple,list):
+								try:
+									_bins={'start':bins[0],'end':bins[1],'size':bins[2]}
+									if orientation=='h':
+										__.update(ybins=_bins,autobiny=False)	
+									else:
+										__.update(xbins=_bins,autobinx=False)	
+								except:
+									print("Invalid format for bins generation")
 							else:
-								__.update(nbinsx=bins)
+								if orientation=='h':
+									__.update(nbinsy=bins)	
+								else:
+									__.update(nbinsx=bins)
 					data.append(__)
 
 			elif kind in ('heatmap','surface'):
