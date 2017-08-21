@@ -335,9 +335,16 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 			Set the gap between groups
 				[0,1)
 			* Only valid when kind is 'histogram' or 'bar'		
-		bins : int
-			Specifies the number of bins 
+		bins : int or tuple 
+			if int:
+				Specifies the number of bins 
+			if tuple:
+				(start, end, size)
+				start : starting value
+				end: end value
+				size: bin size
 			* Only valid when kind='histogram'
+
 		histnorm : string
 				'' (frequency)
 				percent
