@@ -206,10 +206,6 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 			Plotly Data Object.
 			If not entered then the Data object will be automatically
 			generated from the DataFrame.
-		data : Data
-			Plotly Data Object.
-			If not entered then the Data object will be automatically
-			generated from the DataFrame.
 		layout : Layout
 			Plotly layout Object
 			If not entered then the Layout objet will be automatically
