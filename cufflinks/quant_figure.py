@@ -1171,7 +1171,7 @@ class QuantFig(object):
 				shapes[k].append(v)
 			else:
 				shapes[k]=[v]
-		for _ in [data,layout,
+		for _ in [data,layout, self._d,
 				  self.theme,{'annotations':annotations['values']},
 				  annotations['params'],shapes]:
 			if _:
