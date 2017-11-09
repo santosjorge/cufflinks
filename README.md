@@ -26,10 +26,6 @@ All studies have be rewritten in Python.
 
 ### v0.11.0
 
-** Note: ** This version requires ta-lib to be installed separately. 
-
-	brew install ta-lib
-
 * `QuantFigure` is a new class that will generate a graph object with persistence. 
 Parameters can be added/modified at any given point. 
 
