@@ -61,7 +61,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 		interpolation : string
 			Positioning of the connecting lines
 				linear
-    	    	spline
+				spline
 				vhv
 				hvh
 				vh
@@ -311,7 +311,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 						the dataframe
 			Positioning of the connecting lines
 				linear
-    	    	spline
+				spline
 				vhv
 				hvh
 				vh
