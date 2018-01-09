@@ -31,7 +31,7 @@ def dict_to_iplot(d):
 	return Data(l)
 
 
-def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbol='dot',size='12',fill=False,
+def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',interpolation='linear',symbol='dot',size='12',fill=False,
 		width=3,dash='solid',sortbars=False,keys=False,bestfit=False,bestfit_colors=None,
 		mean=False,mean_colors=None,asDates=False,asTimestamp=False,text=None,**kwargs):
 	"""
@@ -57,7 +57,15 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 				lines+markers
 				lines+text
 				markers+text
-				lines+markers+text		
+				lines+markers+text
+		interpolation : string
+			Positioning of the connecting lines
+				linear
+    	    	spline
+				vhv
+				hvh
+				vh
+				hv	
 		symbol : string
 			The symbol that is drawn on the plot for each marker
 			Valid only when mode includes markers
@@ -130,6 +138,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 	dash=get_items_as_list(dash,keys,'dash')
 	symbol=get_items_as_list(symbol,keys,'symbol')
 	mode=get_items_as_list(mode,keys,'mode')
+	interpolation=get_items_as_list(interpolation,keys,'interpolation')
 	width=get_items_as_list(width,keys,'width')
 	for key in keys:
 		lines[key]={}
@@ -141,7 +150,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 		if 'bar' in kind:
 			lines[key]["marker"]={'color':to_rgba(colors[key],.6),'line':{'color':colors[key],'width':1}}
 		else:
-			lines[key]["line"]={'color':colors[key],'width':width[key],'dash':dash[key]}
+			lines[key]["line"]={'color':colors[key],'width':width[key],'dash':dash[key], 'shape':interpolation[key]}
 			lines[key]["mode"]=mode[key]
 			if 'marker' in mode[key]:
 				lines[key]["marker"]=Marker(symbol=symbol[key],size=size)
@@ -191,7 +200,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',symbo
 
 def _iplot(self,data=None,layout=None,filename='',sharing=None,
 			kind='scatter',title='',xTitle='',yTitle='',zTitle='',theme=None,colors=None,colorscale=None,fill=False,width=None,
-			dash='solid',mode='lines',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
+			dash='solid',mode='lines',interpolation='linear',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
 			bestfit_colors=None,mean=False,mean_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,
 			zerolinecolor=None,margin=None,labels=None,values=None,secondary_y='',secondary_y_title='',subplots=False,shape=None,error_x=None,
@@ -293,7 +302,20 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				lines+markers
 				lines+text
 				markers+text
-				lines+markers+text		
+				lines+markers+text
+		interpolation : dict, list, or string
+				string : applies to all traces
+				list : applies to each trace in the order 
+						specified
+				dict: {column:value} for each column in 
+						the dataframe
+			Positioning of the connecting lines
+				linear
+    	    	spline
+				vhv
+				hvh
+				vh
+				hv		
 		symbol : dict, list or string
 				string : applies to all traces
 				list : applies to each trace in the order 
@@ -750,7 +772,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				if text:
 					if not isinstance(text,list):
 						text=self[text].values
-				data=df.to_iplot(colors=colors,colorscale=colorscale,kind=kind,fill=fill,width=width,dash=dash,sortbars=sortbars,keys=keys,
+				data=df.to_iplot(colors=colors,colorscale=colorscale,kind=kind,interpolation=interpolation,fill=fill,width=width,dash=dash,sortbars=sortbars,keys=keys,
 						bestfit=bestfit,bestfit_colors=bestfit_colors,mean=mean,mean_colors=mean_colors,asDates=asDates,mode=mode,symbol=symbol,size=size,
 						text=text,**kwargs)		
 				trace_kw=check_kwargs(kwargs,TRACE_KWARGS)
