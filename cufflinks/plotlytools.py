@@ -1051,11 +1051,20 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 			path=filename+'.png'
 		return display(Image(path))
 	elif asPlot:
-		return py.plot(figure,sharing=sharing,filename=filename,validate=validate)
+		if offline.is_offline() and not online:
+			return offline.py_offline.plot(figure, filename=filename, validate=validate)
+		else:
+			return py.plot(figure, sharing=sharing, filename=filename, validate=validate)
 	elif asUrl:
-		return py.plot(figure,sharing=sharing,filename=filename,validate=validate,auto_open=False)
+		if offline.is_offline() and not online:
+			return offline.py_offline.plot(figure, filename=filename, validate=validate,
+										   auto_open=False)
+		else:
+			return py.plot(figure, sharing=sharing, filename=filename, validate=validate,
+						   auto_open=False)
 	else:
-		return iplot(figure,sharing=sharing,filename=filename,validate=validate,online=online)
+		return iplot(figure, sharing=sharing, filename=filename, validate=validate, online=online)
+
 
 
 def get_colors(colors,colorscale,keys,asList=False):
