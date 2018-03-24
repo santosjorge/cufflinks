@@ -615,7 +615,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 	# 		'error_y','error_type','locations','lon','lat','asFrame','asDates','asFigure',
 	# 		'asImage','dimensions','asPlot','asUrl','online']
 	valid_kwargs = ['color','opacity','column','columns','labels','text','world_readable','colorbar']
-	TRACE_KWARGS = ['hoverinfo']
+	TRACE_KWARGS = ['hoverinfo','connectgaps']
 	PIE_KWARGS=['sort','pull','hole','textposition','textinfo','linecolor']
 	OHLC_KWARGS=['up_color','down_color','open','high','low','close','volume','name','decreasing','increasing']
 	SUBPLOT_KWARGS=['horizontal_spacing', 'vertical_spacing',
