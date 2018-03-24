@@ -18,7 +18,7 @@ __TA_KWARGS = ['min_period','center','freq','how','rsi_upper','rsi_lower','boll_
 
 
 def iplot_to_dict(data):
-	d=collections.defaultdict(dict)
+	d=defaultdict(dict)
 	for i in data:
 		for k,v in list(i.items()):
 			d[i['name']][k]=v
