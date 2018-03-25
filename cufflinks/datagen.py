@@ -1,11 +1,11 @@
+import os
+import string
+
 import numpy as np
 import pandas as pd
-import string
-from .auth import get_config_file
-import os
 
-class CufflinksError(Exception):
-		pass
+from .auth import get_config_file
+from .exceptions import CufflinksError
 
 
 def scattergeo():
@@ -359,7 +359,3 @@ def getName(n=1,name=3,exchange=2,columns=None,mode='abc'):
 		else:
 			raise CufflinksError("Unknown mode: {0}".format(mode))
 	return columns
-
-
-
-

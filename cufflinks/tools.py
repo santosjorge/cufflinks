@@ -1,14 +1,16 @@
-import plotly.plotly as py
-import plotly.offline as py_offline
-import pandas as pd
-from plotly.graph_objs import *
-from .colors import normalize,to_rgba
-from .themes import THEMES
-from . import auth
-from . import ta
-from .utils import merge_dict,deep_update, check_kwargs,kwargs_from_keyword,dict_replace_keyword
-import numpy as np
 import copy
+
+import numpy as np
+import pandas as pd
+import plotly.offline as py_offline
+import plotly.plotly as py
+import plotly.graph_objs as go
+
+from . import auth, ta
+from .colors import normalize, to_rgba
+from .themes import THEMES
+from .utils import (check_kwargs, deep_update, dict_replace_keyword,
+                    kwargs_from_keyword, merge_dict)
 
 __LAYOUT_VALID_KWARGS = ['legend','logx','logy','layout_update','title',
 					'xrange','yrange','zrange','rangeselector','rangeslider','showlegend','fontfamily']
@@ -32,8 +34,8 @@ __LAYOUT_AXIS=['autorange','autotick','backgroundcolor','categoryarray','categor
 			   'ticksuffix','ticktext','ticktextsrc','tickvals','tickvalssrc','tickwidth','titlefont',
 			   'zeroline','zerolinecolor','zerolinewidth']
 
-__LAYOUT_AXIS_X=['xaxis_'+_ for _ in XAxis().__dir__()]
-__LAYOUT_AXIS_Y=['yaxis_'+_ for _ in YAxis().__dir__()]
+__LAYOUT_AXIS_X=['xaxis_'+_ for _ in go.XAxis().__dir__()]
+__LAYOUT_AXIS_Y=['yaxis_'+_ for _ in go.YAxis().__dir__()]
 
 __LAYOUT_KWARGS = []
 [__LAYOUT_KWARGS.extend(_) for _ in [__LAYOUT_VALID_KWARGS,__SHAPES_KWARGS,__GEO_KWARGS,__ANN_KWARGS,__LAYOUT_AXIS,
@@ -196,7 +198,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		theme = auth.get_config_file()['theme']
 
 	theme_data = getTheme(theme)
-	layout=Layout(theme_data['layout'])
+	layout=go.Layout(theme_data['layout'])
 	layout['xaxis1'].update({'title':xTitle})
 	layout['yaxis1'].update({'title':yTitle})
 
@@ -254,7 +256,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 			layout=deep_update(layout,theme_data['3d'])
 		zaxis=layout['xaxis1'].copy()
 		zaxis.update(title=zTitle)
-		scene=Scene(xaxis=layout['xaxis1'].copy(),yaxis=layout['yaxis1'].copy(),zaxis=zaxis)
+		scene=go.Scene(xaxis=layout['xaxis1'].copy(),yaxis=layout['yaxis1'].copy(),zaxis=zaxis)
 		layout.update(scene=scene)
 		del layout['xaxis1']
 		del layout['yaxis1']
@@ -473,12 +475,12 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 		try:
 			_annotation=dict_replace_keyword({},'font',annotation,False)
 			_annotation=dict_replace_keyword(_annotation,'font',kwargs,False)
-			local_list.append(Annotation(_annotation))
+			local_list.append(go.Annotation(_annotation))
 			
 		except:
 			if 'title' in annotation:
 				local_list.append(
-						Annotation(	
+						go.Annotation(	
 								text=annotation['title'],
 								showarrow=False,
 								x=0,
@@ -498,7 +500,7 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 				else:
 					maxv=df.ix[k].sum() if k in df.index else 0
 					yref='y1'
-				ann=Annotation(
+				ann=go.Annotation(
 								x=k,
 								y=maxv,
 								xref='x',
@@ -525,7 +527,7 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 	_list_ann=[]
 	for ann in annotations:
 		_list_ann.extend(check_ann(ann))
-	return Annotations(_list_ann)
+	return go.Annotations(_list_ann)
 
 
 def strip_figures(figure):
@@ -539,7 +541,7 @@ def strip_figures(figure):
 	"""
 	fig=[]
 	for trace in figure['data']:
-		fig.append(Figure(data=[trace],layout=figure['layout']))
+		fig.append(go.Figure(data=[trace],layout=figure['layout']))
 	return fig
 
 
@@ -594,8 +596,8 @@ def merge_figures(figures):
 		figures : list(Figures)
 			List of figures to be merged. 
 	"""
-	figure=Figure()
-	data=Data()
+	figure=go.Figure()
+	data=go.Data()
 	for fig in figures:
 		for trace in fig['data']:
 			data.append(trace)
@@ -855,7 +857,7 @@ def get_subplots(rows=1,cols=1,
 										   shared_yaxes=shared_yaxes,print_grid=False,
 											start_cell=start_cell,**kwargs)
 	for k,v in list(layout.items()):
-		if not isinstance(v,XAxis) and not isinstance(v,YAxis):
+		if not isinstance(v,go.XAxis) and not isinstance(v,go.YAxis):
 			sp['layout'].update({k:v})
 
 	# if 'subplot_titles' in kwargs:
@@ -871,9 +873,9 @@ def get_subplots(rows=1,cols=1,
 			sp_item.update({k:v})
 
 	for k,v in list(sp['layout'].items()):
-		if isinstance(v,XAxis):
+		if isinstance(v,go.XAxis):
 			update_items(v,layout,'xaxis1')
-		elif isinstance(v,YAxis):
+		elif isinstance(v,go.YAxis):
 			update_items(v,layout,'xaxis1')
 
 	return sp
@@ -890,7 +892,7 @@ def get_ohlc(df,up_color=None,down_color=None,theme=None,layout=None,**kwargs):
 	args=[df[c_dir[_]] for _ in ohlc]
 	args.append(df.index)
 	fig=py.plotly.tools.FigureFactory.create_ohlc(*args,**kwargs)
-	ohlc_bars=Figure()
+	ohlc_bars=go.Figure()
 	ohlc_bars['data']=fig['data']
 	ohlc_bars['layout']=fig['layout']
 	data=ohlc_bars['data']
@@ -911,7 +913,7 @@ def get_candle(df,up_color=None,down_color=None,theme=None,layout=None,**kwargs)
 	args=[df[c_dir[_]] for _ in ohlc]
 	args.append(df.index)
 	fig=py.plotly.tools.FigureFactory.create_candlestick(*args,**kwargs)
-	candle=Figure()
+	candle=go.Figure()
 	candle['data']=fig['data']
 	candle['layout']=layout
 	data=candle['data']
@@ -1072,7 +1074,7 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 			Sets the title of the axis
 			Applies only to new axis
 	"""
-	fig=Figure()
+	fig=go.Figure()
 	fig_cpy=self.copy()
 	fig['data']=fig_cpy['data']
 	fig['layout']=fig_cpy['layout']
@@ -1096,7 +1098,7 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 			try:
 				new_axis=fig.axis['dom']['y'][domain][side]
 			except KeyError:
-				axis=YAxis(fig.axis['def'][curr_y].copy())
+				axis=go.YAxis(fig.axis['def'][curr_y].copy())
 				### check overlaying values
 				axis.update(title=title,overlaying=curr_y,side=side,anchor=curr_x)
 				axis_idx=str(fig.axis['len']['y']+1)
@@ -1400,7 +1402,7 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,
 
 def get_error_bar(axis='y',type='data',values=None,values_minus=None,color=None,thickness=1,width=5,
 				 opacity=1):
-	error=ErrorY() if axis=='y' else ErrorX()
+	error=go.ErrorY() if axis=='y' else go.ErrorX()
 	if type=='data':
 		if isinstance(values,list) or isinstance(values,np.ndarray):
 			if values_minus:
@@ -1410,7 +1412,7 @@ def get_error_bar(axis='y',type='data',values=None,values_minus=None,color=None,
 			error.update(array=values)
 		else:
 			if values_minus:
-				if isinstance(values_minus,list) or isinstance(a,np.ndarray):
+				if isinstance(values_minus,list) or isinstance(values_minus,np.ndarray):
 					raise Exception('Values should be of same type (int, float)')
 				error.udpate(symmetric=False,valueminus=values_minus)
 			error.update(value=values)
@@ -1429,7 +1431,7 @@ def get_error_bar(axis='y',type='data',values=None,values_minus=None,color=None,
 
 def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=None,color=None,thickness=1,width=None,
 				 opacity=None,**kwargs):
-	figure=Figure(copy.deepcopy(figure))
+	figure=go.Figure(copy.deepcopy(figure))
 	if 'value' in kwargs:
 		values=kwargs['value']
 	data=figure['data']
@@ -1454,8 +1456,8 @@ def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=N
 				y_up=trace['y']+value
 				y_down=trace['y']-value
 			y=trace['y']
-			upper=Scatter(y=y_up,mode='lines',showlegend=False,
-							 line=Line(width=width),x=trace['x'])
+			upper=go.Scatter(y=y_up,mode='lines',showlegend=False,
+							 line=go.Line(width=width),x=trace['x'])
 			if 'yaxis' in trace:
 				upper['yaxis']=trace['yaxis']
 			if color:
@@ -1507,7 +1509,7 @@ def _nodata(self):
 	for _ in self:
 		d.append(copy.deepcopy(_))
 	for _ in d:	
-		for k,v in list(_.items()):
+		for k in list(_.keys()):
 			if k in ('x','y','open','close','high','low','index','volume','line','marker'):
 				try:
 					_[k]=[]
@@ -1551,10 +1553,10 @@ def is_offline():
 
 
 
-Figure.axis=axis
-Figure.trace_dict=trace_dict
-Figure.set_axis=_set_axis
-Figure.update_traces=_update_traces
-Figure.move_axis=_move_axis
-Figure.nodata=_figure_no_data
-Data.nodata=_nodata
+go.Figure.axis=axis
+go.Figure.trace_dict=trace_dict
+go.Figure.set_axis=_set_axis
+go.Figure.update_traces=_update_traces
+go.Figure.move_axis=_move_axis
+go.Figure.nodata=_figure_no_data
+go.Data.nodata=_nodata

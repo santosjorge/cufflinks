@@ -311,7 +311,7 @@ def colorgen(colors=None, n=None, scale=None, theme=None):
     for i in np.arange(.2, 1, step):
         for y in dq:
             yield to_rgba(y, 1 - i + .2)
-        dq.rotate()
+        dq.rotate(1)
 
 # NEW STUFF
 
