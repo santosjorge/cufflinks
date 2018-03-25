@@ -686,12 +686,14 @@ def get_scales(scale=None, n=None):
             is_reverse = True
         d = copy.deepcopy(_scales_names[scale.lower()])
         keys = list(map(int, list(d.keys())))
+        cs = None
         if n:
             if n in keys:
                 cs = d[str(n)]
             elif n < min(keys):
                 cs = d[str(min(keys))]
-        cs = d[str(max(keys))]
+        if cs is None:
+            cs = d[str(max(keys))]
         if is_reverse:
             cs.reverse()
         return cs
