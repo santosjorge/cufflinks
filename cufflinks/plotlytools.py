@@ -637,15 +637,7 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 			for a complete list of valid parameters.
 	"""
 
-	# Look for invalid kwargs
-	# _native_iplot = ['layout','filename','sharing',
-	# 		'kind','title','xTitle','yTitle','zTitle','theme','colors','colorscale','fill','width',
-	# 		'dash','mode','symbol','size','barmode','sortbars','bargap','bargroupgap','bins','histnorm',
-	# 		'histfunc','orientation','boxpoints','annotations','keys','bestfit',
-	# 		'bestfit_colors','mean','mean_colors','categories','x','y','z','text','gridcolor',
-	# 		'zerolinecolor','margin','labels','values','secondary_y','secondary_y_title','subplots','shape','error_x',
-	# 		'error_y','error_type','locations','lon','lat','asFrame','asDates','asFigure',
-	# 		'asImage','dimensions','asPlot','asUrl','online']
+	# Valid Kwargs
 	valid_kwargs = ['color','opacity','column','columns','labels','text','world_readable','colorbar']
 	TRACE_KWARGS = ['hoverinfo','connectgaps']
 	PIE_KWARGS=['sort','pull','hole','textposition','textinfo','linecolor','linewidth','textcolor']

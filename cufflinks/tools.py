@@ -12,7 +12,7 @@ from .themes import THEMES
 from .utils import (check_kwargs, deep_update, dict_replace_keyword,
                     kwargs_from_keyword, merge_dict)
 
-__LAYOUT_VALID_KWARGS = ['legend','logx','logy','layout_update','title',
+__LAYOUT_VALID_KWARGS = ['legend','logx','logy','logz','layout_update','title',
 					'xrange','yrange','zrange','rangeselector','rangeslider','showlegend','fontfamily']
 
 __SHAPES_KWARGS = ['vline','hline','shapes','hspan','vspan']
@@ -292,13 +292,15 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	if 'showlegend' in kwargs:
 		layout['showlegend']=kwargs['showlegend']
 
-	if 'logy' in kwargs:
-		if kwargs['logy']:
-			layout['yaxis1']['type']='log'
-
-	if 'logx' in kwargs:
-		if kwargs['logx']:
-			layout['xaxis1']['type']='log'
+	# Logarithmic Axis
+	for _ in ['x','y','z']:
+		if 'log{0}'.format(_) in kwargs:
+			if is3d:			
+				if kwargs['log{0}'.format(_)]:
+					layout['scene']['{0}axis'.format(_)]['type']='log'
+			else:
+				if kwargs['log{0}'.format(_)]:
+					layout['{0}axis1'.format(_)]['type']='log'
 
 	# Shapes
 
