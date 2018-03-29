@@ -8,11 +8,11 @@ dependencies:
   override:
 
     # run all the pre-written installers (this will take a *while*)
-    - wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
-    - tar xvzf ta-lib-0.4.0-src.tar.gz
-    - cd ta-lib && ./configure --prefix=/usr
-    - cd ta-lib && make
-    - cd ta-lib && sudo make install
+    # - wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+    # - tar xvzf ta-lib-0.4.0-src.tar.gz
+    # - cd ta-lib && ./configure --prefix=/usr
+    # - cd ta-lib && make
+    # - cd ta-lib && sudo make install
     - bash circle/setup.sh
 
     # install testing tools for circle's version of things
@@ -24,7 +24,7 @@ dependencies:
 
   cache_directories:
     - "~/.pyenv/versions"  # attempt to just cache installed pyenv things
-    - "ta-lib"
+    # - "ta-lib"
 
 test:
   override:
