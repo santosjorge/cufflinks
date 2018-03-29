@@ -551,7 +551,9 @@ cnames = {'aliceblue': '#F0F8FF',
 
 _custom_scales = {
     'qual': {
+        # dflt only exists to keep backward compatibility after issue 91
         'dflt': ['orange', 'blue', 'grassgreen', 'purple', 'red', 'teal', 'yellow', 'olive', 'salmon', 'lightblue2'],
+        'original': ['orange', 'blue', 'grassgreen', 'purple', 'red', 'teal', 'yellow', 'olive', 'salmon', 'lightblue2'],
         'ggplot': ['brick', 'smurf', 'lightviolet', 'mediumgray', 'mustard', 'lime2', 'pinksalmon'],
         'polar': ['polarblue', 'polarorange', 'polargreen', 'polarpurple', 'polarred', 'polarcyan', 'polarbluelight']
     },

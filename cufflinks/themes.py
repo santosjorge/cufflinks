@@ -33,7 +33,7 @@ THEMES = {
 
 		},
 		'pearl' : {
-			'colorscale':'dflt',
+			'colorscale':'original',
 			'linewidth':1.3,
 			'bargap' : .01,
 			'layout' : {
@@ -72,7 +72,7 @@ THEMES = {
 			}
 		},
 		'solar' : {
-			'colorscale':'dflt',
+			'colorscale':'original',
 			'linewidth':1.3,
 			'bargap' : .01,
 			'layout' : {
@@ -101,7 +101,7 @@ THEMES = {
 			}
 		},
 		'space' : {
-			'colorscale':'dflt',
+			'colorscale':'original',
 			'linewidth':1.3,
 			'bargap' : .01,
 			'layout' : {
@@ -130,7 +130,7 @@ THEMES = {
 			}
 		},
 		'white' : {
-			'colorscale':'dflt',
+			'colorscale':'original',
 			'linewidth':1.3,
 			'bargap' : .01,
 			'layout' : {
@@ -208,7 +208,7 @@ THEMES = {
 			}
 		},
 		'henanigans' : {
-			'colorscale':'dflt',
+			'colorscale':'original',
 			'linewidth':1.3,
 			'bargap' : .01,
 			'layout' : {

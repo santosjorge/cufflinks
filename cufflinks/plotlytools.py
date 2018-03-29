@@ -200,8 +200,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 		return data
 	return go.Data(lines_plotly)
 
-def _iplot(self,data=None,layout=None,filename='',sharing=None,
-			kind='scatter',title='',xTitle='',yTitle='',zTitle='',theme=None,colors=None,colorscale=None,fill=False,width=None,
+def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,title='',xTitle='',yTitle='',zTitle='',theme=None,colors=None,colorscale=None,fill=False,width=None,
 			dash='solid',mode='lines',interpolation='linear',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
 			bestfit_colors=None,mean=False,mean_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,
@@ -213,21 +212,6 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 
 	Parameters:
 	-----------
-		data : Data
-			Plotly Data Object.
-			If not entered then the Data object will be automatically
-			generated from the DataFrame.
-		layout : Layout
-			Plotly layout Object
-			If not entered then the Layout objet will be automatically
-			generated from the DataFrame.
-		filename : string
-			Filename to be saved as in plotly account
-		sharing : string
-			Sets the sharing level permission
-				public - anyone can see this chart
-				private - only you can see this chart
-				secret - only people with the link can see the chart
 		kind : string
 			Kind of chart
 				scatter
@@ -246,6 +230,21 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 				candle
 				pie
 				choroplet	
+		data : Data
+			Plotly Data Object.
+			If not entered then the Data object will be automatically
+			generated from the DataFrame.
+		layout : Layout
+			Plotly layout Object
+			If not entered then the Layout objet will be automatically
+			generated from the DataFrame.
+		filename : string
+			Filename to be saved as in plotly account
+		sharing : string
+			Sets the sharing level permission
+				public - anyone can see this chart
+				private - only you can see this chart
+				secret - only people with the link can see the chart
 		title : string
 			Chart Title				
 		xTitle : string
@@ -676,7 +675,11 @@ def _iplot(self,data=None,layout=None,filename='',sharing=None,
 		theme = auth.get_config_file()['theme']
 	theme_config=tools.getTheme(theme)
 	if colorscale is None:
-		colorscale=theme_config['colorscale'] if 'colorscale' in theme_config else 'dflt'
+		config_colorscale=auth.get_config_file()['colorscale']
+		if config_colorscale in ('dflt',None):
+			colorscale=theme_config['colorscale'] if 'colorscale' in theme_config else 'original'
+		else:
+			colorscale=config_colorscale
 	if width is None:
 		if kind != 'pie':
 			width=theme_config['linewidth'] if 'linewidth' in theme_config else 2
