@@ -820,9 +820,9 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				z=size if size else z
 				rg=self[z].values
                                 if len(rg) > 1:
-				    z=[int(100*(float(_)-rg.min())/(rg.max()-rg.min()))+12 for _ in rg]
+					z=[int(100*(float(_)-rg.min())/(rg.max()-rg.min()))+12 for _ in rg]
                                 else:
-                                    z=[12] if len(rg) else []
+					z=[12] if len(rg) else []
 				text=kwargs['labels'] if 'labels' in kwargs else text
 				labels=self[text].values.tolist() if text else ''
 				clrs=colors if colors else get_scales(colorscale)
