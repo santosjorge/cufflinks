@@ -130,7 +130,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 	if not keys:		
 		if 'bar' in kind:
 			if sortbars:
-				keys=list(df.sum().sort(inplace=False,ascending=False).keys())
+				keys=list(df.sum().sort_values(ascending=False).keys())
 			else:
 				keys=list(df.keys())
 		else:
