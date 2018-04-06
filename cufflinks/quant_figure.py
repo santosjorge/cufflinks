@@ -33,6 +33,7 @@ __QUANT_FIGURE_LAYOUT = ['annotations','showlegend','margin','rangeselector','ra
 __QUANT_FIGURE_THEME = ['theme','up_color','down_color']
 __QUANT_FIGURE_PANELS = ['min_panel_size','spacing','top_margin','bottom_margin']
 
+
 def get_layout_kwargs():
 	return tools.__LAYOUT_KWARGS
 def get_annotation_kwargs():
@@ -1126,7 +1127,9 @@ class QuantFig(object):
 		return fig
 	
 	def iplot(self,**kwargs):
-		
+		__QUANT_FIGURE_EXPORT = ['asFigure','asUrl','asImage','asPlot','display_image','validate',
+						 'sharing','online','filename','dimensions']
+
 		layout=copy.deepcopy(self.layout)
 		data=copy.deepcopy(self.data)
 		self_kwargs=copy.deepcopy(self.kwargs)
@@ -1138,6 +1141,8 @@ class QuantFig(object):
 		showstudies=kwargs.pop('showstudies',True)
 		study_kwargs=utils.kwargs_from_keyword(kwargs,{},'study',True)
 		datalegend=kwargs.pop('datalegend',data.pop('datalegend',data.pop('showlegend',True)))
+		export_kwargs = utils.check_kwargs(kwargs,__QUANT_FIGURE_EXPORT)
+
 		_slice=data.pop('slice')
 		_resample=data.pop('resample')
 		
@@ -1216,7 +1221,7 @@ class QuantFig(object):
 		if asFigure:
 			return fig
 		else:
-			return fig.iplot()
+			return fig.iplot(**export_kwargs)
 	
 	def __getitem__(self,key):
 			return self.__dict__[key]

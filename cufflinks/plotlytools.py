@@ -478,17 +478,31 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 		asFigure : bool
 			If True returns plotly Figure
 		asImage : bool
-			If True it returns Image
-			* Only valid when asImage=True
+			If True it returns an Image (png)
+			In ONLINE mode:
+				Image file is saved in the working directory				
+					Accepts:
+						filename
+						dimensions
+						scale
+						display_image
+			In OFFLINE mode:
+				Image file is downloaded (downloads folder) and a 
+				regular plotly chart is displayed in Jupyter
+					Accepts:
+						filename
+						dimensions
 		dimensions : tuple(int,int)
-			Dimensions for image
+			Dimensions for image / chart
 				(width,height)		
 		asPlot : bool
 			If True the chart opens in browser
 		asUrl : bool
-			If True the chart url is returned. No chart is displayed. 
+			If True the chart url/path is returned. No chart is displayed. 
+				If Online : the URL is returned
+				If Offline : the local path is returned
 		online : bool
-			If True then the chart is rendered on the server 
+			If True then the chart/image is rendered on the server 
 			even when running in offline mode. 
 
 		Other Kwargs
@@ -634,6 +648,14 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				Textt angle 
 			See https://plot.ly/python/reference/#layout-annotations 
 			for a complete list of valid parameters.
+
+		Exports
+			display_image : bool
+				If True then the image if displayed after being saved
+				** only valid if asImage=True
+			scale : integer
+				Increase the resolution of the image by `scale` amount
+				Only valid when asImage=True		
 	"""
 
 	# Valid Kwargs
@@ -646,8 +668,9 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 	GEO_KWARGS=['locationmode','locationsrc','geo','lon','lat']
 	ERROR_KWARGS=['error_trace','error_values_minus','error_color','error_thickness',
 					'error_width','error_opacity']
+	EXPORT_KWARGS=['display_image','scale']
 	kwargs_list = [tools.__LAYOUT_KWARGS,TRACE_KWARGS,
-				   OHLC_KWARGS,PIE_KWARGS,SUBPLOT_KWARGS,GEO_KWARGS,ERROR_KWARGS]
+				   OHLC_KWARGS,PIE_KWARGS,SUBPLOT_KWARGS,GEO_KWARGS,ERROR_KWARGS,EXPORT_KWARGS]
 	[valid_kwargs.extend(_) for _ in kwargs_list]
 
 	dict_modifiers_keys = ['line']
@@ -1066,34 +1089,11 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 
 	if asFigure:
 		return figure
-	elif asImage:
-		if not dimensions:
-			dimensions=(1000,500)
-		try:
-			py.image.save_as(figure,filename='img/'+filename,format='png',
-				width=dimensions[0],height=dimensions[1])
-			path='img/'+filename+'.png'
-		except:
-			py.image.save_as(figure,filename=filename,format='png',
-				width=dimensions[0],height=dimensions[1])
-			path=filename+'.png'
-		return display(Image(path))
-	elif asPlot:
-		if offline.is_offline() and not online:
-			return offline.py_offline.plot(figure, filename=filename, validate=validate)
-		else:
-			return py.plot(figure, sharing=sharing, filename=filename, validate=validate)
-	elif asUrl:
-		if offline.is_offline() and not online:
-			return offline.py_offline.plot(figure, filename=filename, validate=validate,
-										   auto_open=False)
-		else:
-			return py.plot(figure, sharing=sharing, filename=filename, validate=validate,
-						   auto_open=False)
 	else:
-		return iplot(figure, sharing=sharing, filename=filename, validate=validate, online=online)
-
-
+		return iplot(figure,validate=validate,sharing=sharing,filename=filename,
+			 online=online,asImage=asImage,asUrl=asUrl,asPlot=asPlot,
+			 dimensions=dimensions,display_image=kwargs.get('display_image',True))
+	
 
 def get_colors(colors,colorscale,keys,asList=False):
 	if type(colors)!=dict:
@@ -1184,12 +1184,25 @@ def _layout(self,**kwargs):
 	kwargs['asFigure']=True
 	return self.iplot(**kwargs)['layout']
 
+	
+# ONLINE
+# py.iplot(filename,fileopt,sharing,world_readable)
+# py.plot(filename,fileopt,auto_open,sharing,world_readable)
+# py.image.ishow(figure,format,width,height,scale)
+# py.image.save_as(figure,filename,format,width,height,scale)
 
-def iplot(data_or_figure,validate=True,sharing=None,filename='',online=None,**kwargs):
+# OFFLINE
+# py_offline.iplot(figure,show_link,link_text,validate,image,filename,image_width,image_height,config)
+# py_offline.plot(figure,show_link,link_text,validate,output_type,include_plotlyjs,filename,auto_open,image,image_filename,image_width,image_height,config)
+
+
+def iplot(figure,validate=True,sharing=None,filename='',
+			 online=None,asImage=False,asUrl=False,asPlot=False,
+			 dimensions=None,display_image=True,**kwargs):
 	"""
-	Plots a figure in IPython
+	Plots a figure in IPython, creates an HTML or generates an Image
 
-	data_or_figure : figure
+	figure : figure
 		Plotly figure to be charted
 	validate : bool
 		If True then all values are validated before 
@@ -1200,23 +1213,58 @@ def iplot(data_or_figure,validate=True,sharing=None,filename='',online=None,**kw
 			private - only you can see this chart
 			secret - only people with the link can see the chart
 	filename : string
-		Name to be used to save the file in the server
+		Name to be used to save the file in the server, or as an image
 	online : bool
-		If True then charts are rendered in the server 
+		If True then the chart/image is rendered on the server 
+		even when running in offline mode. 
+	asImage : bool
+			If True it returns an Image (png)
+			In ONLINE mode:
+				Image file is saved in the working directory				
+					Accepts:
+						filename
+						dimensions
+						scale
+						display_image
+			In OFFLINE mode:
+				Image file is downloaded (downloads folder) and a 
+				regular plotly chart is displayed in Jupyter
+					Accepts:
+						filename
+						dimensions
+	asUrl : bool
+		If True the chart url/path is returned. No chart is displayed. 
+			If Online : the URL is returned
+			If Offline : the local path is returned
+	asPlot : bool
+		If True the chart opens in browser
+	dimensions : tuple(int,int)
+		Dimensions for image
+			(width,height)		
+	display_image : bool
+		If true, then the image is displayed after it has been saved
+		Requires Jupyter Notebook
+		Only valid when asImage=True
 
 	Other Kwargs
 	============
-
 		legend : bool
-			If False then the legend will not be shown		
+			If False then the legend will not be shown
+		scale : integer
+			Increase the resolution of the image by `scale` amount
+			Only valid when asImage=True		
 	"""
-	valid_kwargs=['world_readable','legend']
+	valid_kwargs=['world_readable','legend','scale']
+
 	for key in list(kwargs.keys()):
 		if key not in valid_kwargs:
 			raise Exception("Invalid keyword : '{0}'".format(key))
+	
 	if 'legend' in kwargs:
-		if 'layout' in data_or_figure:
-			data_or_figure['layout'].update(showlegend=kwargs['legend'])
+		if 'layout' in figure:
+			figure['layout'].update(showlegend=kwargs['legend'])
+
+	## Sharing Values
 	if all(['world_readable' in kwargs,sharing is None]):
 		sharing=kwargs['world_readable']
 	if isinstance(sharing,bool):
@@ -1226,17 +1274,70 @@ def iplot(data_or_figure,validate=True,sharing=None,filename='',online=None,**kw
 				sharing='private'
 	if sharing is None:
 		sharing=auth.get_config_file()['sharing']
-	if offline.is_offline() and not online:
-		show_link = auth.get_config_file()['offline_show_link']
-		link_text = auth.get_config_file()['offline_link_text']
-		return offline.py_offline.iplot(data_or_figure,show_link=show_link,link_text=link_text)
-	else:
-		if 'layout' in data_or_figure:
-			validate = False if 'shapes' in data_or_figure['layout'] else validate
-		if not filename:
+
+	## Filename Handling
+	if not filename:
+		if figure['layout']['title']:
+			filename=figure['layout']['title']
+		else:
 			filename='Plotly Playground {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
-		return py.iplot(data_or_figure,validate=validate,sharing=sharing,
+
+	## Dimensions
+	if not dimensions:
+		dimensions=(800,500) if not auth.get_config_file()['dimensions'] else auth.get_config_file()['dimensions']
+
+	## Offline Links
+	show_link = auth.get_config_file()['offline_show_link']
+	link_text = auth.get_config_file()['offline_link_text']
+
+	## Remove validation if shapes are present
+	if 'layout' in figure:
+		validate = False if 'shapes' in figure['layout'] else validate
+
+	## asURL
+	auto_open=True
+	if asUrl:
+		asPlot=True
+		auto_open=False
+
+	## Exports
+	if asImage:
+		if offline.is_offline() and not online:
+			return offline.py_offline.iplot(figure,validate=validate, filename=filename, show_link=show_link,link_text=link_text,
+				image='png',image_width=dimensions[0],image_height=dimensions[1])
+		else:
+			try:
+				py.image.save_as(figure,filename='img/'+filename,format='png',
+					width=dimensions[0],height=dimensions[1],scale=kwargs.get('scale',None))
+				path='img/'+filename+'.png'
+			except:
+				py.image.save_as(figure,filename=filename,format='png',
+					width=dimensions[0],height=dimensions[1],scale=kwargs.get('scale',None))
+				path=filename+'.png'
+			if display_image:
+				return display(Image(path))
+			else:
+				print('Image saved : {0}'.format(path))
+				return None
+
+	## asPlot and asUrl
+	if asPlot:
+		filename+='.html'
+		if offline.is_offline() and not online:
+			return offline.py_offline.plot(figure, filename=filename, validate=validate,
+								show_link=show_link,link_text=link_text,auto_open=auto_open)
+		else:
+			return py.plot(figure, sharing=sharing, filename=filename, validate=validate,
+							auto_open=auto_open)
+
+	## iplot
+	if offline.is_offline() and not online:	
+		return offline.py_offline.iplot(figure,validate=validate, filename=filename, show_link=show_link,link_text=link_text)
+	else:		
+		return py.iplot(figure,validate=validate,sharing=sharing,
 						filename=filename)
+
+		
 
 def _ta_figure(self,**kwargs):
 	"""
@@ -1395,12 +1496,12 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str='{name}({period}
 
 	inset=study in ('sma','boll','ema','atr','ptps')
 	figure=get_study(self,ta_func,iplot_kwargs,iplot_study_kwargs,include=include,
-				     column=column,str=str,inset=inset)
+					 column=column,str=str,inset=inset)
 
 	## Add Bands
 	if study in ('rsi','cci'):
 		bands= {'rsi':(30,70),
-			    'cci':(-100,100)}
+				'cci':(-100,100)}
 		_upper=study_kwargs.get('{0}_upper'.format(study),bands[study][0])
 		_lower=study_kwargs.get('{0}_lower'.format(study),bands[study][1])
 		yref='y2' if include else 'y1'
@@ -1428,10 +1529,14 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str='{name}({period}
 	else: 
 		return iplot(figure,sharing=sharing,filename=filename)
 
-def _fig_iplot(self,validate=True,sharing=None,filename='',online=None,**kwargs):
+def _fig_iplot(self,validate=True,sharing=None,filename='',
+			 online=None,asImage=False,asUrl=False,asPlot=False,
+			 dimensions=None,display_image=True,**kwargs):
 	"""
 	Plots a figure in IPython
 
+	figure : figure
+		Plotly figure to be charted
 	validate : bool
 		If True then all values are validated before 
 		it is charted
@@ -1441,9 +1546,38 @@ def _fig_iplot(self,validate=True,sharing=None,filename='',online=None,**kwargs)
 			private - only you can see this chart
 			secret - only people with the link can see the chart
 	filename : string
-		Name to be used to save the file in the server
+		Name to be used to save the file in the server, or as an image
 	online : bool
-		If True then charts are rendered in the server 
+		If True then the chart is rendered on the server 
+		even when running in offline mode. 
+	asImage : bool
+			If True it returns an Image (png)
+			In ONLINE mode:
+				Image file is saved in the working directory				
+					Accepts:
+						filename
+						dimensions
+						scale
+						display_image
+			In OFFLINE mode:
+				Image file is downloaded (downloads folder) and a 
+				regular plotly chart is displayed in Jupyter
+					Accepts:
+						filename
+						dimensions
+	asUrl : bool
+		If True the chart url/path is returned. No chart is displayed. 
+			If Online : the URL is returned
+			If Offline : the local path is returned
+	asPlot : bool
+		If True the chart opens in browser
+	dimensions : tuple(int,int)
+		Dimensions for image
+			(width,height)		
+	display_image : bool
+		If true, then the image is displayed after it has been saved
+		Requires Jupyter Notebook
+		onlh valide when asImage=True
 
 	Other Kwargs
 	============
@@ -1451,7 +1585,9 @@ def _fig_iplot(self,validate=True,sharing=None,filename='',online=None,**kwargs)
 		legend : bool
 			If False then the legend will not be shown		
 	"""
-	return iplot(self,validate=True,sharing=None,filename='',online=None,**kwargs)
+	return iplot(self,validate=validate,sharing=sharing,filename=filename,
+			 online=online,asImage=asImage,asUrl=asUrl,asPlot=asPlot,
+			 dimensions=dimensions,display_image=display_image,**kwargs)
 
 
 pd.DataFrame.to_iplot=_to_iplot
