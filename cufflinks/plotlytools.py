@@ -943,6 +943,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				data=go.Data()
 				keys=self[text].values if text else list(range(len(self)))
 				colors=get_colors(colors,colorscale,keys,asList=True)
+				mode='markers' if 'markers' not in mode else mode 
 				df=self.copy()
 				df['index']=keys
 				if kind=='bubble3d':
