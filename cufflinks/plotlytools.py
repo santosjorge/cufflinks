@@ -706,8 +706,9 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 	if width is None:
 		if kind != 'pie':
 			width=theme_config['linewidth'] if 'linewidth' in theme_config else 2
-	# if bargap is None:
-	# 	bargap=theme_config['bargap'] if 'bargap' in theme_config else 0
+	if margin is None:
+		margin=auth.get_config_file().get('margin',None)
+
 
 	# In case column was used instead of keys
 	if 'column' in kwargs:
