@@ -541,6 +541,17 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 			line_color : string
 				specifies the line color of the histogram
 
+		Heatmap and Surface
+			center_scale : float
+				Centers the colorscale at a specific value
+				Automatically sets the (zmin,zmax) values
+			zmin : float
+				Defines the minimum range for the z values. 
+				This affects the range for the colorscale
+			zmax : float
+				Defines the maximum range for the z values. 
+				This affects the range for the colorscale
+
 		Error Bars
 			error_trace : string
 				Name of the column for which error should be 
@@ -661,6 +672,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 	# Valid Kwargs
 	valid_kwargs = ['color','opacity','column','columns','labels','text','world_readable','colorbar']
 	TRACE_KWARGS = ['hoverinfo','connectgaps']
+	HEATMAP_SURFACE_KWARGS = ['center_scale','zmin','zmax']
 	PIE_KWARGS=['sort','pull','hole','textposition','textinfo','linecolor','linewidth','textcolor']
 	OHLC_KWARGS=['up_color','down_color','open','high','low','close','volume','name','decreasing','increasing']
 	SUBPLOT_KWARGS=['horizontal_spacing', 'vertical_spacing',
@@ -670,7 +682,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					'error_width','error_opacity']
 	EXPORT_KWARGS=['display_image','scale']
 	kwargs_list = [tools.__LAYOUT_KWARGS,TRACE_KWARGS,
-				   OHLC_KWARGS,PIE_KWARGS,SUBPLOT_KWARGS,GEO_KWARGS,ERROR_KWARGS,EXPORT_KWARGS]
+				   OHLC_KWARGS,PIE_KWARGS,HEATMAP_SURFACE_KWARGS,SUBPLOT_KWARGS,GEO_KWARGS,ERROR_KWARGS,EXPORT_KWARGS]
 	[valid_kwargs.extend(_) for _ in kwargs_list]
 
 	dict_modifiers_keys = ['line']
@@ -912,10 +924,20 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				z=self[z].values.tolist() if z else self.values.transpose()
 				scale=get_scales('rdbu') if not colorscale else get_scales(colorscale)
 				colorscale=[[float(_)/(len(scale)-1),scale[_]] for _ in range(len(scale))]
+				center_scale = kwargs.get('center_scale',None)
+				zmin=z.min()
+				zmax=z.max()
+				if center_scale is not None:
+					if center_scale<=zmin+(zmax-zmin)/2:
+						zmin=center_scale*2-zmax
+					else:
+						zmax=center_scale*2-zmin
+				zmin=kwargs.get('zmin',zmin)
+				zmax=kwargs.get('zmax',zmax)
 				if kind=='heatmap':
-					data=go.Data([go.Heatmap(z=z,x=x,y=y,colorscale=colorscale)])
+					data=go.Data([go.Heatmap(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)])
 				else:
-					data=go.Data([go.Surface(z=z,x=x,y=y,colorscale=colorscale)])
+					data=go.Data([go.Surface(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)])
 
 			elif kind in ('scatter3d','bubble3d'):
 				data=go.Data()
