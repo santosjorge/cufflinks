@@ -1,0 +1,193 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cufflinks.pandastools &#8212; Cufflinks  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cufflinks.pandastools</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+
+
+<span class="k">def</span> <span class="nf">_screen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">include</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Filters a DataFrame for columns that contain the given strings. </span>
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		include : bool</span>
+<span class="sd">			If False then it will exclude items that match </span>
+<span class="sd">			the given filters.</span>
+<span class="sd">			This is the same as passing a regex ^keyword</span>
+<span class="sd">		kwargs : </span>
+<span class="sd">			Key value pairs that indicate the column and </span>
+<span class="sd">			value to screen for</span>
+
+<span class="sd">	Example:</span>
+<span class="sd">		df.screen(col1=&#39;string_to_match&#39;,col2=[&#39;string1&#39;,&#39;string2&#39;])</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+	<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+		<span class="n">v</span><span class="o">=</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">!=</span><span class="nb">list</span> <span class="k">else</span> <span class="n">v</span>
+		<span class="k">if</span> <span class="n">include</span><span class="p">:</span>
+			<span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">v</span><span class="p">),</span><span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="kc">False</span><span class="p">)]</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">v</span><span class="p">),</span><span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">==</span><span class="kc">False</span><span class="p">]</span>
+	<span class="k">return</span> <span class="n">df</span>
+
+<span class="k">def</span> <span class="nf">_swapcolumns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Swaps first and second columns. </span>
+<span class="sd">	Useful for inverting axis when plotting. </span>
+
+<span class="sd">	Example:</span>
+<span class="sd">		df.swapcolumns()</span>
+
+<span class="sd">	Returns : DataFrame</span>
+
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reindex_axis</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="bestfit"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.pandastools.bestfit">[docs]</a><span class="k">def</span> <span class="nf">bestfit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a series with the bestfit values. </span>
+<span class="sd">	</span>
+<span class="sd">	Example:</span>
+<span class="sd">		Series.bestfit()</span>
+
+<span class="sd">	Returns: series</span>
+<span class="sd">		The returned series contains a parameter </span>
+<span class="sd">		called &#39;formula&#39; which includes the string representation </span>
+<span class="sd">		of the bestfit line. </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="c1"># statsmodel cannot be included on requirements.txt</span>
+	<span class="c1"># see https://github.com/scikit-learn/scikit-learn/issues/4164</span>
+	<span class="c1"># which shares the same issue as statsmodel</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="kn">import</span> <span class="nn">statsmodels.api</span> <span class="k">as</span> <span class="nn">sm</span>
+	<span class="k">except</span><span class="p">:</span>
+		<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;statsmodels is required: &quot;</span> \
+						<span class="s2">&quot;please run &quot;</span> \
+						<span class="s2">&quot;pip install statsmodels&quot;</span> <span class="p">)</span>
+
+	<span class="n">x</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)),</span><span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+	<span class="n">x</span><span class="o">=</span><span class="n">sm</span><span class="o">.</span><span class="n">add_constant</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+	<span class="n">model</span><span class="o">=</span><span class="n">sm</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+	<span class="n">fit</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+	<span class="n">vals</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">values</span>
+	<span class="n">best_fit</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">fittedvalues</span>
+	<span class="c1"># the below methods have been deprecated in Pandas</span>
+	<span class="c1"># model=pd.ols(x=x,y=self,intercept=True)</span>
+	<span class="c1"># best_fit=model.y_fitted</span>
+	<span class="n">best_fit</span><span class="o">.</span><span class="n">formula</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.2f</span><span class="s1">*x+</span><span class="si">%.2f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+	<span class="k">return</span> <span class="n">best_fit</span></div>
+
+<div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.pandastools.normalize">[docs]</a><span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">asOf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">multiplier</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a normalized series or DataFrame</span>
+<span class="sd">	</span>
+<span class="sd">	Example:</span>
+<span class="sd">		Series.normalize()</span>
+
+<span class="sd">	Returns: series of DataFrame</span>
+<span class="sd">	</span>
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		asOf : string</span>
+<span class="sd">			Date format</span>
+<span class="sd">			&#39;2015-02-29&#39;</span>
+<span class="sd">		multiplier : int</span>
+<span class="sd">			Factor by which the results will be adjusted</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">asOf</span><span class="p">:</span>
+		<span class="n">x0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="n">x0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">asOf</span><span class="p">]</span>
+	<span class="k">return</span> <span class="bp">self</span><span class="o">/</span><span class="n">x0</span><span class="o">*</span><span class="n">multiplier</span></div>
+
+<div class="viewcode-block" id="read_google"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.pandastools.read_google">[docs]</a><span class="k">def</span> <span class="nf">read_google</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Reads a google sheet</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">if</span> <span class="n">url</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;/&#39;</span><span class="p">:</span>
+		<span class="n">url</span><span class="o">+=</span><span class="s1">&#39;/&#39;</span>
+	<span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">url</span><span class="o">+</span><span class="s1">&#39;export?gid=0&amp;format=csv&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">screen</span><span class="o">=</span><span class="n">_screen</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">swapcolumns</span><span class="o">=</span><span class="n">_swapcolumns</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">read_google</span><span class="o">=</span><span class="n">read_google</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="o">.</span><span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="o">.</span><span class="n">bestfit</span><span class="o">=</span><span class="n">bestfit</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Jorge Santos.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
