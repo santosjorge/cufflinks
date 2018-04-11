@@ -4,6 +4,7 @@ import time
 import copy
 # from plotly.graph_objs import *
 import plotly.graph_objs as go
+import plotly.figure_factory as ff
 from collections import defaultdict
 from IPython.display import display,Image
 from .exceptions import CufflinksError
@@ -868,7 +869,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 								line=go.Line(width=width))
 				trace=go.Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
 				data=go.Data([trace])
-			elif kind in ('box','histogram','hist'):
+			elif kind in ('box','histogram','hist','violin'):
 				if isinstance(self,pd.core.series.Series):
 					df=pd.DataFrame({self.name:self})
 				else:
@@ -883,6 +884,15 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					if kind=='box':
 						__=go.Box(y=df[_].values.tolist(),marker=go.Marker(color=clrs[_]),name=_,
 								line=go.Line(width=width),boxpoints=boxpoints)
+					elif kind=='violin':
+						figure = ff.create_violin(df.melt(), data_header='value', group_header='variable')
+						if asFigure:
+							return figure
+						else:
+							return iplot(figure,validate=validate,sharing=sharing,filename=filename,
+								online=online,asImage=asImage,asUrl=asUrl,asPlot=asPlot,
+								dimensions=dimensions,display_image=kwargs.get('display_image',True))
+
 					else:
 						__=go.Histogram(x=df[_].values.tolist(),name=_,
 								marker=go.Marker(color=clrs[_], line=go.Line(width=width)),
