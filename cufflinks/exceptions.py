@@ -1,2 +1,2 @@
 class CufflinksError(Exception):
-		pass
+    pass
