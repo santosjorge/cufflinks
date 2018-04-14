@@ -27,10 +27,27 @@ from .quant_figure import QuantFig
 from .offline import is_offline,go_offline,go_online
 from .version import __version__
 
-try:
-	if get_config_file()['offline']:
-		go_offline()
-	else:
-		go_online()
-except:
-	pass
+import sys
+if sys.version_info.major >= 3:
+    from io import StringIO
+else:
+    from StringIO import StringIO
+
+class Capturing(list):
+    def __enter__(self):
+        self._stdout = sys.stdout
+        sys.stdout = self._stringio = StringIO()
+        return self
+    def __exit__(self, *args):
+        self.extend(self._stringio.getvalue().splitlines())
+        del self._stringio    # free up some memory
+        sys.stdout = self._stdout
+
+with Capturing() as output:
+    try:
+        if get_config_file()['offline']:
+            go_offline()
+        else:
+            go_online()
+    except:
+        pass
