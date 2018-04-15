@@ -673,6 +673,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 	# Valid Kwargs
 	valid_kwargs = ['color','opacity','column','columns','labels','text','world_readable','colorbar']
 	TRACE_KWARGS = ['hoverinfo','connectgaps']
+	VIOLIN_KWARGS = ['rugplot']
 	HEATMAP_SURFACE_KWARGS = ['center_scale','zmin','zmax']
 	PIE_KWARGS=['sort','pull','hole','textposition','textinfo','linecolor','linewidth','textcolor']
 	OHLC_KWARGS=['up_color','down_color','open','high','low','close','volume','name','decreasing','increasing']
@@ -683,7 +684,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					'error_width','error_opacity']
 	EXPORT_KWARGS=['display_image','scale']
 	kwargs_list = [tools.__LAYOUT_KWARGS,TRACE_KWARGS,
-				   OHLC_KWARGS,PIE_KWARGS,HEATMAP_SURFACE_KWARGS,SUBPLOT_KWARGS,GEO_KWARGS,ERROR_KWARGS,EXPORT_KWARGS]
+				   OHLC_KWARGS,VIOLIN_KWARGS,PIE_KWARGS,HEATMAP_SURFACE_KWARGS,SUBPLOT_KWARGS,GEO_KWARGS,ERROR_KWARGS,EXPORT_KWARGS]
 	[valid_kwargs.extend(_) for _ in kwargs_list]
 
 	dict_modifiers_keys = ['line']
@@ -886,8 +887,11 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 								line=go.Line(width=width),boxpoints=boxpoints)
 					elif kind=='violin':
 						dimensions = dimensions if dimensions else (None, None)
+						kw = check_kwargs(kwargs,VIOLIN_KWARGS)
+						rugplot = kw.pop('rugplot', True)
 						figure = ff.create_violin(df.melt(), data_header='value', group_header='variable',
-							title=title, colors=colors, width = dimensions[0], height=dimensions[1])
+							title=title, colors=colors, rugplot=rugplot,
+							width = dimensions[0], height=dimensions[1])
 						if asFigure:
 							return figure
 						else:
