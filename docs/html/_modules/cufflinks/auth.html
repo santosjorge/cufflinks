@@ -83,16 +83,16 @@
 	<span class="n">_file_permissions</span> <span class="o">=</span> <span class="kc">False</span>                 
 
 
-<div class="viewcode-block" id="get_path"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.auth.get_path">[docs]</a><span class="k">def</span> <span class="nf">get_path</span><span class="p">():</span>
+<div class="viewcode-block" id="get_path"><a class="viewcode-back" href="../../cufflinks.auth.html#cufflinks.auth.get_path">[docs]</a><span class="k">def</span> <span class="nf">get_path</span><span class="p">():</span>
 	<span class="k">return</span> <span class="n">AUTH_DIR</span></div>
 
-<div class="viewcode-block" id="get_pickle_path"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.auth.get_pickle_path">[docs]</a><span class="k">def</span> <span class="nf">get_pickle_path</span><span class="p">():</span>
+<div class="viewcode-block" id="get_pickle_path"><a class="viewcode-back" href="../../cufflinks.auth.html#cufflinks.auth.get_pickle_path">[docs]</a><span class="k">def</span> <span class="nf">get_pickle_path</span><span class="p">():</span>
 	<span class="k">return</span> <span class="n">PICKLE_FILE</span></div>
 
-<div class="viewcode-block" id="check_file_permissions"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.auth.check_file_permissions">[docs]</a><span class="k">def</span> <span class="nf">check_file_permissions</span><span class="p">():</span>
+<div class="viewcode-block" id="check_file_permissions"><a class="viewcode-back" href="../../cufflinks.auth.html#cufflinks.auth.check_file_permissions">[docs]</a><span class="k">def</span> <span class="nf">check_file_permissions</span><span class="p">():</span>
 	<span class="k">return</span> <span class="n">_file_permissions</span></div>
 
-<div class="viewcode-block" id="ensure_local_files"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.auth.ensure_local_files">[docs]</a><span class="k">def</span> <span class="nf">ensure_local_files</span><span class="p">():</span>
+<div class="viewcode-block" id="ensure_local_files"><a class="viewcode-back" href="../../cufflinks.auth.html#cufflinks.auth.ensure_local_files">[docs]</a><span class="k">def</span> <span class="nf">ensure_local_files</span><span class="p">():</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Ensure that filesystem is setup/filled out in a valid way</span>
 <span class="sd">	&quot;&quot;&quot;</span>
@@ -114,7 +114,7 @@
 					  <span class="s2">&quot;your &#39;home&#39; (&#39;~&#39;) directory&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="set_config_file"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.auth.set_config_file">[docs]</a><span class="k">def</span> <span class="nf">set_config_file</span><span class="p">(</span><span class="n">sharing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">colorscale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">offline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="set_config_file"><a class="viewcode-back" href="../../cufflinks.auth.html#cufflinks.auth.set_config_file">[docs]</a><span class="k">def</span> <span class="nf">set_config_file</span><span class="p">(</span><span class="n">sharing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">colorscale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">offline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 					<span class="n">offline_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">offline_show_link</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">offline_link_text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 					<span class="n">datagen_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
@@ -192,7 +192,7 @@
 	<span class="n">ensure_local_files</span><span class="p">()</span>  </div>
 
 
-<div class="viewcode-block" id="get_config_file"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.auth.get_config_file">[docs]</a><span class="k">def</span> <span class="nf">get_config_file</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="get_config_file"><a class="viewcode-back" href="../../cufflinks.auth.html#cufflinks.auth.get_config_file">[docs]</a><span class="k">def</span> <span class="nf">get_config_file</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return specified args from `~/.confg`. as dict.</span>
 <span class="sd">    Returns all if no arguments are specified.</span>
@@ -208,7 +208,7 @@
         <span class="k">return</span> <span class="n">_FILE_CONTENT</span><span class="p">[</span><span class="n">CONFIG_FILE</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="load_json_dict"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.auth.load_json_dict">[docs]</a><span class="k">def</span> <span class="nf">load_json_dict</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="load_json_dict"><a class="viewcode-back" href="../../cufflinks.auth.html#cufflinks.auth.load_json_dict">[docs]</a><span class="k">def</span> <span class="nf">load_json_dict</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;Checks if file exists. Returns {} if something fails.&quot;&quot;&quot;</span>
 	<span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
 	<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
@@ -224,7 +224,7 @@
 	<span class="k">return</span> <span class="n">data</span></div>
 
 
-<div class="viewcode-block" id="save_json_dict"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.auth.save_json_dict">[docs]</a><span class="k">def</span> <span class="nf">save_json_dict</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">json_dict</span><span class="p">):</span>
+<div class="viewcode-block" id="save_json_dict"><a class="viewcode-back" href="../../cufflinks.auth.html#cufflinks.auth.save_json_dict">[docs]</a><span class="k">def</span> <span class="nf">save_json_dict</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">json_dict</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;Will error if filename is not appropriate, but it&#39;s checked elsewhere.</span>
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>

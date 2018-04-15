@@ -74,7 +74,7 @@
 <span class="sd">	&quot;&quot;&quot;</span>
 	<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reindex_axis</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-<div class="viewcode-block" id="bestfit"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.pandastools.bestfit">[docs]</a><span class="k">def</span> <span class="nf">bestfit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="bestfit"><a class="viewcode-back" href="../../cufflinks.pandastools.html#cufflinks.pandastools.bestfit">[docs]</a><span class="k">def</span> <span class="nf">bestfit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Returns a series with the bestfit values. </span>
 <span class="sd">	</span>
@@ -108,7 +108,7 @@
 	<span class="n">best_fit</span><span class="o">.</span><span class="n">formula</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.2f</span><span class="s1">*x+</span><span class="si">%.2f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 	<span class="k">return</span> <span class="n">best_fit</span></div>
 
-<div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.pandastools.normalize">[docs]</a><span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">asOf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">multiplier</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../cufflinks.pandastools.html#cufflinks.pandastools.normalize">[docs]</a><span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">asOf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">multiplier</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Returns a normalized series or DataFrame</span>
 <span class="sd">	</span>
@@ -131,7 +131,7 @@
 		<span class="n">x0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">asOf</span><span class="p">]</span>
 	<span class="k">return</span> <span class="bp">self</span><span class="o">/</span><span class="n">x0</span><span class="o">*</span><span class="n">multiplier</span></div>
 
-<div class="viewcode-block" id="read_google"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.pandastools.read_google">[docs]</a><span class="k">def</span> <span class="nf">read_google</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="read_google"><a class="viewcode-back" href="../../cufflinks.pandastools.html#cufflinks.pandastools.read_google">[docs]</a><span class="k">def</span> <span class="nf">read_google</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 	<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">	Reads a google sheet</span>
 <span class="sd">	&quot;&quot;&quot;</span>

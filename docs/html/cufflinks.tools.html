@@ -1,0 +1,815 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cufflinks.tools module &#8212; Cufflinks  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-cufflinks.tools">
+<span id="cufflinks-tools-module"></span><h1>cufflinks.tools module<a class="headerlink" href="#module-cufflinks.tools" title="Permalink to this headline">¶</a></h1>
+<dl class="attribute">
+<dt id="cufflinks.tools.axis">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">axis</code><a class="headerlink" href="#cufflinks.tools.axis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.figures">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">figures</code><span class="sig-paren">(</span><em>df</em>, <em>specs</em>, <em>asList=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#figures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.figures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates multiple Plotly figures for a given DataFrame</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>df <span class="classifier-delimiter">:</span> <span class="classifier">DataFrame</span></dt>
+<dd>Pandas DataFrame</dd>
+<dt>specs <span class="classifier-delimiter">:</span> <span class="classifier">list(dict)</span></dt>
+<dd>List of dictionaries with the properties
+of each figure.
+All properties avaialbe can be seen with
+help(cufflinks.pd.DataFrame.iplot)</dd>
+<dt>asList <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
+<dd>If True, then a list of figures is returned.
+Otherwise a single (merged) figure is returned.
+Default : False</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.getAnnotations">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">getAnnotations</code><span class="sig-paren">(</span><em>df</em>, <em>annotations</em>, <em>kind='lines'</em>, <em>theme=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#getAnnotations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.getAnnotations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates an annotations object</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>df <span class="classifier-delimiter">:</span> <span class="classifier">DataFrame</span></dt>
+<dd>Original DataFrame of values</dd>
+<dt>annotations <span class="classifier-delimiter">:</span> <span class="classifier">dict or list</span></dt>
+<dd>Dictionary of annotations
+{x_point : text}
+or
+List of Plotly annotations</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.getLayout">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">getLayout</code><span class="sig-paren">(</span><em>kind=None</em>, <em>theme=None</em>, <em>title=''</em>, <em>xTitle=''</em>, <em>yTitle=''</em>, <em>zTitle=''</em>, <em>barmode=''</em>, <em>bargap=None</em>, <em>bargroupgap=None</em>, <em>margin=None</em>, <em>dimensions=None</em>, <em>width=None</em>, <em>height=None</em>, <em>annotations=None</em>, <em>is3d=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#getLayout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.getLayout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a plotly Layout</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>theme <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first last docutils">
+<dt>Layout Theme</dt>
+<dd>solar
+pearl
+white</dd>
+</dl>
+</dd>
+<dt>title <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Chart Title</dd>
+<dt>xTitle <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>X Axis Title</dd>
+<dt>yTitle <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Y Axis Title</dd>
+<dt>zTitle <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Z Axis Title
+Applicable only for 3d charts</dd>
+<dt>barmode <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first last docutils">
+<dt>Mode when displaying bars</dt>
+<dd>group
+stack
+overlay</dd>
+</dl>
+</dd>
+<dt>bargap <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><dl class="first docutils">
+<dt>Sets the gap between bars</dt>
+<dd>[0,1)</dd>
+</dl>
+<p class="last">Applicabe for bar and histogram plots</p>
+</dd>
+<dt>bargroupgap <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><dl class="first docutils">
+<dt>Set the gap between groups</dt>
+<dd>[0,1)</dd>
+</dl>
+<p class="last">Applicabe for bar and histogram plots</p>
+</dd>
+<dt>gridcolor <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>grid color</dd>
+<dt>zerolinecolor <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>zero line color</dd>
+<dt>margin <span class="classifier-delimiter">:</span> <span class="classifier">dict or tuple</span></dt>
+<dd>Dictionary (l,r,b,t) or
+Tuple containing the left,
+right, bottom and top margins</dd>
+<dt>dimensions <span class="classifier-delimiter">:</span> <span class="classifier">tuple</span></dt>
+<dd>Dimensions of figure</dd>
+<dt>annotations <span class="classifier-delimiter">:</span> <span class="classifier">dict or list</span></dt>
+<dd><dl class="first docutils">
+<dt>Dictionary of annotations</dt>
+<dd>{x_point : text}</dd>
+</dl>
+<p class="last">or
+List of Plotly Annotations</p>
+</dd>
+<dt>is3d <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>Indicates if the layout is for a 3D chart</dd>
+</dl>
+<dl class="docutils">
+<dt>Shapes</dt>
+<dd><dl class="first last docutils">
+<dt>hline <span class="classifier-delimiter">:</span> <span class="classifier">int, list or dict</span></dt>
+<dd>Draws a horizontal line at the
+indicated y position(s)
+Extra parameters can be passed in
+the form of a dictionary (see shapes)</dd>
+<dt>vline <span class="classifier-delimiter">:</span> <span class="classifier">int, list or dict</span></dt>
+<dd>Draws a vertical line at the
+indicated x position(s)
+Extra parameters can be passed in
+the form of a dictionary (see shapes)</dd>
+<dt>hspan <span class="classifier-delimiter">:</span> <span class="classifier">(y0,y1)</span></dt>
+<dd>Draws a horizontal rectangle at the
+indicated (y0,y1) positions.
+Extra parameters can be passed in
+the form of a dictionary (see shapes)</dd>
+<dt>vspan <span class="classifier-delimiter">:</span> <span class="classifier">(x0,x1)</span></dt>
+<dd>Draws a vertical rectangle at the
+indicated (x0,x1) positions.
+Extra parameters can be passed in
+the form of a dictionary (see shapes)</dd>
+<dt>shapes <span class="classifier-delimiter">:</span> <span class="classifier">dict or list(dict)</span></dt>
+<dd>List of dictionaries with the
+specifications of a given shape.
+See help(cufflinks.tools.get_shape)
+for more information</dd>
+</dl>
+</dd>
+<dt>Axis Ranges</dt>
+<dd><dl class="first last docutils">
+<dt>xrange <span class="classifier-delimiter">:</span> <span class="classifier">[lower_bound,upper_bound]</span></dt>
+<dd>Sets the range for the x axis</dd>
+<dt>yrange <span class="classifier-delimiter">:</span> <span class="classifier">[lower_bound,upper_bound]</span></dt>
+<dd>Sets the range for the y axis</dd>
+<dt>zrange <span class="classifier-delimiter">:</span> <span class="classifier">[lower_bound,upper_bound]</span></dt>
+<dd>Sets the range for the z axis</dd>
+</dl>
+</dd>
+<dt>Explicit Layout Updates</dt>
+<dd><dl class="first last docutils">
+<dt>layout_update <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>The layout will be modified with all
+the explicit values stated in the
+dictionary</dd>
+</dl>
+</dd>
+<dt>Range Selector</dt>
+<dd><dl class="first last docutils">
+<dt>rangeselector <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd><p class="first">Defines a rangeselector object
+see help(cf.tools.get_range_selector) for more information
+Example:</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>{‘steps’:[‘1y’,‘2 months’,‘5 weeks’,’ytd’,‘2mtd’],</dt>
+<dd>‘axis’:’xaxis1’, ‘bgcolor’ : (‘blue’,.3),
+‘x’: 0.2 , ‘y’ : 0.9}</dd>
+</dl>
+</div></blockquote>
+</dd>
+</dl>
+</dd>
+<dt>Range Slider</dt>
+<dd><dl class="first last docutils">
+<dt>rangeslider <span class="classifier-delimiter">:</span> <span class="classifier">bool or dict</span></dt>
+<dd><p class="first">Defines if a rangeslider is displayed
+If bool:</p>
+<blockquote>
+<div>True : Makes it visible</div></blockquote>
+<dl class="last docutils">
+<dt>if dict:</dt>
+<dd>Rangeslider object</dd>
+<dt>Example:</dt>
+<dd>{‘bgcolor’:(‘blue’,.3),’autorange’:True}</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>Annotations</dt>
+<dd><dl class="first docutils">
+<dt>fontcolor <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Text color for annotations</dd>
+<dt>fontsize <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Text size for annotations</dd>
+<dt>textangle <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Textt angle</dd>
+</dl>
+<p class="last">See <a class="reference external" href="https://plot.ly/python/reference/#layout-annotations">https://plot.ly/python/reference/#layout-annotations</a> 
+for a complete list of valid parameters.</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.getTheme">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">getTheme</code><span class="sig-paren">(</span><em>theme=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#getTheme"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.getTheme" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a theme definition.</p>
+<p>To see the colors translated (hex) use
+cufflinks.getLayout(theme) instead.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.getThemes">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">getThemes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#getThemes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.getThemes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of available themes</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.get_base_layout">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">get_base_layout</code><span class="sig-paren">(</span><em>figs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#get_base_layout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.get_base_layout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a layout with the union of all properties of multiple
+figures’ layouts</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>fig <span class="classifier-delimiter">:</span> <span class="classifier">list(Figures)</span></dt>
+<dd>List of Plotly Figures</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.get_candle">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">get_candle</code><span class="sig-paren">(</span><em>df</em>, <em>up_color=None</em>, <em>down_color=None</em>, <em>theme=None</em>, <em>layout=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#get_candle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.get_candle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.get_def">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">get_def</code><span class="sig-paren">(</span><em>figure</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#get_def"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.get_def" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.get_dom">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">get_dom</code><span class="sig-paren">(</span><em>figure</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#get_dom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.get_dom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.get_error_bar">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">get_error_bar</code><span class="sig-paren">(</span><em>axis='y'</em>, <em>type='data'</em>, <em>values=None</em>, <em>values_minus=None</em>, <em>color=None</em>, <em>thickness=1</em>, <em>width=5</em>, <em>opacity=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#get_error_bar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.get_error_bar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.get_len">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">get_len</code><span class="sig-paren">(</span><em>figure</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#get_len"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.get_len" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.get_ohlc">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">get_ohlc</code><span class="sig-paren">(</span><em>df</em>, <em>up_color=None</em>, <em>down_color=None</em>, <em>theme=None</em>, <em>layout=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#get_ohlc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.get_ohlc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.get_range_selector">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">get_range_selector</code><span class="sig-paren">(</span><em>steps=['1m', '1y'], bgcolor='rgba(150, 200, 250, 0.4)', x=0, y=0.9, visible=True, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#get_range_selector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.get_range_selector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a range selector
+Reference: <a class="reference external" href="https://plot.ly/python/reference/#layout-xaxis-rangeselector">https://plot.ly/python/reference/#layout-xaxis-rangeselector</a></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>steps <span class="classifier-delimiter">:</span> <span class="classifier">string or list(string)</span></dt>
+<dd><dl class="first last docutils">
+<dt>Steps for the range</dt>
+<dd><dl class="first last docutils">
+<dt>Examples:</dt>
+<dd>[‘1y’,‘2 months’,‘5 weeks’,’ytd’,‘2mtd’]</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>bgocolor <span class="classifier-delimiter">:</span> <span class="classifier">string or tuple(color,alpha)</span></dt>
+<dd><dl class="first last docutils">
+<dt>Background color</dt>
+<dd><dl class="first last docutils">
+<dt>Examples:</dt>
+<dd>‘cyan’
+‘rgba(232,214,10,.5)’
+(‘blue’,.3)</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>font_size <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Font size</dd>
+<dt>x <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>Position along the x axis
+Domain (0,1)</dd>
+<dt>y <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>Position along the y axis
+Domain (0,1)</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.get_ref">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">get_ref</code><span class="sig-paren">(</span><em>figure</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#get_ref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.get_ref" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.get_ref_axis">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">get_ref_axis</code><span class="sig-paren">(</span><em>figure</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#get_ref_axis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.get_ref_axis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.get_shape">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">get_shape</code><span class="sig-paren">(</span><em>kind='line'</em>, <em>x=None</em>, <em>y=None</em>, <em>x0=None</em>, <em>y0=None</em>, <em>x1=None</em>, <em>y1=None</em>, <em>span=0</em>, <em>color='red'</em>, <em>dash='solid'</em>, <em>width=1</em>, <em>fillcolor=None</em>, <em>fill=False</em>, <em>opacity=1</em>, <em>xref='x'</em>, <em>yref='y'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#get_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.get_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a plotly shape</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>kind <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first last docutils">
+<dt>Shape kind</dt>
+<dd>line
+rect
+circle</dd>
+</dl>
+</dd>
+<dt>x <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>x values for the shape.
+This assumes x0=x1</dd>
+<dt>x0 <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>x0 value for the shape</dd>
+<dt>x1 <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>x1 value for the shape</dd>
+<dt>y <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>y values for the shape.
+This assumes y0=y1</dd>
+<dt>y0 <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>y0 value for the shape</dd>
+<dt>y1 <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>y1 value for the shape</dd>
+<dt>color <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>color for shape line</dd>
+<dt>dash <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first last docutils">
+<dt>line style</dt>
+<dd>solid
+dash
+dashdot
+dot</dd>
+</dl>
+</dd>
+<dt>width <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>line width</dd>
+<dt>fillcolor <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>shape fill color</dd>
+<dt>fill <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If True then fill shape
+If not fillcolor then the
+line color will be used</dd>
+<dt>opacity <span class="classifier-delimiter">:</span> <span class="classifier">float [0,1]</span></dt>
+<dd>opacity of the fill</dd>
+<dt>xref <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Sets the x coordinate system
+which this object refers to</p>
+<blockquote class="last">
+<div>‘x’
+‘paper’
+‘x2’ etc</div></blockquote>
+</dd>
+<dt>yref <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Sets the y coordinate system
+which this object refers to</p>
+<blockquote class="last">
+<div>‘y’
+‘paper’
+‘y2’ etc</div></blockquote>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.get_subplots">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">get_subplots</code><span class="sig-paren">(</span><em>rows=1</em>, <em>cols=1</em>, <em>shared_xaxes=False</em>, <em>shared_yaxes=False</em>, <em>start_cell='top-left'</em>, <em>theme=None</em>, <em>base_layout=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#get_subplots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.get_subplots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a subplot view for a set of figures</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>rows <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of rows</dd>
+<dt>cols <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of cols</dd>
+<dt>shared_xaxes <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>Assign shared x axes.
+If True, subplots in the same grid column have one common
+shared x-axis at the bottom of the gird.</dd>
+<dt>shared_yaxes <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>Assign shared y axes.
+If True, subplots in the same grid row have one common
+shared y-axis on the left-hand side of the gird.</dd>
+<dt>start_cell <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><blockquote class="first">
+<div>‘bottom-left’
+‘top-left’</div></blockquote>
+<p class="last">Choose the starting cell in the subplot grid used to set the
+domains of the subplots.</p>
+</dd>
+<dt>theme <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first docutils">
+<dt>Layout Theme</dt>
+<dd>solar
+pearl
+white</dd>
+</dl>
+<p class="last">see cufflinks.getThemes() for all
+available themes</p>
+</dd>
+<dt>horizontal_spacing <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><blockquote class="first">
+<div>[0,1]</div></blockquote>
+<p class="last">Space between subplot columns.</p>
+</dd>
+<dt>vertical_spacing <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>Space between subplot rows.</dd>
+<dt>specs <span class="classifier-delimiter">:</span> <span class="classifier">list of dicts</span></dt>
+<dd><dl class="first docutils">
+<dt>Subplot specifications.</dt>
+<dd>ex1: specs=[[{}, {}], [{‘colspan’: 2}, None]]
+ex2: specs=[[{‘rowspan’: 2}, {}], [None, {}]]</dd>
+</dl>
+<ul class="last simple">
+<li>Indices of the outer list correspond to subplot grid rows
+starting from the bottom. The number of rows in ‘specs’
+must be equal to ‘rows’.</li>
+<li>Indices of the inner lists correspond to subplot grid columns
+starting from the left. The number of columns in ‘specs’
+must be equal to ‘cols’.</li>
+<li>Each item in the ‘specs’ list corresponds to one subplot
+in a subplot grid. (N.B. The subplot grid has exactly ‘rows’
+times ‘cols’ cells.)</li>
+<li>Use None for blank a subplot cell (or to move pass a col/row span).</li>
+<li>Note that specs[0][0] has the specs of the ‘start_cell’ subplot.</li>
+<li><dl class="first docutils">
+<dt>Each item in ‘specs’ is a dictionary.</dt>
+<dd>The available keys are:<ul class="last">
+<li>is_3d (boolean, default=False): flag for 3d scenes</li>
+<li><dl class="first docutils">
+<dt>colspan (int, default=1): number of subplot columns</dt>
+<dd>for this subplot to span.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>rowspan (int, default=1): number of subplot rows</dt>
+<dd>for this subplot to span.</dd>
+</dl>
+</li>
+<li>l (float, default=0.0): padding left of cell</li>
+<li>r (float, default=0.0): padding right of cell</li>
+<li>t (float, default=0.0): padding right of cell</li>
+<li>b (float, default=0.0): padding bottom of cell</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>Use ‘horizontal_spacing’ and ‘vertical_spacing’ to adjust
+the spacing in between the subplots.</li>
+</ul>
+</dd>
+<dt>insets <span class="classifier-delimiter">:</span> <span class="classifier">list of dicts</span></dt>
+<dd><p class="first">Inset specifications.</p>
+<ul class="last simple">
+<li><dl class="first docutils">
+<dt>Each item in ‘insets’ is a dictionary.</dt>
+<dd>The available keys are:<ul class="last">
+<li><dl class="first docutils">
+<dt>cell (tuple, default=(1,1)): (row, col) index of the</dt>
+<dd>subplot cell to overlay inset axes onto.</dd>
+</dl>
+</li>
+<li>is_3d (boolean, default=False): flag for 3d scenes</li>
+<li><dl class="first docutils">
+<dt>l (float, default=0.0): padding left of inset</dt>
+<dd>in fraction of cell width</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>w (float or ‘to_end’, default=’to_end’) inset width</dt>
+<dd>in fraction of cell width (‘to_end’: to cell right edge)</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>b (float, default=0.0): padding bottom of inset</dt>
+<dd>in fraction of cell height</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>h (float or ‘to_end’, default=’to_end’) inset height</dt>
+<dd>in fraction of cell height (‘to_end’: to cell top edge)</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.get_trendline">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">get_trendline</code><span class="sig-paren">(</span><em>df</em>, <em>date0</em>, <em>date1</em>, <em>column='close'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#get_trendline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.get_trendline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.get_which">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">get_which</code><span class="sig-paren">(</span><em>figure</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#get_which"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.get_which" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.go_offline">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">go_offline</code><span class="sig-paren">(</span><em>connected=False</em>, <em>offline=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#go_offline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.go_offline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.is_offline">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">is_offline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#is_offline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.is_offline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.merge_figures">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">merge_figures</code><span class="sig-paren">(</span><em>figures</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#merge_figures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.merge_figures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a single Figure from a list of figures</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>figures <span class="classifier-delimiter">:</span> <span class="classifier">list(Figures)</span></dt>
+<dd>List of figures to be merged.</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.scatter_matrix">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">scatter_matrix</code><span class="sig-paren">(</span><em>df</em>, <em>theme=None</em>, <em>bins=10</em>, <em>color='grey'</em>, <em>size=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#scatter_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.scatter_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays a matrix with scatter plot for each pair of
+Series in the DataFrame.
+The diagonal shows a histogram for each of the Series</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>df <span class="classifier-delimiter">:</span> <span class="classifier">DataFrame</span></dt>
+<dd>Pandas DataFrame</dd>
+<dt>theme <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Theme to be used (if not the default)</dd>
+<dt>bins <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of bins to use for histogram</dd>
+<dt>color <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Color to be used for each scatter plot</dd>
+<dt>size <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Size for each marker on the scatter plot</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.set_errors">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">set_errors</code><span class="sig-paren">(</span><em>figure</em>, <em>trace=None</em>, <em>axis='y'</em>, <em>type='data'</em>, <em>values=None</em>, <em>values_minus=None</em>, <em>color=None</em>, <em>thickness=1</em>, <em>width=None</em>, <em>opacity=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#set_errors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.set_errors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.strip_figures">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">strip_figures</code><span class="sig-paren">(</span><em>figure</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#strip_figures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.strip_figures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strips a figure into multiple figures with a trace on each of them</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>figure <span class="classifier-delimiter">:</span> <span class="classifier">Figure</span></dt>
+<dd>Plotly Figure</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.subplots">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">subplots</code><span class="sig-paren">(</span><em>figures</em>, <em>shape=None</em>, <em>shared_xaxes=False</em>, <em>shared_yaxes=False</em>, <em>start_cell='top-left'</em>, <em>theme=None</em>, <em>base_layout=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#subplots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.subplots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a subplot view for a set of figures
+This is a wrapper for plotly.tools.make_subplots</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>figures <span class="classifier-delimiter">:</span> <span class="classifier">[Figures]</span></dt>
+<dd>List of Plotly Figures</dd>
+<dt>shape <span class="classifier-delimiter">:</span> <span class="classifier">(rows,cols)</span></dt>
+<dd>Tuple indicating the size of rows and columns
+If omitted then the layout is automatically set</dd>
+<dt>shared_xaxes <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>Assign shared x axes.
+If True, subplots in the same grid column have one common
+shared x-axis at the bottom of the grid.</dd>
+<dt>shared_yaxes <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>Assign shared y axes.
+If True, subplots in the same grid row have one common
+shared y-axis on the left-hand side of the grid.</dd>
+<dt>start_cell <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><blockquote class="first">
+<div>‘bottom-left’
+‘top-left’</div></blockquote>
+<p class="last">Choose the starting cell in the subplot grid used to set the
+domains of the subplots.</p>
+</dd>
+<dt>theme <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first docutils">
+<dt>Layout Theme</dt>
+<dd>solar
+pearl
+white</dd>
+</dl>
+<p class="last">see cufflinks.getThemes() for all
+available themes</p>
+</dd>
+<dt>base_layout <span class="classifier-delimiter">:</span> <span class="classifier">layout (dict)</span></dt>
+<dd>Layout to be used as base where the subplots will be
+added</dd>
+<dt>subplot_titles <span class="classifier-delimiter">:</span> <span class="classifier">list(string)</span></dt>
+<dd>List of strings that contains the titles of each
+plot.</dd>
+<dt>horizontal_spacing <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><blockquote class="first">
+<div>[0,1]</div></blockquote>
+<p class="last">Space between subplot columns.</p>
+</dd>
+<dt>vertical_spacing <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>Space between subplot rows.</dd>
+<dt>specs <span class="classifier-delimiter">:</span> <span class="classifier">list of dicts</span></dt>
+<dd><dl class="first docutils">
+<dt>Subplot specifications.</dt>
+<dd>ex1: specs=[[{}, {}], [{‘colspan’: 2}, None]]
+ex2: specs=[[{‘rowspan’: 2}, {}], [None, {}]]</dd>
+</dl>
+<ul class="last simple">
+<li>Indices of the outer list correspond to subplot grid rows
+starting from the bottom. The number of rows in ‘specs’
+must be equal to ‘rows’.</li>
+<li>Indices of the inner lists correspond to subplot grid columns
+starting from the left. The number of columns in ‘specs’
+must be equal to ‘cols’.</li>
+<li>Each item in the ‘specs’ list corresponds to one subplot
+in a subplot grid. (N.B. The subplot grid has exactly ‘rows’
+times ‘cols’ cells.)</li>
+<li>Use None for blank a subplot cell (or to move pass a col/row span).</li>
+<li>Note that specs[0][0] has the specs of the ‘start_cell’ subplot.</li>
+<li><dl class="first docutils">
+<dt>Each item in ‘specs’ is a dictionary.</dt>
+<dd>The available keys are:<ul class="last">
+<li>is_3d (boolean, default=False): flag for 3d scenes</li>
+<li><dl class="first docutils">
+<dt>colspan (int, default=1): number of subplot columns</dt>
+<dd>for this subplot to span.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>rowspan (int, default=1): number of subplot rows</dt>
+<dd>for this subplot to span.</dd>
+</dl>
+</li>
+<li>l (float, default=0.0): padding left of cell</li>
+<li>r (float, default=0.0): padding right of cell</li>
+<li>t (float, default=0.0): padding right of cell</li>
+<li>b (float, default=0.0): padding bottom of cell</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>Use ‘horizontal_spacing’ and ‘vertical_spacing’ to adjust
+the spacing in between the subplots.</li>
+</ul>
+</dd>
+<dt>insets <span class="classifier-delimiter">:</span> <span class="classifier">list of dicts</span></dt>
+<dd><p class="first">Inset specifications.</p>
+<ul class="last simple">
+<li><dl class="first docutils">
+<dt>Each item in ‘insets’ is a dictionary.</dt>
+<dd>The available keys are:<ul class="last">
+<li><dl class="first docutils">
+<dt>cell (tuple, default=(1,1)): (row, col) index of the</dt>
+<dd>subplot cell to overlay inset axes onto.</dd>
+</dl>
+</li>
+<li>is_3d (boolean, default=False): flag for 3d scenes</li>
+<li><dl class="first docutils">
+<dt>l (float, default=0.0): padding left of inset</dt>
+<dd>in fraction of cell width</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>w (float or ‘to_end’, default=’to_end’) inset width</dt>
+<dd>in fraction of cell width (‘to_end’: to cell right edge)</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>b (float, default=0.0): padding bottom of inset</dt>
+<dd>in fraction of cell height</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>h (float or ‘to_end’, default=’to_end’) inset height</dt>
+<dd>in fraction of cell height (‘to_end’: to cell top edge)</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cufflinks.tools.trace_dict">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">trace_dict</code><a class="headerlink" href="#cufflinks.tools.trace_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.tools.updateColors">
+<code class="descclassname">cufflinks.tools.</code><code class="descname">updateColors</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/tools.html#updateColors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.tools.updateColors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cufflinks.tools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Jorge Santos.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/cufflinks.tools.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

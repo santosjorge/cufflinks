@@ -1,0 +1,203 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cufflinks.plotlytools module &#8212; Cufflinks  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-cufflinks.plotlytools">
+<span id="cufflinks-plotlytools-module"></span><h1>cufflinks.plotlytools module<a class="headerlink" href="#module-cufflinks.plotlytools" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="cufflinks.plotlytools.dict_to_iplot">
+<code class="descclassname">cufflinks.plotlytools.</code><code class="descname">dict_to_iplot</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/plotlytools.html#dict_to_iplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.plotlytools.dict_to_iplot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.plotlytools.get_colors">
+<code class="descclassname">cufflinks.plotlytools.</code><code class="descname">get_colors</code><span class="sig-paren">(</span><em>colors</em>, <em>colorscale</em>, <em>keys</em>, <em>asList=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/plotlytools.html#get_colors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.plotlytools.get_colors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.plotlytools.get_items_as_list">
+<code class="descclassname">cufflinks.plotlytools.</code><code class="descname">get_items_as_list</code><span class="sig-paren">(</span><em>items</em>, <em>keys</em>, <em>items_names='styles'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/plotlytools.html#get_items_as_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.plotlytools.get_items_as_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dict with an item per key</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>items <span class="classifier-delimiter">:</span> <span class="classifier">string, list or dict</span></dt>
+<dd>Items (ie line styles)</dd>
+<dt>keys: list </dt>
+<dd>List of keys</dd>
+<dt>items_names <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name of items</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.plotlytools.iplot">
+<code class="descclassname">cufflinks.plotlytools.</code><code class="descname">iplot</code><span class="sig-paren">(</span><em>figure</em>, <em>validate=True</em>, <em>sharing=None</em>, <em>filename=''</em>, <em>online=None</em>, <em>asImage=False</em>, <em>asUrl=False</em>, <em>asPlot=False</em>, <em>dimensions=None</em>, <em>display_image=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/plotlytools.html#iplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.plotlytools.iplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots a figure in IPython, creates an HTML or generates an Image</p>
+<dl class="docutils">
+<dt>figure <span class="classifier-delimiter">:</span> <span class="classifier">figure</span></dt>
+<dd>Plotly figure to be charted</dd>
+<dt>validate <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If True then all values are validated before 
+it is charted</dd>
+<dt>sharing <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first last docutils">
+<dt>Sets the sharing level permission</dt>
+<dd>public - anyone can see this chart
+private - only you can see this chart
+secret - only people with the link can see the chart</dd>
+</dl>
+</dd>
+<dt>filename <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name to be used to save the file in the server, or as an image</dd>
+<dt>online <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If True then the chart/image is rendered on the server 
+even when running in offline mode.</dd>
+<dt>asImage <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><p class="first">If True it returns an Image (png)
+In ONLINE mode:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>Image file is saved in the working directory                            </dt>
+<dd><dl class="first last docutils">
+<dt>Accepts:</dt>
+<dd>filename
+dimensions
+scale
+display_image</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="last docutils">
+<dt>In OFFLINE mode:</dt>
+<dd><p class="first">Image file is downloaded (downloads folder) and a 
+regular plotly chart is displayed in Jupyter</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>Accepts:</dt>
+<dd>filename
+dimensions</dd>
+</dl>
+</div></blockquote>
+</dd>
+</dl>
+</dd>
+<dt>asUrl <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd><dl class="first last docutils">
+<dt>If True the chart url/path is returned. No chart is displayed. </dt>
+<dd>If Online : the URL is returned
+If Offline : the local path is returned</dd>
+</dl>
+</dd>
+<dt>asPlot <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If True the chart opens in browser</dd>
+<dt>dimensions <span class="classifier-delimiter">:</span> <span class="classifier">tuple(int,int)</span></dt>
+<dd><dl class="first last docutils">
+<dt>Dimensions for image</dt>
+<dd>(width,height)</dd>
+</dl>
+</dd>
+<dt>display_image <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If true, then the image is displayed after it has been saved
+Requires Jupyter Notebook
+Only valid when asImage=True</dd>
+</dl>
+<blockquote>
+<div><dl class="docutils">
+<dt>legend <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If False then the legend will not be shown</dd>
+<dt>scale <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
+<dd>Increase the resolution of the image by <cite>scale</cite> amount
+Only valid when asImage=True</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.plotlytools.iplot_to_dict">
+<code class="descclassname">cufflinks.plotlytools.</code><code class="descname">iplot_to_dict</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/plotlytools.html#iplot_to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.plotlytools.iplot_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cufflinks.plotlytools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Jorge Santos.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/cufflinks.plotlytools.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,244 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cufflinks.utils module &#8212; Cufflinks  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-cufflinks.utils">
+<span id="cufflinks-utils-module"></span><h1>cufflinks.utils module<a class="headerlink" href="#module-cufflinks.utils" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="cufflinks.utils.check_kwargs">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">check_kwargs</code><span class="sig-paren">(</span><em>global_kwargs</em>, <em>values</em>, <em>local_kwargs=None</em>, <em>clean_origin=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#check_kwargs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.check_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.deep_update">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">deep_update</code><span class="sig-paren">(</span><em>d</em>, <em>d_update</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#deep_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.deep_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the values (deep form) of a given dictionary</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>d <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>dictionary that contains the values to update</dd>
+<dt>d_update <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>dictionary to be updated</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.dict_path">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">dict_path</code><span class="sig-paren">(</span><em>from_d</em>, <em>to_d={}</em>, <em>l=[]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#dict_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.dict_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary with the path in which each of the keys is found</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>from_d <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>Dictionary that contains all the keys, values</dd>
+<dt>to_d <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>Dictionary to which the results will be appended</dd>
+</dl>
+</dd>
+<dt>Example: </dt>
+<dd><p class="first">dict_path({‘level1’:{‘level2’:{‘level3’:’value’}}})
+Returns</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>{‘level1’: [],</dt>
+<dd>‘level2’: [‘level1’],
+‘level3’: [‘level1’, ‘level2’]</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.dict_replace_keyword">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">dict_replace_keyword</code><span class="sig-paren">(</span><em>d</em>, <em>keyword</em>, <em>kwargs</em>, <em>forceupdate=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#dict_replace_keyword"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.dict_replace_keyword" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.dict_update">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">dict_update</code><span class="sig-paren">(</span><em>d</em>, <em>k</em>, <em>val</em>, <em>d_ref=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#dict_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.dict_update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.inverseDict">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">inverseDict</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#inverseDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.inverseDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionay indexed by values {value_k:key_k}
+Parameters:
+———–</p>
+<blockquote>
+<div>d : dictionary</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.is_dict">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">is_dict</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#is_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.is_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.is_list">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">is_list</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#is_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.is_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.is_string">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">is_string</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#is_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.is_string" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.kwargs_from_keyword">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">kwargs_from_keyword</code><span class="sig-paren">(</span><em>from_kwargs</em>, <em>to_kwargs</em>, <em>keyword</em>, <em>clean_origin=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#kwargs_from_keyword"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.kwargs_from_keyword" title="Permalink to this definition">¶</a></dt>
+<dd><p>Looks for keys of the format keyword_value. 
+And return a dictionary with {keyword:value} format</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>from_kwargs <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>Original dictionary</dd>
+<dt>to_kwargs <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd>Dictionary where the items will be appended</dd>
+<dt>keyword <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Keyword to look for in the orginal dictionary</dd>
+<dt>clean_origin <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If True then the k,v pairs from the original 
+dictionary are deleted</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.load_pickle">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">load_pickle</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#load_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.load_pickle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a serialized object
+Parameters:
+———–</p>
+<blockquote>
+<div>filename : string</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.make_dict_from_list">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">make_dict_from_list</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#make_dict_from_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.make_dict_from_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.make_list">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">make_list</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#make_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.make_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.make_string">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">make_string</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#make_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.make_string" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.merge_dict">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">merge_dict</code><span class="sig-paren">(</span><em>d1</em>, <em>d2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#merge_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.merge_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>d1 &lt;– d2</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.pp">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">pp</code><span class="sig-paren">(</span><em>el</em>, <em>preString=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#pp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.pp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formats (prettyprint) a concatenated dictionary</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.read_google">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">read_google</code><span class="sig-paren">(</span><em>self</em>, <em>url</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#read_google"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.read_google" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a google sheet</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.utils.save_pickle">
+<code class="descclassname">cufflinks.utils.</code><code class="descname">save_pickle</code><span class="sig-paren">(</span><em>obj</em>, <em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/utils.html#save_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.utils.save_pickle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serializes a given object
+Parameters:
+———–</p>
+<blockquote>
+<div>obj : object
+filename : string</div></blockquote>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cufflinks.utils.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Jorge Santos.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/cufflinks.utils.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

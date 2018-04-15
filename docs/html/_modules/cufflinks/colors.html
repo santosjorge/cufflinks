@@ -50,11 +50,11 @@
 <span class="kn">from</span> <span class="nn">.auth</span> <span class="k">import</span> <span class="n">get_config_file</span>
 
 
-<div class="viewcode-block" id="CufflinksError"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.colors.CufflinksError">[docs]</a><span class="k">class</span> <span class="nc">CufflinksError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="CufflinksError"><a class="viewcode-back" href="../../cufflinks.colors.html#cufflinks.colors.CufflinksError">[docs]</a><span class="k">class</span> <span class="nc">CufflinksError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="to_rgba"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.colors.to_rgba">[docs]</a><span class="k">def</span> <span class="nf">to_rgba</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+<div class="viewcode-block" id="to_rgba"><a class="viewcode-back" href="../../cufflinks.colors.html#cufflinks.colors.to_rgba">[docs]</a><span class="k">def</span> <span class="nf">to_rgba</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts from hex|rgb to rgba</span>
 
@@ -86,7 +86,7 @@
         <span class="k">return</span> <span class="n">to_rgba</span><span class="p">(</span><span class="n">hex_to_rgb</span><span class="p">(</span><span class="n">color</span><span class="p">),</span> <span class="n">alpha</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="hex_to_rgb"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.colors.hex_to_rgb">[docs]</a><span class="k">def</span> <span class="nf">hex_to_rgb</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
+<div class="viewcode-block" id="hex_to_rgb"><a class="viewcode-back" href="../../cufflinks.colors.html#cufflinks.colors.hex_to_rgb">[docs]</a><span class="k">def</span> <span class="nf">hex_to_rgb</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts from hex to rgb</span>
 
@@ -105,7 +105,7 @@
     <span class="k">return</span> <span class="s1">&#39;rgb&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="n">base</span><span class="o">=</span><span class="mi">16</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="n">base</span><span class="o">=</span><span class="mi">16</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">],</span> <span class="n">base</span><span class="o">=</span><span class="mi">16</span><span class="p">)))</span></div>
 
 
-<div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.colors.normalize">[docs]</a><span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
+<div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../cufflinks.colors.html#cufflinks.colors.normalize">[docs]</a><span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an hex color</span>
 
@@ -136,7 +136,7 @@
             <span class="k">raise</span> <span class="n">CufflinksError</span><span class="p">(</span><span class="s1">&#39;Not a valid color: &#39;</span> <span class="o">+</span> <span class="n">color</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="rgb_to_hex"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.colors.rgb_to_hex">[docs]</a><span class="k">def</span> <span class="nf">rgb_to_hex</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
+<div class="viewcode-block" id="rgb_to_hex"><a class="viewcode-back" href="../../cufflinks.colors.html#cufflinks.colors.rgb_to_hex">[docs]</a><span class="k">def</span> <span class="nf">rgb_to_hex</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts from rgb to hex</span>
 
@@ -153,7 +153,7 @@
     <span class="k">return</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{0:02x}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">rgb</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="rgba_to_rgb"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.colors.rgba_to_rgb">[docs]</a><span class="k">def</span> <span class="nf">rgba_to_rgb</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;rgb(255,255,255)&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="rgba_to_rgb"><a class="viewcode-back" href="../../cufflinks.colors.html#cufflinks.colors.rgba_to_rgb">[docs]</a><span class="k">def</span> <span class="nf">rgba_to_rgb</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s1">&#39;rgb(255,255,255)&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts from rgba to rgb</span>
 
@@ -177,7 +177,7 @@
     <span class="k">return</span> <span class="s1">&#39;rgb&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">r</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="hex_to_hsv"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.colors.hex_to_hsv">[docs]</a><span class="k">def</span> <span class="nf">hex_to_hsv</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
+<div class="viewcode-block" id="hex_to_hsv"><a class="viewcode-back" href="../../cufflinks.colors.html#cufflinks.colors.hex_to_hsv">[docs]</a><span class="k">def</span> <span class="nf">hex_to_hsv</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts from hex to hsv</span>
 
@@ -197,7 +197,7 @@
     <span class="k">return</span> <span class="n">colorsys</span><span class="o">.</span><span class="n">rgb_to_hsv</span><span class="p">(</span><span class="o">*</span><span class="n">color</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="color_range"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.colors.color_range">[docs]</a><span class="k">def</span> <span class="nf">color_range</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+<div class="viewcode-block" id="color_range"><a class="viewcode-back" href="../../cufflinks.colors.html#cufflinks.colors.color_range">[docs]</a><span class="k">def</span> <span class="nf">color_range</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates a scale of colours from a base colour</span>
 
@@ -229,7 +229,7 @@
     <span class="k">return</span> <span class="n">hex_out</span></div>
 
 
-<div class="viewcode-block" id="color_table"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.colors.color_table">[docs]</a><span class="k">def</span> <span class="nf">color_table</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sort_values</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">as_html</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="color_table"><a class="viewcode-back" href="../../cufflinks.colors.html#cufflinks.colors.color_table">[docs]</a><span class="k">def</span> <span class="nf">color_table</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sort_values</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">as_html</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates a colour table </span>
 
@@ -315,7 +315,7 @@
     <span class="k">return</span> <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="n">s</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="colorgen"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.colors.colorgen">[docs]</a><span class="k">def</span> <span class="nf">colorgen</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="colorgen"><a class="viewcode-back" href="../../cufflinks.colors.html#cufflinks.colors.colorgen">[docs]</a><span class="k">def</span> <span class="nf">colorgen</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a generator with a list of colors</span>
 <span class="sd">    and gradients of those colors</span>
@@ -610,7 +610,7 @@
 <span class="n">_scales_names</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="interp"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.colors.interp">[docs]</a><span class="k">def</span> <span class="nf">interp</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+<div class="viewcode-block" id="interp"><a class="viewcode-back" href="../../cufflinks.colors.html#cufflinks.colors.interp">[docs]</a><span class="k">def</span> <span class="nf">interp</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">_interp</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">cl</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
@@ -620,7 +620,7 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">rgb_to_hex</span><span class="p">,</span> <span class="n">cl</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">c</span><span class="p">)))</span></div>
 
 
-<div class="viewcode-block" id="scales"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.colors.scales">[docs]</a><span class="k">def</span> <span class="nf">scales</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="scales"><a class="viewcode-back" href="../../cufflinks.colors.html#cufflinks.colors.scales">[docs]</a><span class="k">def</span> <span class="nf">scales</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Displays a color scale (HTML)</span>
 
@@ -657,7 +657,7 @@
 <span class="c1"># ---------------------------------</span>
 
 
-<div class="viewcode-block" id="reset_scales"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.colors.reset_scales">[docs]</a><span class="k">def</span> <span class="nf">reset_scales</span><span class="p">():</span>
+<div class="viewcode-block" id="reset_scales"><a class="viewcode-back" href="../../cufflinks.colors.html#cufflinks.colors.reset_scales">[docs]</a><span class="k">def</span> <span class="nf">reset_scales</span><span class="p">():</span>
     <span class="k">global</span> <span class="n">_scales</span>
     <span class="k">global</span> <span class="n">_scales_names</span>
     <span class="n">scale_cpy</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">scales</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -693,7 +693,7 @@
                 <span class="n">_scales_names</span><span class="p">[</span><span class="n">k__</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v__</span></div>
 
 
-<div class="viewcode-block" id="get_scales"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.colors.get_scales">[docs]</a><span class="k">def</span> <span class="nf">get_scales</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_scales"><a class="viewcode-back" href="../../cufflinks.colors.html#cufflinks.colors.get_scales">[docs]</a><span class="k">def</span> <span class="nf">get_scales</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a color scale </span>
 
@@ -743,7 +743,7 @@
         <span class="k">return</span> <span class="n">d</span></div>
 
 
-<div class="viewcode-block" id="get_colorscale"><a class="viewcode-back" href="../../cufflinks.html#cufflinks.colors.get_colorscale">[docs]</a><span class="k">def</span> <span class="nf">get_colorscale</span><span class="p">(</span><span class="n">scale</span><span class="p">):</span>
+<div class="viewcode-block" id="get_colorscale"><a class="viewcode-back" href="../../cufflinks.colors.html#cufflinks.colors.get_colorscale">[docs]</a><span class="k">def</span> <span class="nf">get_colorscale</span><span class="p">(</span><span class="n">scale</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a color scale to be used for a plotly figure</span>
 
