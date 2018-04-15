@@ -299,7 +299,7 @@ def histogram(n_traces=1,n=500,mode=None):
 				'abc' for alphabet columns
 				'stocks' for random stock names
 	"""	
-	df=pd.DataFrame(np.random.randn(n,n_traces)+np.random.randint(-1,2),
+	df=pd.DataFrame(np.random.randn(n,n_traces)+np.random.randint(-2,2, n_traces),
 		columns=getName(n_traces,mode=mode))                     
 	return df
 
