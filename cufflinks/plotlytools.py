@@ -885,7 +885,9 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 						__=go.Box(y=df[_].values.tolist(),marker=go.Marker(color=clrs[_]),name=_,
 								line=go.Line(width=width),boxpoints=boxpoints)
 					elif kind=='violin':
-						figure = ff.create_violin(df.melt(), data_header='value', group_header='variable')
+						dimensions = dimensions if dimensions else (None, None)
+						figure = ff.create_violin(df.melt(), data_header='value', group_header='variable',
+							title=title, colors=colors, width = dimensions[0], height=dimensions[1])
 						if asFigure:
 							return figure
 						else:
