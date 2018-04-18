@@ -3,13 +3,22 @@ import plotly.offline as py_offline
 # Offline Mode
 
 
-def go_offline(connected=False):
+def run_from_ipython():
     try:
-        py_offline.init_notebook_mode(connected)
-    except TypeError:
-        # For older versions of plotly
-        py_offline.init_notebook_mode()
-    py_offline.__PLOTLY_OFFLINE_INITIALIZED = True
+        __IPYTHON__
+        return True
+    except NameError:
+        return False
+
+
+def go_offline(connected=False):
+    if run_from_ipython():
+        try:
+            py_offline.init_notebook_mode(connected)
+        except TypeError:
+            #For older versions of plotly
+            py_offline.init_notebook_mode()
+        py_offline.__PLOTLY_OFFLINE_INITIALIZED=True
 
 
 def go_online():
