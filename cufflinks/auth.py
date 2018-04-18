@@ -6,6 +6,7 @@ Based in Plotly's tools module
 import os
 import json
 import warnings
+from .namedomain import define_iplot_as_namedomain
 from .offline import go_offline
 
 package = 'cufflinks'
@@ -87,7 +88,7 @@ def ensure_local_files():
 
 def set_config_file(sharing=None, theme=None, colorscale=None, offline=None,
                     offline_url=None, offline_show_link=None, offline_link_text=None,
-                    datagen_mode=None, **kwargs):
+                    datagen_mode=None, iplot_as_namedomain=False, **kwargs):
     """
     Set the keyword-value pairs in `~/.config`.
 
@@ -150,6 +151,8 @@ def set_config_file(sharing=None, theme=None, colorscale=None, offline=None,
             go_offline()
     if datagen_mode:
         config['datagen_mode'] = datagen_mode
+    if iplot_as_namedomain:
+        define_iplot_as_namedomain()
     if offline_url:
         config['offline_url'] = offline_url
     if offline_show_link is not None:
