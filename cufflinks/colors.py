@@ -14,7 +14,6 @@ from IPython.display import HTML, display
 
 from . import themes
 from .utils import inverseDict
-from .auth import get_config_file
 
 
 class CufflinksError(Exception):
@@ -301,6 +300,7 @@ def colorgen(colors=None, n=None, scale=None, theme=None):
     if not colors:
         if not scale:
             if not theme:
+                from .auth import get_config_file  # avoid circular dependency
                 scale = get_config_file()['colorscale']
             else:
                 scale = themes.THEMES[theme]['colorscale']
