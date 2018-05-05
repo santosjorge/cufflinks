@@ -1,0 +1,140 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cufflinks.date_tools &#8212; Cufflinks  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cufflinks.date_tools</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
+
+
+<div class="viewcode-block" id="getDatefromDate"><a class="viewcode-back" href="../../cufflinks.date_tools.html#cufflinks.date_tools.getDatefromDate">[docs]</a><span class="k">def</span> <span class="nf">getDatefromDate</span><span class="p">(</span><span class="n">date</span><span class="p">,</span><span class="n">delta</span><span class="p">,</span><span class="n">strfmt</span><span class="o">=</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">):</span>
+	<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">==</span><span class="nb">str</span><span class="p">:</span>
+		<span class="n">date</span><span class="o">=</span><span class="n">stringToDate</span><span class="p">(</span><span class="n">date</span><span class="p">,</span><span class="n">strfmt</span><span class="p">)</span>
+	<span class="k">return</span> <span class="p">(</span><span class="n">date</span> <span class="o">+</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">delta</span><span class="p">))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">strfmt</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="getDateFromToday"><a class="viewcode-back" href="../../cufflinks.date_tools.html#cufflinks.date_tools.getDateFromToday">[docs]</a><span class="k">def</span> <span class="nf">getDateFromToday</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span><span class="n">strfmt</span><span class="o">=</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Returns a string that represents a date n numbers of days from today.</span>
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		delta : int </span>
+<span class="sd">			number of days</span>
+<span class="sd">		strfmt : string</span>
+<span class="sd">			format in which the date will be represented</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">+</span> <span class="n">dt</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">delta</span><span class="p">))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">strfmt</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="stringToDate"><a class="viewcode-back" href="../../cufflinks.date_tools.html#cufflinks.date_tools.stringToDate">[docs]</a><span class="k">def</span> <span class="nf">stringToDate</span><span class="p">(</span><span class="n">stringDate</span><span class="p">,</span><span class="n">strfmt</span><span class="o">=</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Converts a string format date into datetime</span>
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		stringDate : string </span>
+<span class="sd">			date in string format</span>
+<span class="sd">		strfmt : string</span>
+<span class="sd">			format in which the input date is represented</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">stringDate</span><span class="p">,</span><span class="n">strfmt</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="intToDate"><a class="viewcode-back" href="../../cufflinks.date_tools.html#cufflinks.date_tools.intToDate">[docs]</a><span class="k">def</span> <span class="nf">intToDate</span><span class="p">(</span><span class="n">intDate</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Converts an int format date into datetime</span>
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		intDate : int</span>
+<span class="sd">			date in int format</span>
+<span class="sd">	Example:</span>
+<span class="sd">		intDate(20151023)</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="n">stringToDate</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">intDate</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="dateToInt"><a class="viewcode-back" href="../../cufflinks.date_tools.html#cufflinks.date_tools.dateToInt">[docs]</a><span class="k">def</span> <span class="nf">dateToInt</span><span class="p">(</span><span class="n">date</span><span class="p">,</span><span class="n">strfmt</span><span class="o">=</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; Converts a datetime date into int</span>
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		date : datetime</span>
+<span class="sd">			date in datetime format</span>
+<span class="sd">		strfmt : string</span>
+<span class="sd">			format in which the int date will be generated</span>
+<span class="sd">	Example:</span>
+<span class="sd">		dateToInt(dt.date(2015,10,23),&#39;%Y&#39;)</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">strfmt</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="dateToString"><a class="viewcode-back" href="../../cufflinks.date_tools.html#cufflinks.date_tools.dateToString">[docs]</a><span class="k">def</span> <span class="nf">dateToString</span><span class="p">(</span><span class="n">date</span><span class="p">,</span><span class="n">strfmt</span><span class="o">=</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">):</span>
+	<span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">date</span><span class="p">,</span><span class="n">strfmt</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="stringToString"><a class="viewcode-back" href="../../cufflinks.date_tools.html#cufflinks.date_tools.stringToString">[docs]</a><span class="k">def</span> <span class="nf">stringToString</span><span class="p">(</span><span class="n">date</span><span class="p">,</span><span class="n">from_strfmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">%b%y&#39;</span><span class="p">,</span><span class="n">to_strfmt</span><span class="o">=</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">):</span>
+	<span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">stringToDate</span><span class="p">(</span><span class="n">date</span><span class="p">,</span><span class="n">from_strfmt</span><span class="p">),</span><span class="n">to_strfmt</span><span class="p">)</span></div>
+
+
+	
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Jorge Santos.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

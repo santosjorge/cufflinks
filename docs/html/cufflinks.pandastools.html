@@ -1,0 +1,128 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cufflinks.pandastools module &#8212; Cufflinks  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-cufflinks.pandastools">
+<span id="cufflinks-pandastools-module"></span><h1>cufflinks.pandastools module<a class="headerlink" href="#module-cufflinks.pandastools" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="cufflinks.pandastools.bestfit">
+<code class="descclassname">cufflinks.pandastools.</code><code class="descname">bestfit</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/pandastools.html#bestfit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.pandastools.bestfit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a series with the bestfit values.</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>Series.bestfit()</dd>
+<dt>Returns: series</dt>
+<dd>The returned series contains a parameter 
+called ‘formula’ which includes the string representation 
+of the bestfit line.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.pandastools.normalize">
+<code class="descclassname">cufflinks.pandastools.</code><code class="descname">normalize</code><span class="sig-paren">(</span><em>self</em>, <em>asOf=None</em>, <em>multiplier=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/pandastools.html#normalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.pandastools.normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a normalized series or DataFrame</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>Series.normalize()</dd>
+</dl>
+<p>Returns: series of DataFrame</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>asOf <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Date format
+‘2015-02-29’</dd>
+<dt>multiplier <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Factor by which the results will be adjusted</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.pandastools.read_google">
+<code class="descclassname">cufflinks.pandastools.</code><code class="descname">read_google</code><span class="sig-paren">(</span><em>url</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/pandastools.html#read_google"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.pandastools.read_google" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a google sheet</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cufflinks.pandastools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Jorge Santos.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/cufflinks.pandastools.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,355 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cufflinks.colors module &#8212; Cufflinks  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-cufflinks.colors">
+<span id="cufflinks-colors-module"></span><h1>cufflinks.colors module<a class="headerlink" href="#module-cufflinks.colors" title="Permalink to this headline">¶</a></h1>
+<dl class="exception">
+<dt id="cufflinks.colors.CufflinksError">
+<em class="property">exception </em><code class="descclassname">cufflinks.colors.</code><code class="descname">CufflinksError</code><a class="reference internal" href="_modules/cufflinks/colors.html#CufflinksError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.colors.CufflinksError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.colors.color_range">
+<code class="descclassname">cufflinks.colors.</code><code class="descname">color_range</code><span class="sig-paren">(</span><em>color</em>, <em>N=20</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/colors.html#color_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.colors.color_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a scale of colours from a base colour</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>color <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Color representation in hex</dd>
+<dt>N <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>number of colours to generate</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>color_range(‘#ff9933’,20)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.colors.color_table">
+<code class="descclassname">cufflinks.colors.</code><code class="descname">color_table</code><span class="sig-paren">(</span><em>color</em>, <em>N=1</em>, <em>sort=False</em>, <em>sort_values=False</em>, <em>inline=False</em>, <em>as_html=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/colors.html#color_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.colors.color_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a colour table</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>color <span class="classifier-delimiter">:</span> <span class="classifier">string | list | dict</span></dt>
+<dd>Color representation in rgba|rgb|hex
+If a list of colors is passed then these
+are displayed in a table</dd>
+<dt>N <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>number of colours to generate
+When color is not a list then it generaes 
+a range of N colors</dd>
+<dt>sort <span class="classifier-delimiter">:</span> <span class="classifier">bool </span></dt>
+<dd>if True then items are sorted</dd>
+<dt>sort_values <span class="classifier-delimiter">:</span> <span class="classifier">bool </span></dt>
+<dd>if True then items are sorted by color values.
+Only applies if color is a dictionary</dd>
+<dt>inline <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>if True it returns single line color blocks</dd>
+<dt>as_html <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>if True it returns the HTML code</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>color_table(‘#ff9933’)
+color_table(cufflinks.cnames)
+color_table([‘pink’,’salmon’,’yellow’])</dd>
+<dt>Note:</dt>
+<dd>This function only works in iPython Notebook</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.colors.colorgen">
+<code class="descclassname">cufflinks.colors.</code><code class="descname">colorgen</code><span class="sig-paren">(</span><em>colors=None</em>, <em>n=None</em>, <em>scale=None</em>, <em>theme=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/colors.html#colorgen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.colors.colorgen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a generator with a list of colors
+and gradients of those colors</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>colors <span class="classifier-delimiter">:</span> <span class="classifier">list(colors)</span></dt>
+<dd>List of colors to use</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>colorgen()
+colorgen([‘blue’,’red’,’pink’])
+colorgen([‘#f03’,’rgb(23,25,25)’])</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.colors.get_colorscale">
+<code class="descclassname">cufflinks.colors.</code><code class="descname">get_colorscale</code><span class="sig-paren">(</span><em>scale</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/colors.html#get_colorscale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.colors.get_colorscale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a color scale to be used for a plotly figure</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>scale <span class="classifier-delimiter">:</span> <span class="classifier">str or list</span></dt>
+<dd>Color scale name
+If the color name is preceded by a minus (-) 
+then the scale is inversed.
+Also accepts a list of colors (rgb,rgba,hex)</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>get_colorscale(‘accent’)
+get_colorscale([‘rgb(127,201,127)’,’rgb(190,174,212)’,’rgb(253,192,134)’])</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.colors.get_scales">
+<code class="descclassname">cufflinks.colors.</code><code class="descname">get_scales</code><span class="sig-paren">(</span><em>scale=None</em>, <em>n=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/colors.html#get_scales"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.colors.get_scales" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a color scale</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>scale <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Color scale name
+If the color name is preceded by a minus (-) 
+then the scale is inversed</dd>
+<dt>n <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first">Number of colors 
+If n &lt; number of colors available for a given scale then</p>
+<blockquote>
+<div>the minimum number will be returned</div></blockquote>
+<dl class="last docutils">
+<dt>If n &gt; number of colors available for a given scale then</dt>
+<dd>the maximum number will be returned</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>get_scales(‘accent’,8)
+get_scales(‘pastel1’)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.colors.hex_to_hsv">
+<code class="descclassname">cufflinks.colors.</code><code class="descname">hex_to_hsv</code><span class="sig-paren">(</span><em>color</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/colors.html#hex_to_hsv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.colors.hex_to_hsv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts from hex to hsv</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>color <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Color representation on color</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>hex_to_hsv(‘#ff9933’)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.colors.hex_to_rgb">
+<code class="descclassname">cufflinks.colors.</code><code class="descname">hex_to_rgb</code><span class="sig-paren">(</span><em>color</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/colors.html#hex_to_rgb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.colors.hex_to_rgb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts from hex to rgb</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>color <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Color representation on hex or rgb</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>hex_to_rgb(‘#E1E5ED’)
+hex_to_rgb(‘#f03’)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.colors.interp">
+<code class="descclassname">cufflinks.colors.</code><code class="descname">interp</code><span class="sig-paren">(</span><em>colors</em>, <em>N</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/colors.html#interp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.colors.interp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.colors.normalize">
+<code class="descclassname">cufflinks.colors.</code><code class="descname">normalize</code><span class="sig-paren">(</span><em>color</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/colors.html#normalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.colors.normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an hex color</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>color <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Color representation in rgba|rgb|hex</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>normalize(‘#f03’)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.colors.reset_scales">
+<code class="descclassname">cufflinks.colors.</code><code class="descname">reset_scales</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/colors.html#reset_scales"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.colors.reset_scales" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.colors.rgb_to_hex">
+<code class="descclassname">cufflinks.colors.</code><code class="descname">rgb_to_hex</code><span class="sig-paren">(</span><em>color</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/colors.html#rgb_to_hex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.colors.rgb_to_hex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts from rgb to hex</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>color <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Color representation on hex or rgb</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>rgb_to_hex(‘rgb(23,25,24)’)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.colors.rgba_to_rgb">
+<code class="descclassname">cufflinks.colors.</code><code class="descname">rgba_to_rgb</code><span class="sig-paren">(</span><em>color</em>, <em>bg='rgb(255</em>, <em>255</em>, <em>255)'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/colors.html#rgba_to_rgb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.colors.rgba_to_rgb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts from rgba to rgb</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>color <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Color representation in rgba</dd>
+<dt>bg <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Color representation in rgb</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>rgba_to_rgb(‘rgb(23,25,24,.4)’‘</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.colors.scales">
+<code class="descclassname">cufflinks.colors.</code><code class="descname">scales</code><span class="sig-paren">(</span><em>scale=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/colors.html#scales"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.colors.scales" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays a color scale (HTML)</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>scale <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first">Color scale name
+If no scale name is provided then all scales are returned</p>
+<blockquote>
+<div>(max number for each scale)</div></blockquote>
+<dl class="last docutils">
+<dt>If scale=’all’ then all scale combinations available </dt>
+<dd>will be returned</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>scales(‘accent’)
+scales(‘all’)
+scales()</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.colors.to_rgba">
+<code class="descclassname">cufflinks.colors.</code><code class="descname">to_rgba</code><span class="sig-paren">(</span><em>color</em>, <em>alpha</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/colors.html#to_rgba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.colors.to_rgba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts from hex|rgb to rgba</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>color <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Color representation on hex or rgb</dd>
+<dt>alpha <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>Value from 0 to 1.0 that represents the 
+alpha value.</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>to_rgba(‘#E1E5ED’,0.6)
+to_rgba(‘#f03’,0.7)
+to_rgba(‘rgb(23,23,23)’,.5)</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cufflinks.colors.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Jorge Santos.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/cufflinks.colors.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,391 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cufflinks.datagen module &#8212; Cufflinks  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-cufflinks.datagen">
+<span id="cufflinks-datagen-module"></span><h1>cufflinks.datagen module<a class="headerlink" href="#module-cufflinks.datagen" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="cufflinks.datagen.bars">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">bars</code><span class="sig-paren">(</span><em>n=3</em>, <em>n_categories=3</em>, <em>prefix='category'</em>, <em>columns=None</em>, <em>mode='abc'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#bars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.bars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DataFrame with the required format for 
+a bar plot</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>n <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of points for each trace</dd>
+<dt>n_categories <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of categories for each point</dd>
+<dt>prefix <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name for each category</dd>
+<dt>columns <span class="classifier-delimiter">:</span> <span class="classifier">[str]</span></dt>
+<dd>List of column names</dd>
+<dt>mode <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first last docutils">
+<dt>Format for each item</dt>
+<dd>‘abc’ for alphabet columns
+‘stocks’ for random stock names</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.box">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">box</code><span class="sig-paren">(</span><em>n_traces=5</em>, <em>n=100</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#box"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.box" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DataFrame with the required format for 
+a box plot</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>n_traces <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of traces</dd>
+<dt>n <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of points for each trace</dd>
+<dt>mode <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first last docutils">
+<dt>Format for each item</dt>
+<dd>‘abc’ for alphabet columns
+‘stocks’ for random stock names</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.bubble">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">bubble</code><span class="sig-paren">(</span><em>n_categories=5</em>, <em>n=10</em>, <em>prefix='category'</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#bubble"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.bubble" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DataFrame with the required format for 
+a bubble plot</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>n_categories <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of categories</dd>
+<dt>n <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of points for each category</dd>
+<dt>prefix <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name for each category</dd>
+<dt>mode <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first last docutils">
+<dt>Format for each item</dt>
+<dd>‘abc’ for alphabet columns
+‘stocks’ for random stock names</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.bubble3d">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">bubble3d</code><span class="sig-paren">(</span><em>n_categories=5</em>, <em>n=10</em>, <em>prefix='category'</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#bubble3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.bubble3d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DataFrame with the required format for 
+a bubble3d plot</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>n_categories <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of categories</dd>
+<dt>n <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of points for each trace</dd>
+<dt>prefix <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name for each trace</dd>
+<dt>mode <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first last docutils">
+<dt>Format for each item</dt>
+<dd>‘abc’ for alphabet columns
+‘stocks’ for random stock names</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.choropleth">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">choropleth</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#choropleth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.choropleth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.getName">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">getName</code><span class="sig-paren">(</span><em>n=1</em>, <em>name=3</em>, <em>exchange=2</em>, <em>columns=None</em>, <em>mode='abc'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#getName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.getName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.heatmap">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">heatmap</code><span class="sig-paren">(</span><em>n_x=5</em>, <em>n_y=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#heatmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.heatmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DataFrame with the required format for 
+a heatmap plot</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>n_x <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of x categories</dd>
+<dt>n_y <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of y categories</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.histogram">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">histogram</code><span class="sig-paren">(</span><em>n_traces=1</em>, <em>n=500</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DataFrame with the required format for 
+a box plot</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>n_traces <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of traces</dd>
+<dt>n <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of points for each trace</dd>
+<dt>mode <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first last docutils">
+<dt>Format for each item</dt>
+<dd>‘abc’ for alphabet columns
+‘stocks’ for random stock names</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.lines">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">lines</code><span class="sig-paren">(</span><em>n_traces=5</em>, <em>n=100</em>, <em>columns=None</em>, <em>dateIndex=True</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#lines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DataFrame with the required format for 
+a scatter (lines) plot</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>n_traces <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of traces</dd>
+<dt>n <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of points for each trace</dd>
+<dt>columns <span class="classifier-delimiter">:</span> <span class="classifier">[str]</span></dt>
+<dd>List of column names</dd>
+<dt>dateIndex <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If True it will return a datetime index
+if False it will return a enumerated index</dd>
+<dt>mode <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first last docutils">
+<dt>Format for each item</dt>
+<dd>‘abc’ for alphabet columns
+‘stocks’ for random stock names</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.ohlc">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">ohlc</code><span class="sig-paren">(</span><em>n=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#ohlc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.ohlc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DataFrame with the required format for 
+a candlestick or ohlc plot
+df[[‘open’,’high’,’low’,’close’]]</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>n <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of ohlc points</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.ohlcv">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">ohlcv</code><span class="sig-paren">(</span><em>n=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#ohlcv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.ohlcv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DataFrame with the required format for 
+a candlestick or ohlc plot
+df[[‘open’,’high’,’low’,’close’,’volume’]</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>n <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of ohlc points</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.pie">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">pie</code><span class="sig-paren">(</span><em>n_labels=5</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#pie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.pie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DataFrame with the required format for 
+a pie plot</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>n_labels <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of labels</dd>
+<dt>mode <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first last docutils">
+<dt>Format for each item</dt>
+<dd>‘abc’ for alphabet columns
+‘stocks’ for random stock names</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.scatter">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">scatter</code><span class="sig-paren">(</span><em>n_categories=5</em>, <em>n=10</em>, <em>prefix='category'</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#scatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.scatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DataFrame with the required format for 
+a scatter plot</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>n_categories <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of categories</dd>
+<dt>n <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of points for each category</dd>
+<dt>prefix <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name for each category</dd>
+<dt>mode <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first last docutils">
+<dt>Format for each item</dt>
+<dd>‘abc’ for alphabet columns
+‘stocks’ for random stock names</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.scatter3d">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">scatter3d</code><span class="sig-paren">(</span><em>n_categories=5</em>, <em>n=10</em>, <em>prefix='category'</em>, <em>mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#scatter3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.scatter3d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DataFrame with the required format for 
+a scatter3d plot</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>n_categories <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of categories</dd>
+<dt>n <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of points for each trace</dd>
+<dt>prefix <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name for each trace</dd>
+<dt>mode <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first last docutils">
+<dt>Format for each item</dt>
+<dd>‘abc’ for alphabet columns
+‘stocks’ for random stock names</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.scattergeo">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">scattergeo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#scattergeo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.scattergeo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.sinwave">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">sinwave</code><span class="sig-paren">(</span><em>n=4</em>, <em>inc=0.25</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#sinwave"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.sinwave" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DataFrame with the required format for 
+a surface (sine wave) plot</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>n <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Ranges for X and Y axis (-n,n)</dd>
+<dt>n_y <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Size of increment along the axis</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.datagen.surface">
+<code class="descclassname">cufflinks.datagen.</code><code class="descname">surface</code><span class="sig-paren">(</span><em>n_x=20</em>, <em>n_y=20</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/datagen.html#surface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.datagen.surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DataFrame with the required format for 
+a surface plot</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>n_x <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of points along the X axis</dd>
+<dt>n_y <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of points along the Y axis</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cufflinks.datagen.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Jorge Santos.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/cufflinks.datagen.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

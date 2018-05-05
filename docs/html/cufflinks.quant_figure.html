@@ -1,0 +1,818 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cufflinks.quant_figure module &#8212; Cufflinks  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-cufflinks.quant_figure">
+<span id="cufflinks-quant-figure-module"></span><h1>cufflinks.quant_figure module<a class="headerlink" href="#module-cufflinks.quant_figure" title="Permalink to this headline">¶</a></h1>
+<p>QuantFigure allows you to create a persistent object. 
+Annotations and Technical Studies can be added on demand.</p>
+<p>It accepts any dataframe with a timeseries index.</p>
+<dl class="docutils">
+<dt>Try it out:</dt>
+<dd>qf=cf.QuantFig(cf.datagen.ohlc())
+qf.iplot()</dd>
+</dl>
+<dl class="class">
+<dt id="cufflinks.quant_figure.QuantFig">
+<em class="property">class </em><code class="descclassname">cufflinks.quant_figure.</code><code class="descname">QuantFig</code><span class="sig-paren">(</span><em>df</em>, <em>kind='candlestick'</em>, <em>columns=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_adx">
+<code class="descname">add_adx</code><span class="sig-paren">(</span><em>periods=14</em>, <em>str=None</em>, <em>name=''</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_adx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_adx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add Average Directional Index (ADX) study to QuantFigure.studies</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>periods <span class="classifier-delimiter">:</span> <span class="classifier">int or list(int)</span></dt>
+<dd>Number of periods</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name given to the study</dd>
+<dt>str <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Label factory for studies
+The following wildcards can be used:</p>
+<blockquote>
+<div>{name} : Name of the column
+{study} : Name of the study
+{period} : Period used</div></blockquote>
+<dl class="last docutils">
+<dt>Examples:</dt>
+<dd>‘study: {study} - period: {period}’</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>kwargs: </dt>
+<dd><dl class="first docutils">
+<dt>legendgroup <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If true, all legend items are grouped into a 
+single one</dd>
+</dl>
+<p class="last">All formatting values available on iplot()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_annotations">
+<code class="descname">add_annotations</code><span class="sig-paren">(</span><em>annotations</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_annotations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_annotations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an annotation to the QuantFigure.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>annotations <span class="classifier-delimiter">:</span> <span class="classifier">dict or list(dict,)</span></dt>
+<dd><dl class="first last docutils">
+<dt>Annotations can be on the form form of </dt>
+<dd>{‘date’ : ‘text’}
+and the text will automatically be placed at the 
+right level on the chart</dd>
+<dt>or</dt>
+<dd>A Plotly fully defined annotation</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>kwargs <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd><dl class="first docutils">
+<dt>fontcolor <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Text color for annotations</dd>
+<dt>fontsize <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Text size for annotations</dd>
+<dt>textangle <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Textt angle</dd>
+</dl>
+<p class="last">See <a class="reference external" href="https://plot.ly/python/reference/#layout-annotations">https://plot.ly/python/reference/#layout-annotations</a> 
+for a complete list of valid parameters.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_atr">
+<code class="descname">add_atr</code><span class="sig-paren">(</span><em>periods=14</em>, <em>str=None</em>, <em>name=''</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_atr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_atr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add Average True Range (ATR) study to QuantFigure.studies</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>periods <span class="classifier-delimiter">:</span> <span class="classifier">int or list(int)</span></dt>
+<dd>Number of periods</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name given to the study</dd>
+<dt>str <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Label factory for studies
+The following wildcards can be used:</p>
+<blockquote>
+<div>{name} : Name of the column
+{study} : Name of the study
+{period} : Period used</div></blockquote>
+<dl class="last docutils">
+<dt>Examples:</dt>
+<dd>‘study: {study} - period: {period}’</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>kwargs: </dt>
+<dd><dl class="first docutils">
+<dt>legendgroup <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If true, all legend items are grouped into a 
+single one</dd>
+</dl>
+<p class="last">All formatting values available on iplot()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_bollinger_bands">
+<code class="descname">add_bollinger_bands</code><span class="sig-paren">(</span><em>periods=20</em>, <em>boll_std=2</em>, <em>fill=True</em>, <em>column=None</em>, <em>name=''</em>, <em>str='{name}({column}</em>, <em>{period})'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_bollinger_bands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_bollinger_bands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add Bollinger Bands (BOLL) study to QuantFigure.studies</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>periods <span class="classifier-delimiter">:</span> <span class="classifier">int or list(int)</span></dt>
+<dd>Number of periods</dd>
+<dt>boll_std <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Number of standard deviations for
+the bollinger upper and lower bands</dd>
+<dt>fill <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
+<dd>If True, then the innner area of the 
+bands will filled</dd>
+<dt>column :string</dt>
+<dd>Defines the data column name that contains the 
+data over which the study will be applied. 
+Default: ‘close’</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name given to the study</dd>
+<dt>str <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Label factory for studies
+The following wildcards can be used:</p>
+<blockquote>
+<div>{name} : Name of the column
+{study} : Name of the study
+{period} : Period used</div></blockquote>
+<dl class="last docutils">
+<dt>Examples:</dt>
+<dd>‘study: {study} - period: {period}’</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>kwargs: </dt>
+<dd><dl class="first docutils">
+<dt>legendgroup <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If true, all legend items are grouped into a 
+single one</dd>
+<dt>fillcolor <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Color to be used for the fill color.
+Example:</p>
+<blockquote class="last">
+<div>‘rgba(62, 111, 176, .4)’</div></blockquote>
+</dd>
+</dl>
+<p class="last">All formatting values available on iplot()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_cci">
+<code class="descname">add_cci</code><span class="sig-paren">(</span><em>periods=14</em>, <em>cci_upper=100</em>, <em>cci_lower=-100</em>, <em>showbands=True</em>, <em>str=None</em>, <em>name=''</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_cci"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_cci" title="Permalink to this definition">¶</a></dt>
+<dd><p>Commodity Channel Indicator study to QuantFigure.studies</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>periods <span class="classifier-delimiter">:</span> <span class="classifier">int or list(int)</span></dt>
+<dd>Number of periods</dd>
+<dt>cci_upper <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Upper bands level
+default : 100</dd>
+<dt>cci_lower <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>Lower band level
+default : -100</dd>
+<dt>showbands <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
+<dd>If True, then the cci_upper and
+cci_lower levels are displayed</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name given to the study</dd>
+<dt>str <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Label factory for studies
+The following wildcards can be used:</p>
+<blockquote>
+<div>{name} : Name of the column
+{study} : Name of the study
+{period} : Period used</div></blockquote>
+<dl class="last docutils">
+<dt>Examples:</dt>
+<dd>‘study: {study} - period: {period}’</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>kwargs: </dt>
+<dd><dl class="first docutils">
+<dt>legendgroup <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If true, all legend items are grouped into a 
+single one</dd>
+</dl>
+<p class="last">All formatting values available on iplot()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_dmi">
+<code class="descname">add_dmi</code><span class="sig-paren">(</span><em>periods=14</em>, <em>str='{name}({period})'</em>, <em>name=''</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_dmi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_dmi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add Directional Movement Index (DMI) study to QuantFigure.studies</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>periods <span class="classifier-delimiter">:</span> <span class="classifier">int or list(int)</span></dt>
+<dd>Number of periods</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name given to the study</dd>
+<dt>str <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Label factory for studies
+The following wildcards can be used:</p>
+<blockquote>
+<div>{name} : Name of the column
+{study} : Name of the study
+{period} : Period used</div></blockquote>
+<dl class="last docutils">
+<dt>Examples:</dt>
+<dd>‘study: {study} - period: {period}’</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>kwargs: </dt>
+<dd><dl class="first docutils">
+<dt>legendgroup <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If true, all legend items are grouped into a 
+single one</dd>
+</dl>
+<p class="last">All formatting values available on iplot()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_ema">
+<code class="descname">add_ema</code><span class="sig-paren">(</span><em>periods=20</em>, <em>column=None</em>, <em>str=None</em>, <em>name=''</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_ema"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_ema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add Exponential Moving Average (EMA) study to QuantFigure.studies</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>periods <span class="classifier-delimiter">:</span> <span class="classifier">int or list(int)</span></dt>
+<dd>Number of periods</dd>
+<dt>column :string</dt>
+<dd>Defines the data column name that contains the 
+data over which the study will be applied. 
+Default: ‘close’</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name given to the study</dd>
+<dt>str <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Label factory for studies
+The following wildcards can be used:</p>
+<blockquote>
+<div>{name} : Name of the column
+{study} : Name of the study
+{period} : Period used</div></blockquote>
+<dl class="last docutils">
+<dt>Examples:</dt>
+<dd>‘study: {study} - period: {period}’</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>kwargs: </dt>
+<dd><dl class="first docutils">
+<dt>legendgroup <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If true, all legend items are grouped into a 
+single one</dd>
+</dl>
+<p class="last">All formatting values available on iplot()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_macd">
+<code class="descname">add_macd</code><span class="sig-paren">(</span><em>fast_period=12</em>, <em>slow_period=26</em>, <em>signal_period=9</em>, <em>column=None</em>, <em>name=''</em>, <em>str=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_macd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_macd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add Moving Average Convergence Divergence (MACD) study to QuantFigure.studies</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>fast_period <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>MACD Fast Period</dd>
+<dt>slow_period <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>MACD Slow Period</dd>
+<dt>signal_period <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>MACD Signal Period</dd>
+<dt>column :string</dt>
+<dd>Defines the data column name that contains the 
+data over which the study will be applied. 
+Default: ‘close’</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name given to the study</dd>
+<dt>str <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Label factory for studies
+The following wildcards can be used:</p>
+<blockquote>
+<div>{name} : Name of the column
+{study} : Name of the study
+{period} : Period used</div></blockquote>
+<dl class="last docutils">
+<dt>Examples:</dt>
+<dd>‘study: {study} - period: {period}’</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>kwargs: </dt>
+<dd><dl class="first docutils">
+<dt>legendgroup <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If true, all legend items are grouped into a 
+single one</dd>
+</dl>
+<p class="last">All formatting values available on iplot()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_ptps">
+<code class="descname">add_ptps</code><span class="sig-paren">(</span><em>periods=14</em>, <em>af=0.2</em>, <em>initial='long'</em>, <em>str=None</em>, <em>name=''</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_ptps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_ptps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add Parabolic SAR (PTPS) study to QuantFigure.studies</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>periods <span class="classifier-delimiter">:</span> <span class="classifier">int or list(int)</span></dt>
+<dd>Number of periods</dd>
+<dt>af <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>acceleration factor</dd>
+<dt>initial <span class="classifier-delimiter">:</span> <span class="classifier">‘long’ or ‘short’</span></dt>
+<dd>Iniital position
+default: long</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name given to the study</dd>
+<dt>str <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Label factory for studies
+The following wildcards can be used:</p>
+<blockquote>
+<div>{name} : Name of the column
+{study} : Name of the study
+{period} : Period used</div></blockquote>
+<dl class="last docutils">
+<dt>Examples:</dt>
+<dd>‘study: {study} - period: {period}’</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>kwargs: </dt>
+<dd><dl class="first docutils">
+<dt>legendgroup <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If true, all legend items are grouped into a 
+single one</dd>
+</dl>
+<p class="last">All formatting values available on iplot()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_resistance">
+<code class="descname">add_resistance</code><span class="sig-paren">(</span><em>date</em>, <em>on='high'</em>, <em>mode='starttoend'</em>, <em>text=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_resistance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_resistance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a resistance line to the QuantFigure</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>date0 <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>The resistance line will be drawn at the ‘y’ level 
+value that corresponds to this date.</dd>
+<dt>on <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Indicate the data series in which the 
+resistance should be based.</p>
+<blockquote class="last">
+<div>‘close’
+‘high’
+‘low’
+‘open’</div></blockquote>
+</dd>
+<dt>mode <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Defines how the support/resistance will 
+be drawn</p>
+<blockquote class="last">
+<div>‘starttoened’ : (x0,x1)
+‘fromstart’ : (x0,date)
+‘toend’ : (date,x1)</div></blockquote>
+</dd>
+<dt>text <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>If passed, then an annotation will be added 
+to the resistance (at mid point)</dd>
+</dl>
+</dd>
+<dt>kwargs: </dt>
+<dd><dl class="first last docutils">
+<dt>from_strfmt <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Defines the date formating in which 
+date0 and date1 are stated. 
+default: ‘%d%b%y’</dd>
+<dt>to_strfmt <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Defines the date formatting 
+to which it should be converted. 
+This should match the same format as the timeseries index. 
+default : ‘%Y-%m-%d’</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_rsi">
+<code class="descname">add_rsi</code><span class="sig-paren">(</span><em>periods=20</em>, <em>rsi_upper=70</em>, <em>rsi_lower=30</em>, <em>showbands=True</em>, <em>column=None</em>, <em>name=''</em>, <em>str=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_rsi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_rsi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add Relative Strength Indicator (RSI) study to QuantFigure.studies</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>periods <span class="classifier-delimiter">:</span> <span class="classifier">int or list(int)</span></dt>
+<dd>Number of periods</dd>
+<dt>rsi_upper <span class="classifier-delimiter">:</span> <span class="classifier">int </span></dt>
+<dd>bounds [0,100]
+Upper (overbought) level</dd>
+<dt>rsi_lower <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>bounds [0,100]
+Lower (oversold) level</dd>
+<dt>showbands <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
+<dd>If True, then the rsi_upper and
+rsi_lower levels are displayed</dd>
+<dt>column :string</dt>
+<dd>Defines the data column name that contains the 
+data over which the study will be applied. 
+Default: ‘close’</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name given to the study</dd>
+<dt>str <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Label factory for studies
+The following wildcards can be used:</p>
+<blockquote>
+<div>{name} : Name of the column
+{study} : Name of the study
+{period} : Period used</div></blockquote>
+<dl class="last docutils">
+<dt>Examples:</dt>
+<dd>‘study: {study} - period: {period}’</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>kwargs: </dt>
+<dd><dl class="first docutils">
+<dt>legendgroup <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If true, all legend items are grouped into a 
+single one</dd>
+</dl>
+<p class="last">All formatting values available on iplot()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_shapes">
+<code class="descname">add_shapes</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_shapes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_shapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a shape to the QuantFigure.</p>
+<dl class="docutils">
+<dt>kwargs <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd><dl class="first last docutils">
+<dt>hline <span class="classifier-delimiter">:</span> <span class="classifier">int, list or dict</span></dt>
+<dd>Draws a horizontal line at the
+indicated y position(s)
+Extra parameters can be passed in
+the form of a dictionary (see shapes)</dd>
+<dt>vline <span class="classifier-delimiter">:</span> <span class="classifier">int, list or dict</span></dt>
+<dd>Draws a vertical line at the
+indicated x position(s)
+Extra parameters can be passed in
+the form of a dictionary (see shapes)</dd>
+<dt>hspan <span class="classifier-delimiter">:</span> <span class="classifier">(y0,y1)</span></dt>
+<dd>Draws a horizontal rectangle at the
+indicated (y0,y1) positions.
+Extra parameters can be passed in
+the form of a dictionary (see shapes)</dd>
+<dt>vspan <span class="classifier-delimiter">:</span> <span class="classifier">(x0,x1)</span></dt>
+<dd>Draws a vertical rectangle at the
+indicated (x0,x1) positions.
+Extra parameters can be passed in
+the form of a dictionary (see shapes)</dd>
+<dt>shapes <span class="classifier-delimiter">:</span> <span class="classifier">dict or list(dict)</span></dt>
+<dd>List of dictionaries with the
+specifications of a given shape.
+See help(cufflinks.tools.get_shape)
+for more information</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_sma">
+<code class="descname">add_sma</code><span class="sig-paren">(</span><em>periods=20</em>, <em>column=None</em>, <em>name=''</em>, <em>str=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_sma"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_sma" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add Simple Moving Average (SMA) study to QuantFigure.studies</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>periods <span class="classifier-delimiter">:</span> <span class="classifier">int or list(int)</span></dt>
+<dd>Number of periods</dd>
+<dt>column :string</dt>
+<dd>Defines the data column name that contains the 
+data over which the study will be applied. 
+Default: ‘close’</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name given to the study</dd>
+<dt>str <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Label factory for studies
+The following wildcards can be used:</p>
+<blockquote>
+<div>{name} : Name of the column
+{study} : Name of the study
+{period} : Period used</div></blockquote>
+<dl class="last docutils">
+<dt>Examples:</dt>
+<dd>‘study: {study} - period: {period}’</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>kwargs: </dt>
+<dd><dl class="first docutils">
+<dt>legendgroup <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If true, all legend items are grouped into a 
+single one</dd>
+</dl>
+<p class="last">All formatting values available on iplot()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_support">
+<code class="descname">add_support</code><span class="sig-paren">(</span><em>date</em>, <em>on='low'</em>, <em>mode='starttoend'</em>, <em>text=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_support"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_support" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a support line to the QuantFigure</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>date0 <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>The support line will be drawn at the ‘y’ level 
+value that corresponds to this date.</dd>
+<dt>on <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Indicate the data series in which the 
+support line should be based.</p>
+<blockquote class="last">
+<div>‘close’
+‘high’
+‘low’
+‘open’</div></blockquote>
+</dd>
+<dt>mode <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Defines how the support/resistance will 
+be drawn</p>
+<blockquote class="last">
+<div>‘starttoened’ : (x0,x1)
+‘fromstart’ : (x0,date)
+‘toend’ : (date,x1)</div></blockquote>
+</dd>
+<dt>text <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>If passed, then an annotation will be added 
+to the support line (at mid point)</dd>
+</dl>
+</dd>
+<dt>kwargs: </dt>
+<dd><dl class="first last docutils">
+<dt>from_strfmt <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Defines the date formating in which 
+date0 and date1 are stated. 
+default: ‘%d%b%y’</dd>
+<dt>to_strfmt <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Defines the date formatting 
+to which it should be converted. 
+This should match the same format as the timeseries index. 
+default : ‘%Y-%m-%d’</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_trendline">
+<code class="descname">add_trendline</code><span class="sig-paren">(</span><em>date0</em>, <em>date1</em>, <em>on='close'</em>, <em>text=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_trendline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_trendline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a trendline to the QuantFigure. 
+Given 2 dates, the trendline is connected on the data points
+that correspond to those dates.</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>date0 <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Trendline starting date</dd>
+<dt>date1 <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Trendline end date</dd>
+<dt>on <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Indicate the data series in which the 
+trendline should be based.</p>
+<blockquote class="last">
+<div>‘close’
+‘high’
+‘low’
+‘open’</div></blockquote>
+</dd>
+<dt>text <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>If passed, then an annotation will be added 
+to the trendline (at mid point)</dd>
+</dl>
+</dd>
+<dt>kwargs:</dt>
+<dd><dl class="first last docutils">
+<dt>from_strfmt <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Defines the date formating in which 
+date0 and date1 are stated. 
+default: ‘%d%b%y’</dd>
+<dt>to_strfmt <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Defines the date formatting 
+to which it should be converted. 
+This should match the same format as the timeseries index. 
+default : ‘%Y-%m-%d’</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.add_volume">
+<code class="descname">add_volume</code><span class="sig-paren">(</span><em>colorchange=True</em>, <em>column=None</em>, <em>name=''</em>, <em>str='{name}'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.add_volume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.add_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add ‘volume’ study to QuantFigure.studies</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>colorchange <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If true then each volume bar will have a fill color 
+depending on if ‘base’ had a positive or negative
+change compared to the previous value</dd>
+<dt>column :string</dt>
+<dd>Defines the data column name that contains the volume data. 
+Default: ‘volume’</dd>
+<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Name given to the study</dd>
+<dt>str <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Label factory for studies
+The following wildcards can be used:</p>
+<blockquote>
+<div>{name} : Name of the column
+{study} : Name of the study
+{period} : Period used</div></blockquote>
+<dl class="last docutils">
+<dt>Examples:</dt>
+<dd>‘study: {study} - period: {period}’</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt>kwargs <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd><dl class="first last docutils">
+<dt>base <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Defines the column which will define the
+positive/negative changes (if colorchange=True).
+Default = ‘close’</dd>
+<dt>up_color <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Color for positive bars</dd>
+<dt>down_color <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Color for negative bars</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.delete">
+<code class="descname">delete</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the values for a QuantFigure
+The key-values are automatically deleted from the correct 
+section of the QuantFigure</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.figure">
+<code class="descname">figure</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.figure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a Plotly figure</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.iplot">
+<code class="descname">iplot</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.iplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.iplot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cufflinks.quant_figure.QuantFig.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#QuantFig.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.QuantFig.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the values for a QuantFigure
+The key-values are automatically assigned to the correct 
+section of the QuantFigure</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.quant_figure.get_annotation_kwargs">
+<code class="descclassname">cufflinks.quant_figure.</code><code class="descname">get_annotation_kwargs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#get_annotation_kwargs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.get_annotation_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.quant_figure.get_layout_kwargs">
+<code class="descclassname">cufflinks.quant_figure.</code><code class="descname">get_layout_kwargs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#get_layout_kwargs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.get_layout_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.quant_figure.get_shapes_kwargs">
+<code class="descclassname">cufflinks.quant_figure.</code><code class="descname">get_shapes_kwargs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/quant_figure.html#get_shapes_kwargs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.quant_figure.get_shapes_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cufflinks.quant_figure.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Jorge Santos.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/cufflinks.quant_figure.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

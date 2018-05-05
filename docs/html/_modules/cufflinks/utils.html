@@ -1,0 +1,310 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cufflinks.utils &#8212; Cufflinks  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cufflinks.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">six</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+
+<div class="viewcode-block" id="is_string"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.is_string">[docs]</a><span class="k">def</span> <span class="nf">is_string</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+	<span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="is_list"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.is_list">[docs]</a><span class="k">def</span> <span class="nf">is_list</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+	<span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">tuple</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="is_dict"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.is_dict">[docs]</a><span class="k">def</span> <span class="nf">is_dict</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+	<span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="nb">dict</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="make_list"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.make_list">[docs]</a><span class="k">def</span> <span class="nf">make_list</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+	<span class="k">return</span> <span class="p">[</span><span class="n">val</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">is_list</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">else</span> <span class="n">val</span></div>
+
+<div class="viewcode-block" id="make_string"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.make_string">[docs]</a><span class="k">def</span> <span class="nf">make_string</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+	<span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">is_string</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">else</span> <span class="n">val</span></div>
+
+<div class="viewcode-block" id="make_dict_from_list"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.make_dict_from_list">[docs]</a><span class="k">def</span> <span class="nf">make_dict_from_list</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+	<span class="k">return</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">_</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">val</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="merge_dict"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.merge_dict">[docs]</a><span class="k">def</span> <span class="nf">merge_dict</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span><span class="n">d2</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		d1 &lt;-- d2</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">d</span><span class="o">=</span><span class="n">d2</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+	<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">d1</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+		<span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+			<span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">v</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
+				<span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">merge_dict</span><span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+	<span class="k">return</span> <span class="n">d</span></div>
+
+<div class="viewcode-block" id="dict_path"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.dict_path">[docs]</a><span class="k">def</span> <span class="nf">dict_path</span><span class="p">(</span><span class="n">from_d</span><span class="p">,</span><span class="n">to_d</span><span class="o">=</span><span class="p">{},</span><span class="n">l</span><span class="o">=</span><span class="p">[]):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a dictionary with the path in which each of the keys is found</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">		from_d : dict</span>
+<span class="sd">			Dictionary that contains all the keys, values</span>
+<span class="sd">		to_d : dict</span>
+<span class="sd">			Dictionary to which the results will be appended</span>
+
+<span class="sd">	Example: </span>
+<span class="sd">		dict_path({&#39;level1&#39;:{&#39;level2&#39;:{&#39;level3&#39;:&#39;value&#39;}}})</span>
+<span class="sd">		Returns</span>
+<span class="sd">			{&#39;level1&#39;: [],</span>
+<span class="sd">		 	 &#39;level2&#39;: [&#39;level1&#39;],</span>
+<span class="sd">		 	 &#39;level3&#39;: [&#39;level1&#39;, &#39;level2&#39;]</span>
+<span class="sd">		 	}</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">from_d</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
+			<span class="n">to_d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">l</span>
+			<span class="n">_l</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+			<span class="n">_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+			<span class="n">to_d</span><span class="o">=</span><span class="n">dict_path</span><span class="p">(</span><span class="n">from_d</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">to_d</span><span class="p">,</span><span class="n">_l</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">to_d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">l</span>
+	<span class="n">_to_d</span><span class="o">=</span><span class="n">to_d</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+	<span class="n">to_d</span><span class="o">=</span><span class="p">{}</span>
+	<span class="k">return</span> <span class="n">_to_d</span></div>
+
+<div class="viewcode-block" id="dict_update"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.dict_update">[docs]</a><span class="k">def</span> <span class="nf">dict_update</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">val</span><span class="p">,</span><span class="n">d_ref</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">d_ref</span><span class="o">=</span><span class="n">d</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">d_ref</span> <span class="k">else</span> <span class="n">d</span>
+    <span class="n">path</span><span class="o">=</span><span class="n">dict_path</span><span class="p">(</span><span class="n">d_ref</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+        <span class="n">reduce</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="n">path</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span><span class="n">val</span><span class="p">})</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">d</span></div>
+
+<div class="viewcode-block" id="pp"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.pp">[docs]</a><span class="k">def</span> <span class="nf">pp</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="n">preString</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">	Formats (prettyprint) a concatenated dictionary</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">tab</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="o">*</span><span class="mi">4</span>
+	<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
+		<span class="n">keys</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+		<span class="n">keys</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+		<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+			<span class="n">val</span><span class="o">=</span><span class="n">el</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+			<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
+				<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1"> :&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">preString</span><span class="p">,</span><span class="n">key</span><span class="p">))</span>
+				<span class="n">pp</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="n">preString</span><span class="o">+</span><span class="n">tab</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">  =  </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">preString</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">))</span>
+	
+	<span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
+		<span class="nb">print</span><span class="p">(</span><span class="n">preString</span><span class="o">+</span><span class="n">tab</span><span class="o">+</span><span class="s1">&#39;[&#39;</span><span class="p">)</span>
+		<span class="n">preString</span><span class="o">+=</span><span class="n">tab</span>	
+		<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">el</span><span class="p">:</span>
+			<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
+				<span class="nb">print</span> <span class="p">(</span><span class="n">preString</span><span class="o">+</span><span class="n">tab</span><span class="o">+</span><span class="s1">&#39;{&#39;</span><span class="p">)</span>
+				<span class="n">pp</span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="n">preString</span><span class="o">+</span><span class="n">tab</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+				<span class="nb">print</span><span class="p">(</span><span class="n">preString</span><span class="o">+</span><span class="n">tab</span><span class="o">+</span><span class="s1">&#39;}&#39;</span><span class="p">)</span>
+			<span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
+				<span class="nb">print</span><span class="p">(</span><span class="n">preString</span><span class="o">+</span><span class="n">tab</span><span class="o">+</span><span class="s1">&#39;[&#39;</span><span class="p">)</span>
+				<span class="n">pp</span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="n">preString</span><span class="o">+</span><span class="n">tab</span><span class="p">)</span>
+				<span class="nb">print</span><span class="p">(</span><span class="n">preString</span><span class="o">+</span><span class="n">tab</span><span class="o">+</span><span class="s1">&#39;]&#39;</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">pp</span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="n">preString</span><span class="o">+</span><span class="n">tab</span><span class="p">)</span>
+			<span class="c1">#print preString+&#39;      &#39;+str(&#39;-&#39;)*10            </span>
+		<span class="nb">print</span><span class="p">(</span><span class="n">preString</span>	<span class="o">+</span><span class="s1">&#39;]&#39;</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="nb">print</span><span class="p">(</span><span class="n">preString</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">el</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="inverseDict"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.inverseDict">[docs]</a><span class="k">def</span> <span class="nf">inverseDict</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a dictionay indexed by values {value_k:key_k}</span>
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		d : dictionary</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">dt</span><span class="o">=</span><span class="p">{}</span>
+	<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+		<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">tuple</span><span class="p">):</span>
+			<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+				<span class="n">dt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">k</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">dt</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">=</span><span class="n">k</span>
+	<span class="k">return</span> <span class="n">dt</span>	</div>
+
+<span class="c1">## Kwargs handlers</span>
+
+<div class="viewcode-block" id="kwargs_from_keyword"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.kwargs_from_keyword">[docs]</a><span class="k">def</span> <span class="nf">kwargs_from_keyword</span><span class="p">(</span><span class="n">from_kwargs</span><span class="p">,</span><span class="n">to_kwargs</span><span class="p">,</span><span class="n">keyword</span><span class="p">,</span><span class="n">clean_origin</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Looks for keys of the format keyword_value. </span>
+<span class="sd">	And return a dictionary with {keyword:value} format</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		from_kwargs : dict</span>
+<span class="sd">			Original dictionary</span>
+<span class="sd">		to_kwargs : dict</span>
+<span class="sd">			Dictionary where the items will be appended</span>
+<span class="sd">		keyword : string</span>
+<span class="sd">			Keyword to look for in the orginal dictionary</span>
+<span class="sd">		clean_origin : bool</span>
+<span class="sd">			If True then the k,v pairs from the original </span>
+<span class="sd">			dictionary are deleted</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">from_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+		<span class="k">if</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">keyword</span><span class="p">)</span> <span class="ow">in</span> <span class="n">k</span><span class="p">:</span>
+			<span class="n">to_kwargs</span><span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">keyword</span><span class="p">),</span><span class="s1">&#39;&#39;</span><span class="p">)]</span><span class="o">=</span><span class="n">from_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+			<span class="k">if</span> <span class="n">clean_origin</span><span class="p">:</span>
+				<span class="k">del</span> <span class="n">from_kwargs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+	<span class="k">return</span> <span class="n">to_kwargs</span></div>
+
+<div class="viewcode-block" id="check_kwargs"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.check_kwargs">[docs]</a><span class="k">def</span> <span class="nf">check_kwargs</span><span class="p">(</span><span class="n">global_kwargs</span><span class="p">,</span><span class="n">values</span><span class="p">,</span><span class="n">local_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">clean_origin</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+	<span class="n">local_kwargs</span><span class="o">=</span><span class="p">{}</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">local_kwargs</span> <span class="k">else</span> <span class="n">local_kwargs</span>
+	<span class="k">for</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">global_kwargs</span><span class="p">:</span>
+			<span class="n">local_kwargs</span><span class="p">[</span><span class="n">kw</span><span class="p">]</span><span class="o">=</span><span class="n">global_kwargs</span><span class="p">[</span><span class="n">kw</span><span class="p">]</span>
+			<span class="k">if</span> <span class="n">clean_origin</span><span class="p">:</span>
+				<span class="k">del</span> <span class="n">global_kwargs</span><span class="p">[</span><span class="n">kw</span><span class="p">]</span>
+	<span class="k">return</span> <span class="n">local_kwargs</span></div>
+
+<div class="viewcode-block" id="dict_replace_keyword"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.dict_replace_keyword">[docs]</a><span class="k">def</span> <span class="nf">dict_replace_keyword</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">keyword</span><span class="p">,</span><span class="n">kwargs</span><span class="p">,</span><span class="n">forceupdate</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+	<span class="n">d</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+	<span class="k">for</span> <span class="n">_k</span><span class="p">,</span><span class="n">_v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+				<span class="k">if</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="n">_k</span><span class="p">:</span>
+					<span class="n">k</span><span class="o">=</span><span class="n">_k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">keyword</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+					<span class="k">if</span> <span class="n">keyword</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+						<span class="n">d</span><span class="p">[</span><span class="n">keyword</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">_v</span><span class="p">}</span>
+					<span class="k">else</span><span class="p">:</span>
+						<span class="k">if</span> <span class="n">forceupdate</span><span class="p">:</span>
+							<span class="n">d</span><span class="p">[</span><span class="n">keyword</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span><span class="n">_v</span><span class="p">})</span>
+						<span class="k">else</span><span class="p">:</span>
+							<span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="n">keyword</span><span class="p">]:</span>	
+								<span class="n">d</span><span class="p">[</span><span class="n">keyword</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span><span class="n">_v</span><span class="p">})</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="k">if</span> <span class="n">forceupdate</span><span class="p">:</span>
+						<span class="n">d</span><span class="p">[</span><span class="n">_k</span><span class="p">]</span><span class="o">=</span><span class="n">_v</span>
+					<span class="k">else</span><span class="p">:</span>
+						<span class="k">if</span> <span class="n">_k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span> 			
+							<span class="n">d</span><span class="p">[</span><span class="n">_k</span><span class="p">]</span><span class="o">=</span><span class="n">_v</span>
+						
+	<span class="k">return</span> <span class="n">d</span></div>
+
+<div class="viewcode-block" id="save_pickle"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.save_pickle">[docs]</a><span class="k">def</span> <span class="nf">save_pickle</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="n">filename</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Serializes a given object</span>
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		obj : object</span>
+<span class="sd">		filename : string</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;wb&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="load_pickle"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.load_pickle">[docs]</a><span class="k">def</span> <span class="nf">load_pickle</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Loads a serialized object</span>
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		filename : string</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="deep_update"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.deep_update">[docs]</a><span class="k">def</span> <span class="nf">deep_update</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">d_update</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Updates the values (deep form) of a given dictionary</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		d : dict</span>
+<span class="sd">			dictionary that contains the values to update</span>
+<span class="sd">		d_update : dict</span>
+<span class="sd">			dictionary to be updated</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">d_update</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
+			<span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+				<span class="n">deep_update</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">v</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">v</span>
+		<span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
+			<span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">k</span><span class="p">:</span><span class="n">v</span><span class="p">})</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">v</span>
+	<span class="k">return</span> <span class="n">d</span></div>
+
+<div class="viewcode-block" id="read_google"><a class="viewcode-back" href="../../cufflinks.utils.html#cufflinks.utils.read_google">[docs]</a><span class="k">def</span> <span class="nf">read_google</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">url</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Reads a google sheet</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="k">if</span> <span class="n">url</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;/&#39;</span><span class="p">:</span>
+		<span class="n">url</span><span class="o">+=</span><span class="s1">&#39;/&#39;</span>
+	<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">url</span><span class="o">+</span><span class="s1">&#39;export?gid=0&amp;format=csv&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Jorge Santos.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

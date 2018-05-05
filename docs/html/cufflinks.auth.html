@@ -1,0 +1,177 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cufflinks.auth module &#8212; Cufflinks  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-cufflinks.auth">
+<span id="cufflinks-auth-module"></span><h1>cufflinks.auth module<a class="headerlink" href="#module-cufflinks.auth" title="Permalink to this headline">¶</a></h1>
+<p>Based in Plotly’s tools module</p>
+<dl class="function">
+<dt id="cufflinks.auth.check_file_permissions">
+<code class="descclassname">cufflinks.auth.</code><code class="descname">check_file_permissions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/auth.html#check_file_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.auth.check_file_permissions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.auth.ensure_local_files">
+<code class="descclassname">cufflinks.auth.</code><code class="descname">ensure_local_files</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/auth.html#ensure_local_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.auth.ensure_local_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure that filesystem is setup/filled out in a valid way</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.auth.get_config_file">
+<code class="descclassname">cufflinks.auth.</code><code class="descname">get_config_file</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/auth.html#get_config_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.auth.get_config_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return specified args from <cite>~/.confg</cite>. as dict.
+Returns all if no arguments are specified.</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>get_config_file(‘sharing’)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.auth.get_path">
+<code class="descclassname">cufflinks.auth.</code><code class="descname">get_path</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/auth.html#get_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.auth.get_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.auth.get_pickle_path">
+<code class="descclassname">cufflinks.auth.</code><code class="descname">get_pickle_path</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/auth.html#get_pickle_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.auth.get_pickle_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.auth.load_json_dict">
+<code class="descclassname">cufflinks.auth.</code><code class="descname">load_json_dict</code><span class="sig-paren">(</span><em>filename</em>, <em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/auth.html#load_json_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.auth.load_json_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if file exists. Returns {} if something fails.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.auth.save_json_dict">
+<code class="descclassname">cufflinks.auth.</code><code class="descname">save_json_dict</code><span class="sig-paren">(</span><em>filename</em>, <em>json_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/auth.html#save_json_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.auth.save_json_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will error if filename is not appropriate, but it’s checked elsewhere.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.auth.set_config_file">
+<code class="descclassname">cufflinks.auth.</code><code class="descname">set_config_file</code><span class="sig-paren">(</span><em>sharing=None</em>, <em>theme=None</em>, <em>colorscale=None</em>, <em>offline=None</em>, <em>offline_url=None</em>, <em>offline_show_link=None</em>, <em>offline_link_text=None</em>, <em>datagen_mode=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/auth.html#set_config_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.auth.set_config_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the keyword-value pairs in <cite>~/.config</cite>.</p>
+<dl class="docutils">
+<dt>sharing <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><dl class="first last docutils">
+<dt>Sets the sharing level permission</dt>
+<dd>public - anyone can see this chart
+private - only you can see this chart
+secret - only people with the link can see the chart</dd>
+</dl>
+</dd>
+<dt>theme <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Sets the default theme
+See cufflinks.getThemes() for available themes</dd>
+<dt>colorscale <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Sets the default colorscale
+See cufflinks.scales()</dd>
+<dt>offline <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If true then the charts are rendered
+locally.</dd>
+<dt>offline_show_link <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If true then the chart will show a link to 
+plot.ly at the bottom right of the chart</dd>
+<dt>offline_link_text <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>Text to display as link at the bottom 
+right of the chart</dd>
+<dt>datagen_mode <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first">Mode in which the data is generated
+by the datagen module</p>
+<blockquote class="last">
+<div>stocks : random stock names are used for the index
+abc : alphabet values are used for the index</div></blockquote>
+</dd>
+<dt>dimensions <span class="classifier-delimiter">:</span> <span class="classifier">tuple</span></dt>
+<dd>Sets the default (width,height) of the chart</dd>
+<dt>margin <span class="classifier-delimiter">:</span> <span class="classifier">dict or tuple</span></dt>
+<dd>Dictionary (l,r,b,t) or
+Tuple containing the left,
+right, bottom and top margins</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cufflinks.auth.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Jorge Santos.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/cufflinks.auth.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

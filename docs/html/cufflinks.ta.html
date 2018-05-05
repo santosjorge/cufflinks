@@ -1,0 +1,170 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cufflinks.ta module &#8212; Cufflinks  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-cufflinks.ta">
+<span id="cufflinks-ta-module"></span><h1>cufflinks.ta module<a class="headerlink" href="#module-cufflinks.ta" title="Permalink to this headline">¶</a></h1>
+<dl class="exception">
+<dt id="cufflinks.ta.StudyError">
+<em class="property">exception </em><code class="descclassname">cufflinks.ta.</code><code class="descname">StudyError</code><a class="reference internal" href="_modules/cufflinks/ta.html#StudyError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.ta.StudyError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.ta.adx">
+<code class="descclassname">cufflinks.ta.</code><code class="descname">adx</code><span class="sig-paren">(</span><em>df</em>, <em>periods=14</em>, <em>high='high'</em>, <em>low='low'</em>, <em>close='close'</em>, <em>di=False</em>, <em>include=True</em>, <em>str='{name}({period})'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/ta.html#adx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.ta.adx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.ta.atr">
+<code class="descclassname">cufflinks.ta.</code><code class="descname">atr</code><span class="sig-paren">(</span><em>df</em>, <em>periods=14</em>, <em>high='high'</em>, <em>low='low'</em>, <em>close='close'</em>, <em>include=True</em>, <em>str='{name}({period})'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/ta.html#atr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.ta.atr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.ta.boll">
+<code class="descclassname">cufflinks.ta.</code><code class="descname">boll</code><span class="sig-paren">(</span><em>df</em>, <em>periods=20</em>, <em>boll_std=2</em>, <em>column=None</em>, <em>include=True</em>, <em>str='{name}({column}</em>, <em>{period})'</em>, <em>detail=False</em>, <em>**boll_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/ta.html#boll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.ta.boll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.ta.cci">
+<code class="descclassname">cufflinks.ta.</code><code class="descname">cci</code><span class="sig-paren">(</span><em>df</em>, <em>periods=14</em>, <em>high='high'</em>, <em>low='low'</em>, <em>close='close'</em>, <em>include=True</em>, <em>str='{name}({period})'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/ta.html#cci"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.ta.cci" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.ta.correl">
+<code class="descclassname">cufflinks.ta.</code><code class="descname">correl</code><span class="sig-paren">(</span><em>df</em>, <em>periods=21</em>, <em>columns=None</em>, <em>include=True</em>, <em>str=None</em>, <em>detail=False</em>, <em>how='value'</em>, <em>**correl_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/ta.html#correl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.ta.correl" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>how <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>value
+pct_chg
+diff</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.ta.dmi">
+<code class="descclassname">cufflinks.ta.</code><code class="descname">dmi</code><span class="sig-paren">(</span><em>df</em>, <em>periods=14</em>, <em>high='high'</em>, <em>low='low'</em>, <em>close='close'</em>, <em>include=True</em>, <em>str='{name}({period})'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/ta.html#dmi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.ta.dmi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.ta.ema">
+<code class="descclassname">cufflinks.ta.</code><code class="descname">ema</code><span class="sig-paren">(</span><em>df</em>, <em>periods=21</em>, <em>column=None</em>, <em>include=True</em>, <em>str='{name}({column}</em>, <em>{period})'</em>, <em>detail=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/ta.html#ema"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.ta.ema" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.ta.get_column_name">
+<code class="descclassname">cufflinks.ta.</code><code class="descname">get_column_name</code><span class="sig-paren">(</span><em>name</em>, <em>study=None</em>, <em>str=None</em>, <em>period=None</em>, <em>column=None</em>, <em>period_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/ta.html#get_column_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.ta.get_column_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.ta.macd">
+<code class="descclassname">cufflinks.ta.</code><code class="descname">macd</code><span class="sig-paren">(</span><em>df</em>, <em>fast_period=12</em>, <em>slow_period=26</em>, <em>signal_period=9</em>, <em>column=None</em>, <em>include=True</em>, <em>str=None</em>, <em>detail=False</em>, <em>**macd_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/ta.html#macd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.ta.macd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.ta.ptps">
+<code class="descclassname">cufflinks.ta.</code><code class="descname">ptps</code><span class="sig-paren">(</span><em>df</em>, <em>periods=14</em>, <em>initial='long'</em>, <em>af=0.02</em>, <em>high='high'</em>, <em>low='low'</em>, <em>include=True</em>, <em>str='{name}({period})'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/ta.html#ptps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.ta.ptps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.ta.rename">
+<code class="descclassname">cufflinks.ta.</code><code class="descname">rename</code><span class="sig-paren">(</span><em>df</em>, <em>_df</em>, <em>study</em>, <em>periods</em>, <em>column</em>, <em>include</em>, <em>str</em>, <em>detail</em>, <em>output=None</em>, <em>period_dict=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/ta.html#rename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.ta.rename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.ta.rsi">
+<code class="descclassname">cufflinks.ta.</code><code class="descname">rsi</code><span class="sig-paren">(</span><em>df</em>, <em>periods=14</em>, <em>column=None</em>, <em>include=True</em>, <em>str='{name}({column}</em>, <em>{period})'</em>, <em>detail=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/ta.html#rsi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.ta.rsi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.ta.sma">
+<code class="descclassname">cufflinks.ta.</code><code class="descname">sma</code><span class="sig-paren">(</span><em>df</em>, <em>periods=21</em>, <em>column=None</em>, <em>include=True</em>, <em>str='{name}({column}</em>, <em>{period})'</em>, <em>detail=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/ta.html#sma"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.ta.sma" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cufflinks.ta.validate">
+<code class="descclassname">cufflinks.ta.</code><code class="descname">validate</code><span class="sig-paren">(</span><em>df</em>, <em>column=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cufflinks/ta.html#validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cufflinks.ta.validate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cufflinks.ta.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Jorge Santos.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/cufflinks.ta.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,1311 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cufflinks.quant_figure &#8212; Cufflinks  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cufflinks.quant_figure</h1><div class="highlight"><pre>
+<span></span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">QuantFigure allows you to create a persistent object. </span>
+<span class="sd">Annotations and Technical Studies can be added on demand. </span>
+
+<span class="sd">It accepts any dataframe with a timeseries index. </span>
+
+<span class="sd">Try it out:</span>
+<span class="sd">	qf=cf.QuantFig(cf.datagen.ohlc())</span>
+<span class="sd">	qf.iplot()</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">tools</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">ta</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">colors</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">auth</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">date_tools</span>
+
+<span class="n">__QUANT_FIGURE_DATA</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">,</span><span class="s1">&#39;showlegend&#39;</span><span class="p">,</span><span class="s1">&#39;datalegend&#39;</span><span class="p">,</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;slice&#39;</span><span class="p">,</span><span class="s1">&#39;resample&#39;</span><span class="p">,</span><span class="s1">&#39;bestfit&#39;</span><span class="p">,</span>
+						<span class="s1">&#39;text&#39;</span><span class="p">,</span><span class="s1">&#39;title&#39;</span><span class="p">,</span><span class="s1">&#39;yTitle&#39;</span><span class="p">,</span><span class="s1">&#39;secondary_y_title&#39;</span><span class="p">,</span><span class="s1">&#39;bestfit_colors&#39;</span><span class="p">,</span><span class="s1">&#39;kind&#39;</span><span class="p">,</span>
+						<span class="s1">&#39;colorscale&#39;</span><span class="p">,</span><span class="s1">&#39;xTitle&#39;</span><span class="p">,</span><span class="s1">&#39;colors&#39;</span><span class="p">,</span><span class="s1">&#39;secondary_y&#39;</span><span class="p">]</span>
+<span class="n">__QUANT_FIGURE_LAYOUT</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">,</span><span class="s1">&#39;showlegend&#39;</span><span class="p">,</span><span class="s1">&#39;margin&#39;</span><span class="p">,</span><span class="s1">&#39;rangeselector&#39;</span><span class="p">,</span><span class="s1">&#39;rangeslider&#39;</span><span class="p">,</span><span class="s1">&#39;shapes&#39;</span><span class="p">,</span>
+						 <span class="s1">&#39;width&#39;</span><span class="p">,</span><span class="s1">&#39;height&#39;</span><span class="p">,</span><span class="s1">&#39;dimensions&#39;</span><span class="p">]</span>
+<span class="n">__QUANT_FIGURE_THEME</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;theme&#39;</span><span class="p">,</span><span class="s1">&#39;up_color&#39;</span><span class="p">,</span><span class="s1">&#39;down_color&#39;</span><span class="p">]</span>
+<span class="n">__QUANT_FIGURE_PANELS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;min_panel_size&#39;</span><span class="p">,</span><span class="s1">&#39;spacing&#39;</span><span class="p">,</span><span class="s1">&#39;top_margin&#39;</span><span class="p">,</span><span class="s1">&#39;bottom_margin&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="get_layout_kwargs"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.get_layout_kwargs">[docs]</a><span class="k">def</span> <span class="nf">get_layout_kwargs</span><span class="p">():</span>
+	<span class="k">return</span> <span class="n">tools</span><span class="o">.</span><span class="n">__LAYOUT_KWARGS</span></div>
+<div class="viewcode-block" id="get_annotation_kwargs"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.get_annotation_kwargs">[docs]</a><span class="k">def</span> <span class="nf">get_annotation_kwargs</span><span class="p">():</span>
+	<span class="k">return</span> <span class="n">tools</span><span class="o">.</span><span class="n">__ANN_KWARGS</span></div>
+<div class="viewcode-block" id="get_shapes_kwargs"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.get_shapes_kwargs">[docs]</a><span class="k">def</span> <span class="nf">get_shapes_kwargs</span><span class="p">():</span> <span class="k">return</span> <span class="n">tools</span><span class="o">.</span><span class="n">__SHAPES_KWARGS</span></div>
+
+<div class="viewcode-block" id="QuantFig"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig">[docs]</a><span class="k">class</span> <span class="nc">QuantFig</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">df</span><span class="p">,</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;candlestick&#39;</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">=</span><span class="n">df</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">studies</span><span class="o">=</span><span class="p">{}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">=</span><span class="p">{}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">theme</span><span class="o">=</span><span class="p">{}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">panels</span><span class="o">=</span><span class="p">{}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">=</span><span class="p">{}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">trendlines</span><span class="o">=</span><span class="p">[]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">=</span><span class="p">{}</span>
+
+		<span class="c1"># Set column names</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">columns</span><span class="p">:</span>
+			<span class="n">columns</span><span class="o">=</span><span class="p">{}</span>
+			<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;open&#39;</span><span class="p">,</span><span class="s1">&#39;high&#39;</span><span class="p">,</span><span class="s1">&#39;low&#39;</span><span class="p">,</span><span class="s1">&#39;close&#39;</span><span class="p">,</span><span class="s1">&#39;volume&#39;</span><span class="p">]:</span>
+				<span class="n">columns</span><span class="p">[</span><span class="n">_</span><span class="p">]</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">=</span><span class="n">ta</span><span class="o">.</span><span class="n">_ohlc_dict</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="o">**</span><span class="n">columns</span><span class="p">)</span>
+		
+		<span class="c1"># Set initial annotations</span>
+		<span class="n">annotations</span><span class="o">=</span><span class="p">{</span>
+			<span class="s1">&#39;values&#39;</span><span class="p">:[],</span>
+			<span class="s1">&#39;params&#39;</span><span class="p">:</span><span class="n">utils</span><span class="o">.</span><span class="n">check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span><span class="n">get_annotation_kwargs</span><span class="p">(),{},</span><span class="n">clean_origin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+		<span class="p">}</span>
+
+		<span class="n">ann_values</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;annotations&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="n">ann_values</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_list</span><span class="p">(</span><span class="n">ann_values</span><span class="p">):</span>
+				<span class="n">annotations</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ann_values</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">annotations</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ann_values</span><span class="p">)</span>
+
+		<span class="c1"># self.data initial values </span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datalegend</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;datalegend&#39;</span><span class="p">,</span><span class="kc">True</span><span class="p">),</span><span class="n">name</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="s1">&#39;Trace 1&#39;</span><span class="p">),</span><span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">slice</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;slice&#39;</span><span class="p">,(</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">)),</span><span class="n">resample</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;resample&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">))</span>
+
+		<span class="c1"># self.layout initial values</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;shapes&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span><span class="n">get_shapes_kwargs</span><span class="p">(),{},</span><span class="n">clean_origin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;shapes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+			<span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;shapes&#39;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;rangeselector&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;rangeselector&#39;</span><span class="p">,{</span><span class="s1">&#39;visible&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">})</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;rangeslider&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;rangeslider&#39;</span><span class="p">,</span><span class="kc">False</span><span class="p">)</span> 
+		<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;margin&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;margin&#39;</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">t</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span><span class="n">r</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span><span class="n">l</span><span class="o">=</span><span class="mi">30</span><span class="p">))</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">annotations</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;showlegend&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;showlegend&#39;</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span><span class="n">get_layout_kwargs</span><span class="p">(),{},</span><span class="n">clean_origin</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+		
+		<span class="c1"># self.theme initial values</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">theme</span><span class="p">[</span><span class="s1">&#39;theme&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;theme&#39;</span><span class="p">,</span><span class="n">auth</span><span class="o">.</span><span class="n">get_config_file</span><span class="p">()[</span><span class="s1">&#39;theme&#39;</span><span class="p">])</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">theme</span><span class="p">[</span><span class="s1">&#39;up_color&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;up_color&#39;</span><span class="p">,</span><span class="s1">&#39;java&#39;</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">theme</span><span class="p">[</span><span class="s1">&#39;down_color&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;down_color&#39;</span><span class="p">,</span><span class="s1">&#39;grey&#39;</span><span class="p">)</span>
+		
+		<span class="c1"># self.panels initial values</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">panels</span><span class="p">[</span><span class="s1">&#39;min_panel_size&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;min_panel_size&#39;</span><span class="p">,</span><span class="o">.</span><span class="mi">15</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">panels</span><span class="p">[</span><span class="s1">&#39;spacing&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;spacing&#39;</span><span class="p">,</span><span class="o">.</span><span class="mi">08</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">panels</span><span class="p">[</span><span class="s1">&#39;top_margin&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;top_margin&#39;</span><span class="p">,</span><span class="mf">0.9</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">panels</span><span class="p">[</span><span class="s1">&#39;bottom_margin&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;top_margin&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+	<span class="k">def</span> <span class="nf">_get_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Returns a dictionary with the schema for a QuantFigure</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">d</span><span class="o">=</span><span class="p">{}</span>
+		<span class="n">layout_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">((</span><span class="n">_</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">get_layout_kwargs</span><span class="p">())</span>
+		<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span><span class="s1">&#39;theme&#39;</span><span class="p">,</span><span class="s1">&#39;panels&#39;</span><span class="p">):</span>
+			<span class="n">d</span><span class="p">[</span><span class="n">_</span><span class="p">]</span><span class="o">=</span><span class="p">{}</span>
+			<span class="k">for</span> <span class="n">__</span> <span class="ow">in</span> <span class="nb">eval</span><span class="p">(</span><span class="s1">&#39;__QUANT_FIGURE_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_</span><span class="o">.</span><span class="n">upper</span><span class="p">())):</span>
+				<span class="n">layout_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">__</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+				<span class="n">d</span><span class="p">[</span><span class="n">_</span><span class="p">][</span><span class="n">__</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
+		<span class="n">d</span><span class="p">[</span><span class="s1">&#39;layout&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">annotations</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">[],</span>
+											<span class="n">params</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">make_dict_from_list</span><span class="p">(</span><span class="n">get_annotation_kwargs</span><span class="p">())))</span>
+		<span class="n">d</span><span class="p">[</span><span class="s1">&#39;layout&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">shapes</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">make_dict_from_list</span><span class="p">(</span><span class="n">get_shapes_kwargs</span><span class="p">()))</span>
+		<span class="p">[</span><span class="n">layout_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">get_annotation_kwargs</span><span class="p">()</span><span class="o">+</span><span class="n">get_shapes_kwargs</span><span class="p">()]</span>
+		<span class="n">d</span><span class="p">[</span><span class="s1">&#39;layout&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">layout_kwargs</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">d</span>
+
+	<span class="k">def</span> <span class="nf">_get_sliced</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">slice</span><span class="p">,</span><span class="n">df</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Returns a sliced DataFrame</span>
+
+<span class="sd">		Parameters</span>
+<span class="sd">		----------</span>
+<span class="sd">			slice : tuple(from,to)</span>
+<span class="sd">				from : str</span>
+<span class="sd">				to : str</span>
+<span class="sd">					States the &#39;from&#39; and &#39;to&#39; values which </span>
+<span class="sd">					will get rendered as df.ix[from:to]</span>
+<span class="sd">			df : DataFrame</span>
+<span class="sd">				If omitted then the QuantFigure.DataFrame is resampled.</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">df</span><span class="o">==</span><span class="kc">None</span> <span class="k">else</span> <span class="n">df</span>
+		<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="nb">slice</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">tuple</span><span class="p">):</span>
+			<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Slice must be a tuple two values&#39;</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">slice</span><span class="p">)</span><span class="o">!=</span><span class="mi">2</span><span class="p">:</span>
+			<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Slice must be a tuple two values&#39;</span><span class="p">)</span>
+		<span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="nb">slice</span>
+		<span class="n">a</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_string</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+		<span class="n">b</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="n">b</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="n">utils</span><span class="o">.</span><span class="n">make_string</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">a</span><span class="p">:</span><span class="n">b</span><span class="p">]</span>
+
+	<span class="k">def</span> <span class="nf">_get_resampled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rule</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ohlc&#39;</span><span class="p">:</span><span class="s1">&#39;last&#39;</span><span class="p">,</span><span class="s1">&#39;volume&#39;</span><span class="p">:</span><span class="s1">&#39;sum&#39;</span><span class="p">},</span><span class="n">df</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Returns a resampled DataFrame</span>
+
+<span class="sd">		Parameters</span>
+<span class="sd">		----------</span>
+<span class="sd">			rule : str</span>
+<span class="sd">				the offset string or object representing target conversion</span>
+<span class="sd">				for all aliases available see http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases</span>
+<span class="sd">			how : str or dict</span>
+<span class="sd">				states the form in which the resampling will be done.</span>
+<span class="sd">				Examples:</span>
+<span class="sd">					how={&#39;volume&#39;:&#39;sum&#39;}</span>
+<span class="sd">					how=&#39;count&#39;</span>
+<span class="sd">			df : DataFrame</span>
+<span class="sd">				If omitted then the QuantFigure.DataFrame is resampled.</span>
+<span class="sd">			kwargs</span>
+<span class="sd">				For more information see http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.resample.html</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">df</span>
+		<span class="k">if</span> <span class="n">rule</span><span class="o">==</span><span class="kc">None</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">df</span> 
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">how</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
+				<span class="k">if</span> <span class="s1">&#39;ohlc&#39;</span> <span class="ow">in</span> <span class="n">how</span><span class="p">:</span>
+					<span class="n">v</span><span class="o">=</span><span class="n">how</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;ohlc&#39;</span><span class="p">)</span>
+					<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;open&#39;</span><span class="p">,</span><span class="s1">&#39;high&#39;</span><span class="p">,</span><span class="s1">&#39;low&#39;</span><span class="p">,</span><span class="s1">&#39;close&#39;</span><span class="p">]:</span> 
+						<span class="n">how</span><span class="p">[</span><span class="n">_</span><span class="p">]</span><span class="o">=</span><span class="n">v</span>
+				<span class="n">_how</span><span class="o">=</span><span class="n">how</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+				<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">_how</span><span class="p">:</span>
+					<span class="k">if</span> <span class="n">_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">:</span>
+						<span class="k">del</span> <span class="n">how</span><span class="p">[</span><span class="n">_</span><span class="p">]</span>
+			<span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="n">rule</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">how</span><span class="p">)</span>
+
+<div class="viewcode-block" id="QuantFig.update"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.update">[docs]</a>	<span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Updates the values for a QuantFigure</span>
+<span class="sd">		The key-values are automatically assigned to the correct </span>
+<span class="sd">		section of the QuantFigure</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="s1">&#39;columns&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">=</span><span class="n">ta</span><span class="o">.</span><span class="n">_ohlc_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;columns&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">))</span>
+		<span class="n">schema</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_schema</span><span class="p">()</span>
+		<span class="n">annotations</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;annotations&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="n">annotations</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">][</span><span class="s1">&#39;values&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">make_list</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="n">utils</span><span class="o">.</span><span class="n">dict_update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">schema</span><span class="p">)</span>
+			<span class="k">except</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span><span class="n">v</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="QuantFig.delete"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.delete">[docs]</a>	<span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Deletes the values for a QuantFigure</span>
+<span class="sd">		The key-values are automatically deleted from the correct </span>
+<span class="sd">		section of the QuantFigure</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+			<span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_list</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">else</span> <span class="n">args</span>
+			<span class="n">path</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">dict_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+			<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+				<span class="k">if</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+					<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">{0}</span><span class="s1">&quot; cannot be deleted&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_</span><span class="p">))</span>
+
+			<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+				<span class="k">try</span><span class="p">:</span>
+					<span class="k">if</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;shapes&#39;</span><span class="p">):</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+					<span class="k">elif</span> <span class="n">a</span><span class="o">==</span><span class="s1">&#39;annotations&#39;</span><span class="p">:</span>
+						<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;values&#39;</span><span class="p">:[],</span><span class="s1">&#39;params&#39;</span><span class="p">:{}}</span>
+					<span class="k">else</span><span class="p">:</span>
+						<span class="k">del</span> <span class="n">reduce</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="n">path</span><span class="p">[</span><span class="n">a</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)[</span><span class="n">a</span><span class="p">]</span>
+				<span class="k">except</span><span class="p">:</span>
+					<span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Key: </span><span class="si">{0}</span><span class="s1"> not found&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">))</span></div>
+
+	
+<div class="viewcode-block" id="QuantFig.figure"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.figure">[docs]</a>	<span class="k">def</span> <span class="nf">figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		</span>
+<span class="sd">		Returns a Plotly figure</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;asFigure&#39;</span><span class="p">]</span><span class="o">=</span><span class="kc">True</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iplot</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+	
+	<span class="k">def</span> <span class="nf">_panel_domains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">min_panel_size</span><span class="o">=.</span><span class="mi">15</span><span class="p">,</span><span class="n">spacing</span><span class="o">=</span><span class="mf">0.08</span><span class="p">,</span><span class="n">top_margin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">bottom_margin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		</span>
+<span class="sd">		Returns the panel domains for each axis</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">d</span><span class="o">=</span><span class="p">{}</span>
+		<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+			<span class="n">lower</span><span class="o">=</span><span class="nb">round</span><span class="p">(</span><span class="n">bottom_margin</span><span class="o">+</span><span class="p">(</span><span class="n">min_panel_size</span><span class="o">+</span><span class="n">spacing</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="n">_</span><span class="p">),</span><span class="mi">2</span><span class="p">)</span>
+			<span class="n">d</span><span class="p">[</span><span class="s1">&#39;yaxis</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_</span><span class="p">)]</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span><span class="n">lower</span><span class="o">+</span><span class="n">min_panel_size</span><span class="p">))</span>
+		<span class="n">top</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;yaxis2&#39;</span><span class="p">][</span><span class="s1">&#39;domain&#39;</span><span class="p">]</span>
+		<span class="n">d</span><span class="p">[</span><span class="s1">&#39;yaxis2&#39;</span><span class="p">][</span><span class="s1">&#39;domain&#39;</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="n">top</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">top_margin</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">d</span>
+	
+	<span class="k">def</span> <span class="nf">_get_trendline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">date0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">date1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">on</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;trend&#39;</span><span class="p">,</span><span class="n">to_strfmt</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">from_strfmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">%b%y&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Returns a trendline (line), support or resistance</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			date0 : string</span>
+<span class="sd">				Trendline starting date			</span>
+<span class="sd">			date1 :  string</span>
+<span class="sd">				Trendline end date</span>
+<span class="sd">			on : string</span>
+<span class="sd">				Indicate the data series in which the </span>
+<span class="sd">				trendline should be based.</span>
+<span class="sd">					&#39;close&#39;</span>
+<span class="sd">					&#39;high&#39;</span>
+<span class="sd">					&#39;low&#39;</span>
+<span class="sd">					&#39;open&#39;			</span>
+<span class="sd">			kind : string</span>
+<span class="sd">				Defines de kind of trendline</span>
+<span class="sd">					&#39;trend&#39;</span>
+<span class="sd">					&#39;resistance&#39;</span>
+<span class="sd">					&#39;support&#39;			</span>
+<span class="sd">			mode : string</span>
+<span class="sd">				Defines how the support/resistance will </span>
+<span class="sd">				be drawn</span>
+<span class="sd">					&#39;starttoened&#39; : (x0,x1)</span>
+<span class="sd">					&#39;fromstart&#39; : (x0,date0)</span>
+<span class="sd">					&#39;toend&#39;	: (date0,x1)</span>
+<span class="sd">			text : string</span>
+<span class="sd">				If passed, then an annotation will be added </span>
+<span class="sd">				to the trendline (at mid point)</span>
+<span class="sd">			from_strfmt : string</span>
+<span class="sd">				Defines the date formating in which </span>
+<span class="sd">				date0 and date1 are stated. </span>
+<span class="sd">				default: &#39;%d%b%y&#39;				</span>
+<span class="sd">			to_strfmt : string</span>
+<span class="sd">				Defines the date formatting </span>
+<span class="sd">				to which it should be converted. </span>
+<span class="sd">				This should match the same format as the timeseries index. </span>
+<span class="sd">				default : &#39;%Y-%m-%d&#39;		</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">ann_values</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">get_annotation_kwargs</span><span class="p">())</span>
+		<span class="n">ann_values</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>
+		<span class="n">ann_kwargs</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span><span class="n">ann_values</span><span class="p">,{},</span><span class="n">clean_origin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+		<span class="k">def</span> <span class="nf">position</span><span class="p">(</span><span class="n">d0</span><span class="p">,</span><span class="n">d1</span><span class="p">):</span>
+			<span class="k">return</span> <span class="n">d0</span><span class="o">+</span><span class="p">(</span><span class="n">d1</span><span class="o">-</span><span class="n">d0</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+
+		<span class="n">date0</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">,</span><span class="n">date0</span><span class="p">)</span>    
+		<span class="n">date0</span><span class="o">=</span><span class="n">date_tools</span><span class="o">.</span><span class="n">stringToString</span><span class="p">(</span><span class="n">date0</span><span class="p">,</span><span class="n">from_strfmt</span><span class="p">,</span><span class="n">to_strfmt</span><span class="p">)</span> <span class="k">if</span> <span class="s1">&#39;-&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">date0</span> <span class="k">else</span> <span class="n">date0</span>
+		
+		<span class="k">if</span> <span class="n">kind</span><span class="o">==</span><span class="s1">&#39;trend&#39;</span><span class="p">:</span>
+			<span class="n">date1</span><span class="o">=</span><span class="n">date_tools</span><span class="o">.</span><span class="n">stringToString</span><span class="p">(</span><span class="n">date1</span><span class="p">,</span><span class="n">from_strfmt</span><span class="p">,</span><span class="n">to_strfmt</span><span class="p">)</span> <span class="k">if</span> <span class="s1">&#39;-&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">date1</span> <span class="k">else</span> <span class="n">date1</span>
+			<span class="n">on</span><span class="o">=</span><span class="s1">&#39;close&#39;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">on</span> <span class="k">else</span> <span class="n">on</span>
+			<span class="n">df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">on</span><span class="p">]])</span>
+			<span class="n">y0</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;y0&#39;</span><span class="p">,</span><span class="n">df</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">date0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+			<span class="n">y1</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;y1&#39;</span><span class="p">,</span><span class="n">df</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">date1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+			
+		
+		<span class="k">if</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;support&#39;</span><span class="p">,</span><span class="s1">&#39;resistance&#39;</span><span class="p">):</span>
+			<span class="n">mode</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;mode&#39;</span><span class="p">,</span><span class="s1">&#39;starttoend&#39;</span><span class="p">)</span>
+			<span class="k">if</span> <span class="ow">not</span> <span class="n">on</span><span class="p">:</span>
+				<span class="n">on</span><span class="o">=</span><span class="s1">&#39;low&#39;</span> <span class="k">if</span> <span class="n">kind</span><span class="o">==</span><span class="s1">&#39;support&#39;</span> <span class="k">else</span> <span class="s1">&#39;high&#39;</span>
+			<span class="n">df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">on</span><span class="p">]])</span>
+			<span class="n">y0</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;y0&#39;</span><span class="p">,</span><span class="n">df</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">date0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+			<span class="n">y1</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;y1&#39;</span><span class="p">,</span><span class="n">y0</span><span class="p">)</span>
+			<span class="k">if</span> <span class="n">mode</span><span class="o">==</span><span class="s1">&#39;starttoend&#39;</span><span class="p">:</span>
+				<span class="n">date0</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+				<span class="n">date1</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+			<span class="k">elif</span> <span class="n">mode</span><span class="o">==</span><span class="s1">&#39;toend&#39;</span><span class="p">:</span>
+				<span class="n">date1</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+			<span class="k">elif</span> <span class="n">mode</span><span class="o">==</span><span class="s1">&#39;fromstart&#39;</span><span class="p">:</span>
+				<span class="n">date1</span><span class="o">=</span><span class="n">date0</span>
+				<span class="n">date0</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">date0</span><span class="p">,</span><span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">):</span>
+			<span class="n">date0</span><span class="o">=</span><span class="n">date_tools</span><span class="o">.</span><span class="n">dateToString</span><span class="p">(</span><span class="n">date0</span><span class="p">,</span><span class="n">to_strfmt</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">date1</span><span class="p">,</span><span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">):</span>
+			<span class="n">date1</span><span class="o">=</span><span class="n">date_tools</span><span class="o">.</span><span class="n">dateToString</span><span class="p">(</span><span class="n">date1</span><span class="p">,</span><span class="n">to_strfmt</span><span class="p">)</span>
+		<span class="n">d</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;x0&#39;</span><span class="p">:</span><span class="n">date0</span><span class="p">,</span><span class="s1">&#39;x1&#39;</span><span class="p">:</span><span class="n">date1</span><span class="p">,</span><span class="s1">&#39;y0&#39;</span><span class="p">:</span><span class="n">y0</span><span class="p">,</span><span class="s1">&#39;y1&#39;</span><span class="p">:</span><span class="n">y1</span><span class="p">}</span>
+		<span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+		<span class="n">shape</span><span class="o">=</span><span class="n">tools</span><span class="o">.</span><span class="n">get_shape</span><span class="p">(</span><span class="o">**</span><span class="n">d</span><span class="p">)</span>        
+
+		
+		<span class="k">if</span> <span class="n">ann_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span><span class="kc">False</span><span class="p">):</span>
+			<span class="n">ann_kwargs</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">ann_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">date_tools</span><span class="o">.</span><span class="n">dateToString</span><span class="p">(</span><span class="n">position</span><span class="p">(</span><span class="n">date_tools</span><span class="o">.</span><span class="n">stringToDate</span><span class="p">(</span><span class="n">date0</span><span class="p">,</span><span class="n">to_strfmt</span><span class="p">),</span><span class="n">date_tools</span><span class="o">.</span><span class="n">stringToDate</span><span class="p">(</span><span class="n">date1</span><span class="p">,</span><span class="n">to_strfmt</span><span class="p">)),</span><span class="n">to_strfmt</span><span class="p">))</span>
+			<span class="n">ann_kwargs</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">ann_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="n">position</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="s1">&#39;y0&#39;</span><span class="p">],</span><span class="n">shape</span><span class="p">[</span><span class="s1">&#39;y1&#39;</span><span class="p">]))</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">ann_kwargs</span><span class="o">=</span><span class="p">{}</span>
+		<span class="k">return</span> <span class="p">{</span><span class="s1">&#39;shape&#39;</span><span class="p">:</span><span class="n">shape</span><span class="p">,</span><span class="s1">&#39;annotation&#39;</span><span class="p">:</span><span class="n">ann_kwargs</span><span class="p">}</span>
+
+<div class="viewcode-block" id="QuantFig.add_trendline"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_trendline">[docs]</a>	<span class="k">def</span> <span class="nf">add_trendline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">date0</span><span class="p">,</span><span class="n">date1</span><span class="p">,</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;close&#39;</span><span class="p">,</span><span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Adds a trendline to the QuantFigure. </span>
+<span class="sd">		Given 2 dates, the trendline is connected on the data points</span>
+<span class="sd">		that correspond to those dates. </span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			date0 : string</span>
+<span class="sd">				Trendline starting date</span>
+<span class="sd">			date1 :  string</span>
+<span class="sd">				Trendline end date</span>
+<span class="sd">			on : string</span>
+<span class="sd">				Indicate the data series in which the </span>
+<span class="sd">				trendline should be based.</span>
+<span class="sd">					&#39;close&#39;</span>
+<span class="sd">					&#39;high&#39;</span>
+<span class="sd">					&#39;low&#39;</span>
+<span class="sd">					&#39;open&#39;</span>
+<span class="sd">			text : string</span>
+<span class="sd">				If passed, then an annotation will be added </span>
+<span class="sd">				to the trendline (at mid point)</span>
+
+<span class="sd">		kwargs:</span>
+<span class="sd">			from_strfmt : string</span>
+<span class="sd">				Defines the date formating in which </span>
+<span class="sd">				date0 and date1 are stated. </span>
+<span class="sd">				default: &#39;%d%b%y&#39;					</span>
+<span class="sd">			to_strfmt : string</span>
+<span class="sd">				Defines the date formatting </span>
+<span class="sd">				to which it should be converted. </span>
+<span class="sd">				This should match the same format as the timeseries index. </span>
+<span class="sd">				default : &#39;%Y-%m-%d&#39;		</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">d</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">:</span><span class="s1">&#39;trend&#39;</span><span class="p">,</span><span class="s1">&#39;date0&#39;</span><span class="p">:</span><span class="n">date0</span><span class="p">,</span><span class="s1">&#39;date1&#39;</span><span class="p">:</span><span class="n">date1</span><span class="p">,</span><span class="s1">&#39;on&#39;</span><span class="p">:</span><span class="n">on</span><span class="p">,</span><span class="s1">&#39;text&#39;</span><span class="p">:</span><span class="n">text</span><span class="p">}</span>
+		<span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">trendlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QuantFig.add_support"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_support">[docs]</a>	<span class="k">def</span> <span class="nf">add_support</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">date</span><span class="p">,</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;low&#39;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;starttoend&#39;</span><span class="p">,</span><span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Adds a support line to the QuantFigure</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			date0 : string</span>
+<span class="sd">				The support line will be drawn at the &#39;y&#39; level </span>
+<span class="sd">				value that corresponds to this date. </span>
+<span class="sd">			on : string</span>
+<span class="sd">				Indicate the data series in which the </span>
+<span class="sd">				support line should be based.</span>
+<span class="sd">					&#39;close&#39;</span>
+<span class="sd">					&#39;high&#39;</span>
+<span class="sd">					&#39;low&#39;</span>
+<span class="sd">					&#39;open&#39;</span>
+<span class="sd">			mode : string</span>
+<span class="sd">				Defines how the support/resistance will </span>
+<span class="sd">				be drawn</span>
+<span class="sd">					&#39;starttoened&#39; : (x0,x1)</span>
+<span class="sd">					&#39;fromstart&#39; : (x0,date)</span>
+<span class="sd">					&#39;toend&#39; : (date,x1)</span>
+<span class="sd">			text : string</span>
+<span class="sd">				If passed, then an annotation will be added </span>
+<span class="sd">				to the support line (at mid point)</span>
+<span class="sd">		</span>
+<span class="sd">		kwargs:	</span>
+<span class="sd">			from_strfmt : string</span>
+<span class="sd">				Defines the date formating in which </span>
+<span class="sd">				date0 and date1 are stated. </span>
+<span class="sd">				default: &#39;%d%b%y&#39;					</span>
+<span class="sd">			to_strfmt : string</span>
+<span class="sd">				Defines the date formatting </span>
+<span class="sd">				to which it should be converted. </span>
+<span class="sd">				This should match the same format as the timeseries index. </span>
+<span class="sd">				default : &#39;%Y-%m-%d&#39;		</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">d</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">:</span><span class="s1">&#39;support&#39;</span><span class="p">,</span><span class="s1">&#39;date&#39;</span><span class="p">:</span><span class="n">date</span><span class="p">,</span><span class="s1">&#39;mode&#39;</span><span class="p">:</span><span class="n">mode</span><span class="p">,</span><span class="s1">&#39;on&#39;</span><span class="p">:</span><span class="n">on</span><span class="p">,</span><span class="s1">&#39;text&#39;</span><span class="p">:</span><span class="n">text</span><span class="p">}</span>
+		<span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">trendlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QuantFig.add_resistance"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_resistance">[docs]</a>	<span class="k">def</span> <span class="nf">add_resistance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">date</span><span class="p">,</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;starttoend&#39;</span><span class="p">,</span><span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Adds a resistance line to the QuantFigure</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			date0 : string</span>
+<span class="sd">				The resistance line will be drawn at the &#39;y&#39; level </span>
+<span class="sd">				value that corresponds to this date. </span>
+<span class="sd">			on : string</span>
+<span class="sd">				Indicate the data series in which the </span>
+<span class="sd">				resistance should be based.</span>
+<span class="sd">					&#39;close&#39;</span>
+<span class="sd">					&#39;high&#39;</span>
+<span class="sd">					&#39;low&#39;</span>
+<span class="sd">					&#39;open&#39;</span>
+<span class="sd">			mode : string</span>
+<span class="sd">				Defines how the support/resistance will </span>
+<span class="sd">				be drawn</span>
+<span class="sd">					&#39;starttoened&#39; : (x0,x1)</span>
+<span class="sd">					&#39;fromstart&#39; : (x0,date)</span>
+<span class="sd">					&#39;toend&#39; : (date,x1)</span>
+<span class="sd">			text : string</span>
+<span class="sd">				If passed, then an annotation will be added </span>
+<span class="sd">				to the resistance (at mid point)</span>
+<span class="sd">		</span>
+<span class="sd">		kwargs:	</span>
+<span class="sd">			from_strfmt : string</span>
+<span class="sd">				Defines the date formating in which </span>
+<span class="sd">				date0 and date1 are stated. </span>
+<span class="sd">				default: &#39;%d%b%y&#39;					</span>
+<span class="sd">			to_strfmt : string</span>
+<span class="sd">				Defines the date formatting </span>
+<span class="sd">				to which it should be converted. </span>
+<span class="sd">				This should match the same format as the timeseries index. </span>
+<span class="sd">				default : &#39;%Y-%m-%d&#39;		</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">d</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">:</span><span class="s1">&#39;resistance&#39;</span><span class="p">,</span><span class="s1">&#39;date&#39;</span><span class="p">:</span><span class="n">date</span><span class="p">,</span><span class="s1">&#39;mode&#39;</span><span class="p">:</span><span class="n">mode</span><span class="p">,</span><span class="s1">&#39;on&#39;</span><span class="p">:</span><span class="n">on</span><span class="p">,</span><span class="s1">&#39;text&#39;</span><span class="p">:</span><span class="n">text</span><span class="p">}</span>
+		<span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">trendlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QuantFig.add_annotations"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_annotations">[docs]</a>	<span class="k">def</span> <span class="nf">add_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">annotations</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Add an annotation to the QuantFigure. </span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			annotations : dict or list(dict,)</span>
+<span class="sd">				Annotations can be on the form form of </span>
+<span class="sd">					{&#39;date&#39; : &#39;text&#39;}</span>
+<span class="sd">					and the text will automatically be placed at the </span>
+<span class="sd">					right level on the chart </span>
+<span class="sd">				or</span>
+<span class="sd">					A Plotly fully defined annotation</span>
+
+<span class="sd">		kwargs : </span>
+<span class="sd">			fontcolor : str</span>
+<span class="sd">				Text color for annotations</span>
+<span class="sd">			fontsize : int</span>
+<span class="sd">				Text size for annotations</span>
+<span class="sd">			textangle : int</span>
+<span class="sd">				Textt angle </span>
+<span class="sd">			See https://plot.ly/python/reference/#layout-annotations </span>
+<span class="sd">			for a complete list of valid parameters.</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">ann_kwargs</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span><span class="n">get_annotation_kwargs</span><span class="p">(),{},</span><span class="n">clean_origin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span><span class="o">==</span><span class="nb">list</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">][</span><span class="s1">&#39;values&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">][</span><span class="s1">&#39;values&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">ann_kwargs</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">][</span><span class="s1">&#39;params&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">ann_kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QuantFig.add_shapes"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_shapes">[docs]</a>	<span class="k">def</span> <span class="nf">add_shapes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Add a shape to the QuantFigure. </span>
+
+<span class="sd">		kwargs : </span>
+<span class="sd">			hline : int, list or dict</span>
+<span class="sd">				Draws a horizontal line at the</span>
+<span class="sd">				indicated y position(s)</span>
+<span class="sd">				Extra parameters can be passed in</span>
+<span class="sd">				the form of a dictionary (see shapes)</span>
+<span class="sd">			vline : int, list or dict</span>
+<span class="sd">				Draws a vertical line at the</span>
+<span class="sd">				indicated x position(s)</span>
+<span class="sd">				Extra parameters can be passed in</span>
+<span class="sd">				the form of a dictionary (see shapes)</span>
+<span class="sd">			hspan : (y0,y1)</span>
+<span class="sd">				Draws a horizontal rectangle at the</span>
+<span class="sd">				indicated (y0,y1) positions.</span>
+<span class="sd">				Extra parameters can be passed in</span>
+<span class="sd">				the form of a dictionary (see shapes)</span>
+<span class="sd">			vspan : (x0,x1)</span>
+<span class="sd">				Draws a vertical rectangle at the</span>
+<span class="sd">				indicated (x0,x1) positions.</span>
+<span class="sd">				Extra parameters can be passed in</span>
+<span class="sd">				the form of a dictionary (see shapes)</span>
+<span class="sd">			shapes : dict or list(dict)</span>
+<span class="sd">				List of dictionaries with the</span>
+<span class="sd">				specifications of a given shape.</span>
+<span class="sd">				See help(cufflinks.tools.get_shape)</span>
+<span class="sd">				for more information</span>
+<span class="sd">			</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">kwargs</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span><span class="n">get_shapes_kwargs</span><span class="p">(),{},</span><span class="n">clean_origin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+			<span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;shapes&#39;</span><span class="p">]:</span>
+				<span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_list</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;shapes&#39;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>	
+				<span class="k">else</span><span class="p">:</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;shapes&#39;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;shapes&#39;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">make_list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></div>
+
+	<span class="c1"># def add_study(self,name,params={}):</span>
+	<span class="c1"># 	if &#39;kind&#39; in params:</span>
+	<span class="c1"># 			if params[&#39;kind&#39;] in self._valid_studies:</span>
+	<span class="c1"># 				self.studies[name]=params</span>
+	<span class="c1"># 			else:</span>
+	<span class="c1"># 				raise Exception(&#39;Invalid study: {0}&#39;.format(params[&#39;kind&#39;]))</span>
+	<span class="c1"># 	else:</span>
+	<span class="c1"># 		raise Exception(&#39;Study kind required&#39;)</span>
+
+	<span class="k">def</span> <span class="nf">_add_study</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">study</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Adds a study to QuantFigure.studies</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			study : dict</span>
+<span class="sd">				{&#39;kind&#39;:study_kind,</span>
+<span class="sd">				 &#39;params&#39;:study_parameters,</span>
+<span class="sd">				 &#39;display&#39;:display_parameters}</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="nb">str</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{study}</span><span class="s1"> </span><span class="si">{name}</span><span class="s1">(</span><span class="si">{period}</span><span class="s1">)&#39;</span> <span class="k">if</span> <span class="n">study</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;str&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span><span class="o">==</span><span class="kc">None</span> <span class="k">else</span> <span class="n">study</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">][</span><span class="s1">&#39;str&#39;</span><span class="p">]</span>
+		<span class="n">study</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">][</span><span class="s1">&#39;str&#39;</span><span class="p">]</span><span class="o">=</span><span class="nb">str</span>
+
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">study</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]:</span>
+			<span class="n">study</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">ta</span><span class="o">.</span><span class="n">get_column_name</span><span class="p">(</span><span class="n">study</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span><span class="n">study</span><span class="o">=</span><span class="n">study</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">],</span>
+												<span class="nb">str</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+												<span class="n">period</span><span class="o">=</span><span class="n">study</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;periods&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">),</span>
+												<span class="n">column</span><span class="o">=</span><span class="n">study</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;column&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">))</span>
+				
+
+		<span class="n">restore</span><span class="o">=</span><span class="n">study</span><span class="p">[</span><span class="s1">&#39;display&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;restore&#39;</span><span class="p">,</span><span class="kc">False</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="n">restore</span><span class="p">:</span>
+			<span class="n">_</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">studies</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">study</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">],</span><span class="kc">None</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="n">study</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">studies</span><span class="p">:</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="nb">id</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> (</span><span class="si">{1}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">study</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">],</span><span class="n">study</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">][</span><span class="s1">&#39;periods&#39;</span><span class="p">])</span>
+			<span class="k">except</span><span class="p">:</span>
+				<span class="nb">id</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> (</span><span class="si">{1}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">study</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">],</span><span class="s1">&#39;(2)&#39;</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="nb">id</span><span class="o">=</span><span class="n">study</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span>
+
+		<span class="n">_id</span><span class="o">=</span><span class="nb">id</span>
+		<span class="n">n</span><span class="o">=</span><span class="mi">1</span>
+		<span class="k">while</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">studies</span><span class="p">:</span>
+			<span class="nb">id</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> (</span><span class="si">{1}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+			<span class="n">n</span><span class="o">+=</span><span class="mi">1</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">=</span><span class="n">study</span>
+	   
+<div class="viewcode-block" id="QuantFig.add_volume"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_volume">[docs]</a>	<span class="k">def</span> <span class="nf">add_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">colorchange</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="nb">str</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{name}</span><span class="s1">&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Add &#39;volume&#39; study to QuantFigure.studies</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			colorchange : bool</span>
+<span class="sd">				If true then each volume bar will have a fill color </span>
+<span class="sd">				depending on if &#39;base&#39; had a positive or negative</span>
+<span class="sd">				change compared to the previous value</span>
+<span class="sd">			column :string</span>
+<span class="sd">				Defines the data column name that contains the volume data. </span>
+<span class="sd">				Default: &#39;volume&#39;</span>
+<span class="sd">			name : string</span>
+<span class="sd">				Name given to the study</span>
+<span class="sd">			str : string</span>
+<span class="sd">				Label factory for studies</span>
+<span class="sd">				The following wildcards can be used:</span>
+<span class="sd">					{name} : Name of the column</span>
+<span class="sd">					{study} : Name of the study</span>
+<span class="sd">					{period} : Period used</span>
+<span class="sd">				Examples:</span>
+<span class="sd">					&#39;study: {study} - period: {period}&#39;</span>
+<span class="sd">			</span>
+<span class="sd">		kwargs : </span>
+<span class="sd">			base : string</span>
+<span class="sd">				Defines the column which will define the</span>
+<span class="sd">				positive/negative changes (if colorchange=True).</span>
+<span class="sd">				Default = &#39;close&#39;</span>
+<span class="sd">			up_color : string</span>
+<span class="sd">				Color for positive bars</span>
+<span class="sd">			down_color : string</span>
+<span class="sd">				Color for negative bars</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">column</span><span class="p">:</span>
+			<span class="n">column</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;volume&#39;</span><span class="p">]</span>
+		<span class="n">up_color</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;up_color&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">theme</span><span class="p">[</span><span class="s1">&#39;up_color&#39;</span><span class="p">])</span>
+		<span class="n">down_color</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;down_color&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">theme</span><span class="p">[</span><span class="s1">&#39;down_color&#39;</span><span class="p">])</span>
+		<span class="n">study</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">:</span><span class="s1">&#39;volume&#39;</span><span class="p">,</span>
+			   <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="n">name</span><span class="p">,</span>
+			   <span class="s1">&#39;params&#39;</span><span class="p">:{</span><span class="s1">&#39;changecolor&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span><span class="s1">&#39;base&#39;</span><span class="p">:</span><span class="s1">&#39;close&#39;</span><span class="p">,</span><span class="s1">&#39;column&#39;</span><span class="p">:</span><span class="n">column</span><span class="p">,</span>
+						 <span class="s1">&#39;str&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">},</span>
+			  <span class="s1">&#39;display&#39;</span><span class="p">:</span><span class="n">utils</span><span class="o">.</span><span class="n">merge_dict</span><span class="p">({</span><span class="s1">&#39;up_color&#39;</span><span class="p">:</span><span class="n">up_color</span><span class="p">,</span><span class="s1">&#39;down_color&#39;</span><span class="p">:</span><span class="n">down_color</span><span class="p">},</span><span class="n">kwargs</span><span class="p">)}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_add_study</span><span class="p">(</span><span class="n">study</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QuantFig.add_macd"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_macd">[docs]</a>	<span class="k">def</span> <span class="nf">add_macd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fast_period</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span><span class="n">slow_period</span><span class="o">=</span><span class="mi">26</span><span class="p">,</span><span class="n">signal_period</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span><span class="n">column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+				 <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Add Moving Average Convergence Divergence (MACD) study to QuantFigure.studies</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			fast_period : int</span>
+<span class="sd">				MACD Fast Period</span>
+<span class="sd">			slow_period : int</span>
+<span class="sd">				MACD Slow Period</span>
+<span class="sd">			signal_period : int</span>
+<span class="sd">				MACD Signal Period</span>
+<span class="sd">			column :string</span>
+<span class="sd">				Defines the data column name that contains the </span>
+<span class="sd">				data over which the study will be applied. </span>
+<span class="sd">				Default: &#39;close&#39;</span>
+<span class="sd">			name : string</span>
+<span class="sd">				Name given to the study</span>
+<span class="sd">			str : string</span>
+<span class="sd">				Label factory for studies</span>
+<span class="sd">				The following wildcards can be used:</span>
+<span class="sd">					{name} : Name of the column</span>
+<span class="sd">					{study} : Name of the study</span>
+<span class="sd">					{period} : Period used</span>
+<span class="sd">				Examples:</span>
+<span class="sd">					&#39;study: {study} - period: {period}&#39;</span>
+<span class="sd">		kwargs: </span>
+<span class="sd">			legendgroup : bool</span>
+<span class="sd">				If true, all legend items are grouped into a </span>
+<span class="sd">				single one</span>
+<span class="sd">			All formatting values available on iplot()</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">column</span><span class="p">:</span>
+			<span class="n">column</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span>
+		<span class="n">study</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">:</span><span class="s1">&#39;macd&#39;</span><span class="p">,</span>
+			   <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="n">name</span><span class="p">,</span>
+			   <span class="s1">&#39;params&#39;</span><span class="p">:{</span><span class="s1">&#39;fast_period&#39;</span><span class="p">:</span><span class="n">fast_period</span><span class="p">,</span><span class="s1">&#39;slow_period&#39;</span><span class="p">:</span><span class="n">slow_period</span><span class="p">,</span>
+						 <span class="s1">&#39;signal_period&#39;</span><span class="p">:</span><span class="n">signal_period</span><span class="p">,</span><span class="s1">&#39;column&#39;</span><span class="p">:</span><span class="n">column</span><span class="p">,</span>
+						 <span class="s1">&#39;str&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">},</span>
+			  <span class="s1">&#39;display&#39;</span><span class="p">:</span><span class="n">utils</span><span class="o">.</span><span class="n">merge_dict</span><span class="p">({</span><span class="s1">&#39;legendgroup&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">,</span><span class="s1">&#39;colors&#39;</span><span class="p">:[</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span><span class="s1">&#39;red&#39;</span><span class="p">]},</span><span class="n">kwargs</span><span class="p">)}</span>
+		<span class="n">study</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">][</span><span class="s1">&#39;periods&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;[</span><span class="si">{0}</span><span class="s1">,</span><span class="si">{1}</span><span class="s1">,</span><span class="si">{2}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fast_period</span><span class="p">,</span><span class="n">slow_period</span><span class="p">,</span><span class="n">signal_period</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_add_study</span><span class="p">(</span><span class="n">study</span><span class="p">)</span></div>
+
+	
+<div class="viewcode-block" id="QuantFig.add_sma"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_sma">[docs]</a>	<span class="k">def</span> <span class="nf">add_sma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">periods</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+					<span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Add Simple Moving Average (SMA) study to QuantFigure.studies</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			periods : int or list(int)</span>
+<span class="sd">				Number of periods</span>
+<span class="sd">			column :string</span>
+<span class="sd">				Defines the data column name that contains the </span>
+<span class="sd">				data over which the study will be applied. </span>
+<span class="sd">				Default: &#39;close&#39;</span>
+<span class="sd">			name : string</span>
+<span class="sd">				Name given to the study</span>
+<span class="sd">			str : string</span>
+<span class="sd">				Label factory for studies</span>
+<span class="sd">				The following wildcards can be used:</span>
+<span class="sd">					{name} : Name of the column</span>
+<span class="sd">					{study} : Name of the study</span>
+<span class="sd">					{period} : Period used</span>
+<span class="sd">				Examples:</span>
+<span class="sd">					&#39;study: {study} - period: {period}&#39;</span>
+<span class="sd">		kwargs: </span>
+<span class="sd">			legendgroup : bool</span>
+<span class="sd">				If true, all legend items are grouped into a </span>
+<span class="sd">				single one</span>
+<span class="sd">			All formatting values available on iplot()</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">column</span><span class="p">:</span>
+			<span class="n">column</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span>
+		<span class="n">study</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">:</span><span class="s1">&#39;sma&#39;</span><span class="p">,</span>
+			   <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="n">name</span><span class="p">,</span>
+			   <span class="s1">&#39;params&#39;</span><span class="p">:{</span><span class="s1">&#39;periods&#39;</span><span class="p">:</span><span class="n">periods</span><span class="p">,</span><span class="s1">&#39;column&#39;</span><span class="p">:</span><span class="n">column</span><span class="p">,</span>
+						 <span class="s1">&#39;str&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">},</span>
+			  <span class="s1">&#39;display&#39;</span><span class="p">:</span><span class="n">utils</span><span class="o">.</span><span class="n">merge_dict</span><span class="p">({</span><span class="s1">&#39;legendgroup&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">},</span><span class="n">kwargs</span><span class="p">)}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_add_study</span><span class="p">(</span><span class="n">study</span><span class="p">)</span></div>
+		
+<div class="viewcode-block" id="QuantFig.add_rsi"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_rsi">[docs]</a>	<span class="k">def</span> <span class="nf">add_rsi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">periods</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">rsi_upper</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span><span class="n">rsi_lower</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span><span class="n">showbands</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+						   <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Add Relative Strength Indicator (RSI) study to QuantFigure.studies</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			periods : int or list(int)</span>
+<span class="sd">				Number of periods</span>
+<span class="sd">			rsi_upper : int </span>
+<span class="sd">				bounds [0,100]</span>
+<span class="sd">				Upper (overbought) level</span>
+<span class="sd">			rsi_lower : int</span>
+<span class="sd">				bounds [0,100]</span>
+<span class="sd">				Lower (oversold) level</span>
+<span class="sd">			showbands : boolean</span>
+<span class="sd">				If True, then the rsi_upper and</span>
+<span class="sd">				rsi_lower levels are displayed</span>
+<span class="sd">			column :string</span>
+<span class="sd">				Defines the data column name that contains the </span>
+<span class="sd">				data over which the study will be applied. </span>
+<span class="sd">				Default: &#39;close&#39;</span>
+<span class="sd">			name : string</span>
+<span class="sd">				Name given to the study</span>
+<span class="sd">			str : string</span>
+<span class="sd">				Label factory for studies</span>
+<span class="sd">				The following wildcards can be used:</span>
+<span class="sd">					{name} : Name of the column</span>
+<span class="sd">					{study} : Name of the study</span>
+<span class="sd">					{period} : Period used</span>
+<span class="sd">				Examples:</span>
+<span class="sd">					&#39;study: {study} - period: {period}&#39;</span>
+<span class="sd">		kwargs: </span>
+<span class="sd">			legendgroup : bool</span>
+<span class="sd">				If true, all legend items are grouped into a </span>
+<span class="sd">				single one</span>
+<span class="sd">			All formatting values available on iplot()</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">column</span><span class="p">:</span>
+			<span class="n">column</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span>
+		<span class="nb">str</span><span class="o">=</span><span class="nb">str</span> <span class="k">if</span> <span class="nb">str</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="si">{name}</span><span class="s1">(</span><span class="si">{column}</span><span class="s1">,</span><span class="si">{period}</span><span class="s1">)&#39;</span>
+
+		<span class="n">study</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">:</span><span class="s1">&#39;rsi&#39;</span><span class="p">,</span>
+			   <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="n">name</span><span class="p">,</span>
+			   <span class="s1">&#39;params&#39;</span><span class="p">:{</span><span class="s1">&#39;periods&#39;</span><span class="p">:</span><span class="n">periods</span><span class="p">,</span><span class="s1">&#39;column&#39;</span><span class="p">:</span><span class="n">column</span><span class="p">,</span>
+						 <span class="s1">&#39;str&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">},</span>
+			  <span class="s1">&#39;display&#39;</span><span class="p">:</span><span class="n">utils</span><span class="o">.</span><span class="n">merge_dict</span><span class="p">({</span><span class="s1">&#39;legendgroup&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span><span class="s1">&#39;rsi_upper&#39;</span><span class="p">:</span><span class="n">rsi_upper</span><span class="p">,</span>
+						 <span class="s1">&#39;rsi_lower&#39;</span><span class="p">:</span><span class="n">rsi_lower</span><span class="p">,</span><span class="s1">&#39;showbands&#39;</span><span class="p">:</span><span class="n">showbands</span><span class="p">},</span><span class="n">kwargs</span><span class="p">)}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_add_study</span><span class="p">(</span><span class="n">study</span><span class="p">)</span></div>
+	
+<div class="viewcode-block" id="QuantFig.add_bollinger_bands"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_bollinger_bands">[docs]</a>	<span class="k">def</span> <span class="nf">add_bollinger_bands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">periods</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">boll_std</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+						   <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{name}</span><span class="s1">(</span><span class="si">{column}</span><span class="s1">,</span><span class="si">{period}</span><span class="s1">)&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Add Bollinger Bands (BOLL) study to QuantFigure.studies</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			periods : int or list(int)</span>
+<span class="sd">				Number of periods</span>
+<span class="sd">			boll_std : int</span>
+<span class="sd">				Number of standard deviations for</span>
+<span class="sd">				the bollinger upper and lower bands</span>
+<span class="sd">			fill : boolean</span>
+<span class="sd">				If True, then the innner area of the </span>
+<span class="sd">				bands will filled</span>
+<span class="sd">			column :string</span>
+<span class="sd">				Defines the data column name that contains the </span>
+<span class="sd">				data over which the study will be applied. </span>
+<span class="sd">				Default: &#39;close&#39;</span>
+<span class="sd">			name : string</span>
+<span class="sd">				Name given to the study</span>
+<span class="sd">			str : string</span>
+<span class="sd">				Label factory for studies</span>
+<span class="sd">				The following wildcards can be used:</span>
+<span class="sd">					{name} : Name of the column</span>
+<span class="sd">					{study} : Name of the study</span>
+<span class="sd">					{period} : Period used</span>
+<span class="sd">				Examples:</span>
+<span class="sd">					&#39;study: {study} - period: {period}&#39;</span>
+<span class="sd">		kwargs: </span>
+<span class="sd">			legendgroup : bool</span>
+<span class="sd">				If true, all legend items are grouped into a </span>
+<span class="sd">				single one</span>
+<span class="sd">			fillcolor : string</span>
+<span class="sd">				Color to be used for the fill color.</span>
+<span class="sd">				Example:</span>
+<span class="sd">					&#39;rgba(62, 111, 176, .4)&#39;</span>
+<span class="sd">			All formatting values available on iplot()</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">column</span><span class="p">:</span>
+			<span class="n">column</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span>
+		<span class="n">study</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">:</span><span class="s1">&#39;boll&#39;</span><span class="p">,</span>
+			   <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="n">name</span><span class="p">,</span>
+			   <span class="s1">&#39;params&#39;</span><span class="p">:{</span><span class="s1">&#39;periods&#39;</span><span class="p">:</span><span class="n">periods</span><span class="p">,</span><span class="s1">&#39;boll_std&#39;</span><span class="p">:</span><span class="n">boll_std</span><span class="p">,</span><span class="s1">&#39;column&#39;</span><span class="p">:</span><span class="n">column</span><span class="p">,</span>
+						<span class="s1">&#39;str&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">},</span>
+			  <span class="s1">&#39;display&#39;</span><span class="p">:</span><span class="n">utils</span><span class="o">.</span><span class="n">merge_dict</span><span class="p">({</span><span class="s1">&#39;legendgroup&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span><span class="s1">&#39;fill&#39;</span><span class="p">:</span><span class="n">fill</span><span class="p">},</span><span class="n">kwargs</span><span class="p">)}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_add_study</span><span class="p">(</span><span class="n">study</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QuantFig.add_ema"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_ema">[docs]</a>	<span class="k">def</span> <span class="nf">add_ema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">periods</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+						   <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Add Exponential Moving Average (EMA) study to QuantFigure.studies</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			periods : int or list(int)</span>
+<span class="sd">				Number of periods</span>
+<span class="sd">			column :string</span>
+<span class="sd">				Defines the data column name that contains the </span>
+<span class="sd">				data over which the study will be applied. </span>
+<span class="sd">				Default: &#39;close&#39;</span>
+<span class="sd">			name : string</span>
+<span class="sd">				Name given to the study</span>
+<span class="sd">			str : string</span>
+<span class="sd">				Label factory for studies</span>
+<span class="sd">				The following wildcards can be used:</span>
+<span class="sd">					{name} : Name of the column</span>
+<span class="sd">					{study} : Name of the study</span>
+<span class="sd">					{period} : Period used</span>
+<span class="sd">				Examples:</span>
+<span class="sd">					&#39;study: {study} - period: {period}&#39;</span>
+<span class="sd">		kwargs: </span>
+<span class="sd">			legendgroup : bool</span>
+<span class="sd">				If true, all legend items are grouped into a </span>
+<span class="sd">				single one</span>
+<span class="sd">			All formatting values available on iplot()</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">column</span><span class="p">:</span>
+			<span class="n">column</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">]</span>
+		<span class="n">study</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">:</span><span class="s1">&#39;ema&#39;</span><span class="p">,</span>
+			   <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="n">name</span><span class="p">,</span>
+			   <span class="s1">&#39;params&#39;</span><span class="p">:{</span><span class="s1">&#39;periods&#39;</span><span class="p">:</span><span class="n">periods</span><span class="p">,</span><span class="s1">&#39;column&#39;</span><span class="p">:</span><span class="n">column</span><span class="p">,</span>
+						 <span class="s1">&#39;str&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">},</span>
+			  <span class="s1">&#39;display&#39;</span><span class="p">:</span><span class="n">utils</span><span class="o">.</span><span class="n">merge_dict</span><span class="p">({</span><span class="s1">&#39;legendgroup&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">},</span><span class="n">kwargs</span><span class="p">)}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_add_study</span><span class="p">(</span><span class="n">study</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QuantFig.add_cci"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_cci">[docs]</a>	<span class="k">def</span> <span class="nf">add_cci</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">periods</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span><span class="n">cci_upper</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">cci_lower</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span>
+			    <span class="n">showbands</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Commodity Channel Indicator study to QuantFigure.studies</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			periods : int or list(int)</span>
+<span class="sd">				Number of periods</span>
+<span class="sd">			cci_upper : int</span>
+<span class="sd">				Upper bands level</span>
+<span class="sd">				default : 100</span>
+<span class="sd">			cci_lower : int</span>
+<span class="sd">				Lower band level</span>
+<span class="sd">				default : -100</span>
+<span class="sd">			showbands : boolean</span>
+<span class="sd">				If True, then the cci_upper and</span>
+<span class="sd">				cci_lower levels are displayed</span>
+<span class="sd">			name : string</span>
+<span class="sd">				Name given to the study</span>
+<span class="sd">			str : string</span>
+<span class="sd">				Label factory for studies</span>
+<span class="sd">				The following wildcards can be used:</span>
+<span class="sd">					{name} : Name of the column</span>
+<span class="sd">					{study} : Name of the study</span>
+<span class="sd">					{period} : Period used</span>
+<span class="sd">				Examples:</span>
+<span class="sd">					&#39;study: {study} - period: {period}&#39;</span>
+<span class="sd">		kwargs: </span>
+<span class="sd">			legendgroup : bool</span>
+<span class="sd">				If true, all legend items are grouped into a </span>
+<span class="sd">				single one</span>
+<span class="sd">			All formatting values available on iplot()</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">study</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">:</span><span class="s1">&#39;cci&#39;</span><span class="p">,</span>
+			   <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="n">name</span><span class="p">,</span>
+			   <span class="s1">&#39;params&#39;</span><span class="p">:{</span><span class="s1">&#39;periods&#39;</span><span class="p">:</span><span class="n">periods</span><span class="p">,</span><span class="s1">&#39;high&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;high&#39;</span><span class="p">],</span><span class="s1">&#39;low&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;low&#39;</span><span class="p">],</span><span class="s1">&#39;close&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">],</span>
+						 <span class="s1">&#39;str&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">},</span>
+			  <span class="s1">&#39;display&#39;</span><span class="p">:</span><span class="n">utils</span><span class="o">.</span><span class="n">merge_dict</span><span class="p">({</span><span class="s1">&#39;legendgroup&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span><span class="s1">&#39;cci_upper&#39;</span><span class="p">:</span><span class="n">cci_upper</span><span class="p">,</span>
+						 <span class="s1">&#39;cci_lower&#39;</span><span class="p">:</span><span class="n">cci_lower</span><span class="p">,</span><span class="s1">&#39;showbands&#39;</span><span class="p">:</span><span class="n">showbands</span><span class="p">},</span><span class="n">kwargs</span><span class="p">)}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_add_study</span><span class="p">(</span><span class="n">study</span><span class="p">)</span>		</div>
+	
+<div class="viewcode-block" id="QuantFig.add_adx"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_adx">[docs]</a>	<span class="k">def</span> <span class="nf">add_adx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">periods</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Add Average Directional Index (ADX) study to QuantFigure.studies</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			periods : int or list(int)</span>
+<span class="sd">				Number of periods</span>
+<span class="sd">			name : string</span>
+<span class="sd">				Name given to the study</span>
+<span class="sd">			str : string</span>
+<span class="sd">				Label factory for studies</span>
+<span class="sd">				The following wildcards can be used:</span>
+<span class="sd">					{name} : Name of the column</span>
+<span class="sd">					{study} : Name of the study</span>
+<span class="sd">					{period} : Period used</span>
+<span class="sd">				Examples:</span>
+<span class="sd">					&#39;study: {study} - period: {period}&#39;</span>
+<span class="sd">		kwargs: </span>
+<span class="sd">			legendgroup : bool</span>
+<span class="sd">				If true, all legend items are grouped into a </span>
+<span class="sd">				single one</span>
+<span class="sd">			All formatting values available on iplot()</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">study</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">:</span><span class="s1">&#39;adx&#39;</span><span class="p">,</span>
+			   <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="n">name</span><span class="p">,</span>
+			   <span class="s1">&#39;params&#39;</span><span class="p">:{</span><span class="s1">&#39;periods&#39;</span><span class="p">:</span><span class="n">periods</span><span class="p">,</span><span class="s1">&#39;high&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;high&#39;</span><span class="p">],</span><span class="s1">&#39;low&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;low&#39;</span><span class="p">],</span><span class="s1">&#39;close&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">],</span>
+						 <span class="s1">&#39;str&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">},</span>
+			  <span class="s1">&#39;display&#39;</span><span class="p">:</span><span class="n">utils</span><span class="o">.</span><span class="n">merge_dict</span><span class="p">({</span><span class="s1">&#39;legendgroup&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">},</span><span class="n">kwargs</span><span class="p">)}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_add_study</span><span class="p">(</span><span class="n">study</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QuantFig.add_ptps"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_ptps">[docs]</a>	<span class="k">def</span> <span class="nf">add_ptps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">periods</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span><span class="n">af</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span><span class="n">initial</span><span class="o">=</span><span class="s1">&#39;long&#39;</span><span class="p">,</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Add Parabolic SAR (PTPS) study to QuantFigure.studies</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			periods : int or list(int)</span>
+<span class="sd">				Number of periods</span>
+<span class="sd">			af : float</span>
+<span class="sd">				acceleration factor</span>
+<span class="sd">			initial : &#39;long&#39; or &#39;short&#39;</span>
+<span class="sd">				Iniital position</span>
+<span class="sd">				default: long</span>
+<span class="sd">			name : string</span>
+<span class="sd">				Name given to the study</span>
+<span class="sd">			str : string</span>
+<span class="sd">				Label factory for studies</span>
+<span class="sd">				The following wildcards can be used:</span>
+<span class="sd">					{name} : Name of the column</span>
+<span class="sd">					{study} : Name of the study</span>
+<span class="sd">					{period} : Period used</span>
+<span class="sd">				Examples:</span>
+<span class="sd">					&#39;study: {study} - period: {period}&#39;</span>
+<span class="sd">		kwargs: </span>
+<span class="sd">			legendgroup : bool</span>
+<span class="sd">				If true, all legend items are grouped into a </span>
+<span class="sd">				single one</span>
+<span class="sd">			All formatting values available on iplot()</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">study</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">:</span><span class="s1">&#39;ptps&#39;</span><span class="p">,</span>
+			   <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="n">name</span><span class="p">,</span>
+			   <span class="s1">&#39;params&#39;</span><span class="p">:{</span><span class="s1">&#39;periods&#39;</span><span class="p">:</span><span class="n">periods</span><span class="p">,</span><span class="s1">&#39;high&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;high&#39;</span><span class="p">],</span><span class="s1">&#39;low&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;low&#39;</span><span class="p">],</span><span class="s1">&#39;af&#39;</span><span class="p">:</span><span class="n">af</span><span class="p">,</span><span class="s1">&#39;initial&#39;</span><span class="p">:</span><span class="n">initial</span><span class="p">,</span>
+						 <span class="s1">&#39;str&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">},</span>
+			  <span class="s1">&#39;display&#39;</span><span class="p">:</span><span class="n">utils</span><span class="o">.</span><span class="n">merge_dict</span><span class="p">({</span><span class="s1">&#39;legendgroup&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">},</span><span class="n">kwargs</span><span class="p">)}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_add_study</span><span class="p">(</span><span class="n">study</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QuantFig.add_atr"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_atr">[docs]</a>	<span class="k">def</span> <span class="nf">add_atr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">periods</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Add Average True Range (ATR) study to QuantFigure.studies</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			periods : int or list(int)</span>
+<span class="sd">				Number of periods</span>
+<span class="sd">			name : string</span>
+<span class="sd">				Name given to the study</span>
+<span class="sd">			str : string</span>
+<span class="sd">				Label factory for studies</span>
+<span class="sd">				The following wildcards can be used:</span>
+<span class="sd">					{name} : Name of the column</span>
+<span class="sd">					{study} : Name of the study</span>
+<span class="sd">					{period} : Period used</span>
+<span class="sd">				Examples:</span>
+<span class="sd">					&#39;study: {study} - period: {period}&#39;</span>
+<span class="sd">		kwargs: </span>
+<span class="sd">			legendgroup : bool</span>
+<span class="sd">				If true, all legend items are grouped into a </span>
+<span class="sd">				single one</span>
+<span class="sd">			All formatting values available on iplot()</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">study</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">:</span><span class="s1">&#39;atr&#39;</span><span class="p">,</span>
+			   <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="n">name</span><span class="p">,</span>
+			   <span class="s1">&#39;params&#39;</span><span class="p">:{</span><span class="s1">&#39;periods&#39;</span><span class="p">:</span><span class="n">periods</span><span class="p">,</span><span class="s1">&#39;high&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;high&#39;</span><span class="p">],</span><span class="s1">&#39;low&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;low&#39;</span><span class="p">],</span><span class="s1">&#39;close&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">],</span>
+						 <span class="s1">&#39;str&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">},</span>
+			  <span class="s1">&#39;display&#39;</span><span class="p">:</span><span class="n">utils</span><span class="o">.</span><span class="n">merge_dict</span><span class="p">({</span><span class="s1">&#39;legendgroup&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">},</span><span class="n">kwargs</span><span class="p">)}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_add_study</span><span class="p">(</span><span class="n">study</span><span class="p">)</span>		</div>
+			
+<div class="viewcode-block" id="QuantFig.add_dmi"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.add_dmi">[docs]</a>	<span class="k">def</span> <span class="nf">add_dmi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">periods</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span><span class="nb">str</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{name}</span><span class="s1">(</span><span class="si">{period}</span><span class="s1">)&#39;</span><span class="p">,</span>
+					<span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Add Directional Movement Index (DMI) study to QuantFigure.studies</span>
+
+<span class="sd">		Parameters:</span>
+<span class="sd">			periods : int or list(int)</span>
+<span class="sd">				Number of periods</span>
+<span class="sd">			name : string</span>
+<span class="sd">				Name given to the study</span>
+<span class="sd">			str : string</span>
+<span class="sd">				Label factory for studies</span>
+<span class="sd">				The following wildcards can be used:</span>
+<span class="sd">					{name} : Name of the column</span>
+<span class="sd">					{study} : Name of the study</span>
+<span class="sd">					{period} : Period used</span>
+<span class="sd">				Examples:</span>
+<span class="sd">					&#39;study: {study} - period: {period}&#39;</span>
+<span class="sd">		kwargs: </span>
+<span class="sd">			legendgroup : bool</span>
+<span class="sd">				If true, all legend items are grouped into a </span>
+<span class="sd">				single one</span>
+<span class="sd">			All formatting values available on iplot()</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="n">study</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;kind&#39;</span><span class="p">:</span><span class="s1">&#39;dmi&#39;</span><span class="p">,</span>
+			   <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="n">name</span><span class="p">,</span>
+			   <span class="s1">&#39;params&#39;</span><span class="p">:{</span><span class="s1">&#39;periods&#39;</span><span class="p">:</span><span class="n">periods</span><span class="p">,</span><span class="s1">&#39;high&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;high&#39;</span><span class="p">],</span><span class="s1">&#39;low&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;low&#39;</span><span class="p">],</span><span class="s1">&#39;close&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="s1">&#39;close&#39;</span><span class="p">],</span>
+						 <span class="s1">&#39;str&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">},</span>
+			  <span class="s1">&#39;display&#39;</span><span class="p">:</span><span class="n">utils</span><span class="o">.</span><span class="n">merge_dict</span><span class="p">({</span><span class="s1">&#39;legendgroup&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">},</span><span class="n">kwargs</span><span class="p">)}</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">_add_study</span><span class="p">(</span><span class="n">study</span><span class="p">)</span>		</div>
+
+
+	<span class="k">def</span> <span class="nf">_get_study_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">study_id</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="n">study</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">studies</span><span class="p">[</span><span class="n">study_id</span><span class="p">])</span>
+		<span class="n">kind</span><span class="o">=</span><span class="n">study</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span>
+		<span class="n">display</span><span class="o">=</span><span class="n">study</span><span class="p">[</span><span class="s1">&#39;display&#39;</span><span class="p">]</span>
+		<span class="n">display</span><span class="p">[</span><span class="s1">&#39;theme&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">display</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;theme&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">theme</span><span class="p">[</span><span class="s1">&#39;theme&#39;</span><span class="p">])</span>
+		<span class="n">params</span><span class="o">=</span><span class="n">study</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span>
+		<span class="n">name</span><span class="o">=</span><span class="n">study</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+		<span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+		<span class="n">local_kwargs</span><span class="o">=</span><span class="p">{}</span>
+		<span class="n">_slice</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;slice&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;slice&#39;</span><span class="p">,(</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">)))</span>
+		<span class="n">_resample</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;resample&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resample&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">))</span>
+		
+		<span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_sliced</span><span class="p">(</span><span class="n">_slice</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+		<span class="k">if</span> <span class="n">_resample</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_list</span><span class="p">(</span><span class="n">_resample</span><span class="p">):</span>
+				<span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_resampled</span><span class="p">(</span><span class="o">*</span><span class="n">_resample</span><span class="p">,</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
+			<span class="k">elif</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_dict</span><span class="p">(</span><span class="n">_resample</span><span class="p">):</span>
+				<span class="n">_resample</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
+				<span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_resampled</span><span class="p">(</span><span class="o">**</span><span class="n">_resample</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_resampled</span><span class="p">(</span><span class="n">_resample</span><span class="p">,</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
+		
+		<span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span><span class="n">locals_list</span><span class="p">,</span><span class="n">params</span><span class="p">,</span><span class="n">display</span><span class="p">,</span><span class="n">append_study</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+			<span class="n">locals_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;legendgroup&#39;</span><span class="p">)</span>
+			<span class="n">local_kwargs</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">check_kwargs</span><span class="p">(</span><span class="n">display</span><span class="p">,</span><span class="n">locals_list</span><span class="p">,{},</span><span class="kc">True</span><span class="p">)</span>
+			<span class="n">display</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+			<span class="k">if</span> <span class="n">append_study</span><span class="p">:</span>
+				<span class="n">display</span><span class="o">=</span><span class="nb">dict</span><span class="p">([(</span><span class="s1">&#39;study_&#39;</span><span class="o">+</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">display</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+			<span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">display</span><span class="p">)</span>
+			<span class="k">return</span> <span class="n">local_kwargs</span><span class="p">,</span><span class="n">params</span>
+ 
+		<span class="k">if</span> <span class="n">kind</span><span class="o">==</span><span class="s1">&#39;volume&#39;</span><span class="p">:</span>
+			<span class="n">bar_colors</span><span class="o">=</span><span class="p">[]</span>
+			<span class="n">local_kwargs</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="n">get_params</span><span class="p">([],</span><span class="n">params</span><span class="p">,</span><span class="n">display</span><span class="p">,</span><span class="kc">False</span><span class="p">)</span>
+			<span class="n">base</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]]]</span>
+			<span class="n">up_color</span><span class="o">=</span><span class="n">colors</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">display</span><span class="p">[</span><span class="s1">&#39;up_color&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="s1">&#39;rgba&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">display</span><span class="p">[</span><span class="s1">&#39;up_color&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="n">display</span><span class="p">[</span><span class="s1">&#39;up_color&#39;</span><span class="p">]</span>
+			<span class="n">down_color</span><span class="o">=</span><span class="n">colors</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">display</span><span class="p">[</span><span class="s1">&#39;down_color&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="s1">&#39;rgba&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">display</span><span class="p">[</span><span class="s1">&#39;down_color&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="n">display</span><span class="p">[</span><span class="s1">&#39;down_color&#39;</span><span class="p">]</span>
+			<span class="n">study_kwargs</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">kwargs_from_keyword</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,{},</span><span class="s1">&#39;study&#39;</span><span class="p">)</span>
+
+			<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">base</span><span class="p">)):</span>
+				<span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+					<span class="k">if</span> <span class="n">base</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">base</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+						<span class="n">bar_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">up_color</span><span class="p">)</span>
+					<span class="k">else</span><span class="p">:</span>
+						<span class="n">bar_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">down_color</span><span class="p">)</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">bar_colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">down_color</span><span class="p">)</span>
+			<span class="n">fig</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;column&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span><span class="n">theme</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;theme&#39;</span><span class="p">],</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+			<span class="n">fig</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">bar_colors</span><span class="p">,</span><span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">bar_colors</span><span class="p">)),</span>
+					  <span class="n">opacity</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;sma&#39;</span><span class="p">,</span><span class="s1">&#39;ema&#39;</span><span class="p">,</span><span class="s1">&#39;atr&#39;</span><span class="p">,</span><span class="s1">&#39;adx&#39;</span><span class="p">,</span><span class="s1">&#39;dmi&#39;</span><span class="p">,</span><span class="s1">&#39;ptps&#39;</span><span class="p">):</span>
+			<span class="n">local_kwargs</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="n">get_params</span><span class="p">([],</span><span class="n">params</span><span class="p">,</span><span class="n">display</span><span class="p">)</span>
+			<span class="n">fig</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">ta_figure</span><span class="p">(</span><span class="n">study</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="n">kind</span><span class="o">==</span><span class="s1">&#39;boll&#39;</span><span class="p">:</span>
+			<span class="n">local_kwargs</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="n">get_params</span><span class="p">([</span><span class="s1">&#39;fill&#39;</span><span class="p">,</span><span class="s1">&#39;fillcolor&#39;</span><span class="p">],</span><span class="n">params</span><span class="p">,</span><span class="n">display</span><span class="p">)</span>
+			<span class="n">fig</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">ta_figure</span><span class="p">(</span><span class="n">study</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+			<span class="k">if</span> <span class="n">local_kwargs</span><span class="p">[</span><span class="s1">&#39;fill&#39;</span><span class="p">]:</span>
+				<span class="n">fillcolor</span><span class="o">=</span><span class="n">local_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;fillcolor&#39;</span><span class="p">,</span><span class="n">fig</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;color&#39;</span><span class="p">,</span><span class="s1">&#39;rgba(200,200,200,.1)&#39;</span><span class="p">))</span>
+				<span class="n">fillcolor</span><span class="o">=</span><span class="n">colors</span><span class="o">.</span><span class="n">to_rgba</span><span class="p">(</span><span class="n">fillcolor</span><span class="p">,</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
+				<span class="n">fig</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s1">&#39;tonexty&#39;</span><span class="p">,</span><span class="n">fillcolor</span><span class="o">=</span><span class="n">fillcolor</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="n">kind</span><span class="o">==</span><span class="s1">&#39;rsi&#39;</span><span class="p">:</span>
+			<span class="n">locals_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;rsi_lower&#39;</span><span class="p">,</span><span class="s1">&#39;rsi_upper&#39;</span><span class="p">,</span><span class="s1">&#39;showbands&#39;</span><span class="p">]</span>
+			<span class="n">local_kwargs</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="n">get_params</span><span class="p">(</span><span class="n">locals_list</span><span class="p">,</span><span class="n">params</span><span class="p">,</span><span class="n">display</span><span class="p">)</span>
+			<span class="n">fig</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">ta_figure</span><span class="p">(</span><span class="n">study</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+			<span class="c1"># del fig.layout[&#39;shapes&#39;]</span>
+			<span class="c1"># if local_kwargs[&#39;showbands&#39;]:</span>
+			<span class="c1"># 	up_color=kwargs.get(&#39;up_color&#39;,self.theme[&#39;up_color&#39;])</span>
+			<span class="c1"># 	down_color=kwargs.get(&#39;down_color&#39;,self.theme[&#39;down_color&#39;])</span>
+			<span class="c1"># 	for _ in (&#39;rsi_lower&#39;,&#39;rsi_upper&#39;):</span>
+			<span class="c1"># 		trace=fig.data[0].copy()</span>
+			<span class="c1"># 		trace.update(y=[local_kwargs[_] for x in trace[&#39;x&#39;]])</span>
+			<span class="c1"># 		trace.update(name=&#39;&#39;)</span>
+			<span class="c1"># 		color=down_color if &#39;lower&#39; in _ else up_color</span>
+			<span class="c1"># 		trace.update(line=dict(color=color,width=1))</span>
+			<span class="c1"># 		fig.data.append(trace)</span>
+		
+		<span class="k">if</span> <span class="n">kind</span><span class="o">==</span><span class="s1">&#39;cci&#39;</span><span class="p">:</span>
+			<span class="n">locals_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;cci_lower&#39;</span><span class="p">,</span><span class="s1">&#39;cci_upper&#39;</span><span class="p">,</span><span class="s1">&#39;showbands&#39;</span><span class="p">]</span>
+			<span class="n">local_kwargs</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="n">get_params</span><span class="p">(</span><span class="n">locals_list</span><span class="p">,</span><span class="n">params</span><span class="p">,</span><span class="n">display</span><span class="p">)</span>
+			<span class="n">fig</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">ta_figure</span><span class="p">(</span><span class="n">study</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+			<span class="c1"># del fig.layout[&#39;shapes&#39;]</span>
+			<span class="c1"># if local_kwargs[&#39;showbands&#39;]:</span>
+			<span class="c1"># 	up_color=kwargs.get(&#39;up_color&#39;,self.theme[&#39;up_color&#39;])</span>
+			<span class="c1"># 	down_color=kwargs.get(&#39;down_color&#39;,self.theme[&#39;down_color&#39;])</span>
+			<span class="c1"># 	for _ in (&#39;cci_lower&#39;,&#39;cci_upper&#39;):</span>
+			<span class="c1"># 		trace=fig.data[0].copy()</span>
+			<span class="c1"># 		trace.update(y=[local_kwargs[_] for x in trace[&#39;x&#39;]])</span>
+			<span class="c1"># 		trace.update(name=&#39;&#39;)</span>
+			<span class="c1"># 		color=down_color if &#39;lower&#39; in _ else up_color</span>
+			<span class="c1"># 		trace.update(line=dict(color=color,width=1))</span>
+			<span class="c1"># 		fig.data.append(trace)</span>
+		
+		<span class="k">if</span> <span class="n">kind</span><span class="o">==</span><span class="s1">&#39;macd&#39;</span><span class="p">:</span>
+			<span class="n">local_kwargs</span><span class="p">,</span><span class="n">params</span><span class="o">=</span><span class="n">get_params</span><span class="p">([],</span><span class="n">params</span><span class="p">,</span><span class="n">display</span><span class="p">)</span>
+			<span class="n">fig</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">ta_figure</span><span class="p">(</span><span class="n">study</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="n">local_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;legendgroup&#39;</span><span class="p">,</span><span class="kc">False</span><span class="p">):</span>
+			<span class="n">fig</span><span class="o">.</span><span class="n">update_traces</span><span class="p">(</span><span class="n">legendgroup</span><span class="o">=</span><span class="n">name</span><span class="p">,</span><span class="n">showlegend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+			<span class="n">fig</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+		
+		<span class="c1">## Has Bands</span>
+		<span class="k">if</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;rsi&#39;</span><span class="p">,</span><span class="s1">&#39;cci&#39;</span><span class="p">):</span>
+			<span class="n">_upper</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_upper&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
+			<span class="n">_lower</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">_lower&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
+			<span class="k">del</span> <span class="n">fig</span><span class="o">.</span><span class="n">layout</span><span class="p">[</span><span class="s1">&#39;shapes&#39;</span><span class="p">]</span>
+			<span class="k">if</span> <span class="n">local_kwargs</span><span class="p">[</span><span class="s1">&#39;showbands&#39;</span><span class="p">]:</span>
+				<span class="n">up_color</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;up_color&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">theme</span><span class="p">[</span><span class="s1">&#39;up_color&#39;</span><span class="p">])</span>
+				<span class="n">down_color</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;down_color&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">theme</span><span class="p">[</span><span class="s1">&#39;down_color&#39;</span><span class="p">])</span>
+				<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="p">(</span><span class="n">_lower</span><span class="p">,</span><span class="n">_upper</span><span class="p">):</span>
+					<span class="n">trace</span><span class="o">=</span><span class="n">fig</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+					<span class="n">trace</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="n">local_kwargs</span><span class="p">[</span><span class="n">_</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">trace</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]])</span>
+					<span class="n">trace</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+					<span class="n">color</span><span class="o">=</span><span class="n">down_color</span> <span class="k">if</span> <span class="s1">&#39;lower&#39;</span> <span class="ow">in</span> <span class="n">_</span> <span class="k">else</span> <span class="n">up_color</span>
+					<span class="n">trace</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span><span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+					<span class="n">fig</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+
+
+		<span class="k">return</span> <span class="n">fig</span>
+	
+<div class="viewcode-block" id="QuantFig.iplot"><a class="viewcode-back" href="../../cufflinks.quant_figure.html#cufflinks.quant_figure.QuantFig.iplot">[docs]</a>	<span class="k">def</span> <span class="nf">iplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+		<span class="n">__QUANT_FIGURE_EXPORT</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;asFigure&#39;</span><span class="p">,</span><span class="s1">&#39;asUrl&#39;</span><span class="p">,</span><span class="s1">&#39;asImage&#39;</span><span class="p">,</span><span class="s1">&#39;asPlot&#39;</span><span class="p">,</span><span class="s1">&#39;display_image&#39;</span><span class="p">,</span><span class="s1">&#39;validate&#39;</span><span class="p">,</span>
+						 <span class="s1">&#39;sharing&#39;</span><span class="p">,</span><span class="s1">&#39;online&#39;</span><span class="p">,</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span><span class="s1">&#39;dimensions&#39;</span><span class="p">]</span>
+
+		<span class="n">layout</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
+		<span class="n">data</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+		<span class="n">self_kwargs</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+
+		<span class="n">data</span><span class="p">[</span><span class="s1">&#39;slice&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;slice&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;slice&#39;</span><span class="p">,(</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">)))</span>
+		<span class="n">data</span><span class="p">[</span><span class="s1">&#39;resample&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;resample&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;resample&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">))</span>
+
+		<span class="n">asFigure</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;asFigure&#39;</span><span class="p">,</span><span class="kc">False</span><span class="p">)</span>
+		<span class="n">showstudies</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;showstudies&#39;</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+		<span class="n">study_kwargs</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">kwargs_from_keyword</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,{},</span><span class="s1">&#39;study&#39;</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+		<span class="n">datalegend</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;datalegend&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;datalegend&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;showlegend&#39;</span><span class="p">,</span><span class="kc">True</span><span class="p">)))</span>
+		<span class="n">export_kwargs</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span><span class="n">__QUANT_FIGURE_EXPORT</span><span class="p">)</span>
+
+		<span class="n">_slice</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;slice&#39;</span><span class="p">)</span>
+		<span class="n">_resample</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;resample&#39;</span><span class="p">)</span>
+		
+		<span class="n">panel_data</span><span class="o">=</span><span class="p">{}</span>
+		<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;min_panel_size&#39;</span><span class="p">,</span><span class="s1">&#39;spacing&#39;</span><span class="p">,</span><span class="s1">&#39;top_margin&#39;</span><span class="p">,</span><span class="s1">&#39;bottom_margin&#39;</span><span class="p">]:</span>
+			<span class="n">panel_data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">panels</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+		<span class="n">d</span><span class="o">=</span><span class="n">self_kwargs</span>
+		<span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_sliced</span><span class="p">(</span><span class="n">_slice</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+		<span class="k">if</span> <span class="n">_resample</span><span class="p">:</span>
+			<span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_list</span><span class="p">(</span><span class="n">_resample</span><span class="p">):</span>
+				<span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_resampled</span><span class="p">(</span><span class="o">*</span><span class="n">_resample</span><span class="p">,</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
+			<span class="k">elif</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_dict</span><span class="p">(</span><span class="n">_resample</span><span class="p">):</span>
+				<span class="n">_resample</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
+				<span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_resampled</span><span class="p">(</span><span class="o">**</span><span class="n">_resample</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_resampled</span><span class="p">(</span><span class="n">_resample</span><span class="p">,</span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
+
+		<span class="n">annotations</span><span class="o">=</span><span class="n">layout</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;annotations&#39;</span><span class="p">)</span>
+		<span class="n">shapes</span><span class="o">=</span><span class="n">layout</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;shapes&#39;</span><span class="p">)</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;shapes&#39;</span> <span class="ow">in</span> <span class="n">shapes</span><span class="p">:</span>
+			<span class="n">shapes</span><span class="p">[</span><span class="s1">&#39;shapes&#39;</span><span class="p">]</span><span class="o">=</span><span class="p">[]</span>
+		<span class="k">for</span> <span class="n">trend</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trendlines</span><span class="p">:</span>
+			<span class="n">_trend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_trendline</span><span class="p">(</span><span class="o">**</span><span class="n">trend</span><span class="p">)</span>
+			<span class="n">shapes</span><span class="p">[</span><span class="s1">&#39;shapes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_trend</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">])</span>
+			<span class="k">if</span> <span class="s1">&#39;text&#39;</span> <span class="ow">in</span> <span class="n">_trend</span><span class="p">[</span><span class="s1">&#39;annotation&#39;</span><span class="p">]:</span>
+				<span class="n">annotations</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_trend</span><span class="p">[</span><span class="s1">&#39;annotation&#39;</span><span class="p">])</span>
+		<span class="n">shape_kwargs</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span><span class="n">get_shapes_kwargs</span><span class="p">(),{},</span><span class="n">clean_origin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">shape_kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+			<span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">shapes</span><span class="p">:</span>
+				<span class="n">shapes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="n">shapes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+		<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="p">[</span><span class="n">data</span><span class="p">,</span><span class="n">layout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">,</span>
+				  <span class="bp">self</span><span class="o">.</span><span class="n">theme</span><span class="p">,{</span><span class="s1">&#39;annotations&#39;</span><span class="p">:</span><span class="n">annotations</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">]},</span>
+				  <span class="n">annotations</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">],</span><span class="n">shapes</span><span class="p">]:</span>
+			<span class="k">if</span> <span class="n">_</span><span class="p">:</span>
+				<span class="n">d</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">merge_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">_</span><span class="p">)</span>
+		<span class="n">d</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">deep_update</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">kwargs</span><span class="p">)</span>
+		<span class="n">d</span><span class="o">=</span><span class="n">tools</span><span class="o">.</span><span class="n">updateColors</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+		<span class="n">fig</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="o">**</span><span class="n">d</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;candle&#39;</span><span class="p">,</span><span class="s1">&#39;candlestick&#39;</span><span class="p">,</span><span class="s1">&#39;ohlc&#39;</span><span class="p">):</span>
+			<span class="n">fig</span><span class="o">.</span><span class="n">move_axis</span><span class="p">(</span><span class="n">yaxis</span><span class="o">=</span><span class="s1">&#39;y2&#39;</span><span class="p">)</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">if</span> <span class="ow">not</span> <span class="n">datalegend</span><span class="p">:</span>
+				<span class="n">fig</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;decreasing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">showlegend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+				<span class="n">fig</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;increasing&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">showlegend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+		<span class="n">panel_data</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+		<span class="n">which</span><span class="o">=</span><span class="n">fig</span><span class="o">.</span><span class="n">axis</span><span class="p">[</span><span class="s1">&#39;which&#39;</span><span class="p">][</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
+		<span class="n">which</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+		<span class="n">max_panel</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">which</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:])</span>
+		<span class="n">figures</span><span class="o">=</span><span class="p">[]</span>
+		<span class="k">if</span> <span class="n">showstudies</span><span class="p">:</span>
+			<span class="n">kwargs</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">check_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,[</span><span class="s1">&#39;theme&#39;</span><span class="p">,</span><span class="s1">&#39;up_color&#39;</span><span class="p">,</span><span class="s1">&#39;down_color&#39;</span><span class="p">],{},</span><span class="kc">False</span><span class="p">)</span>
+			<span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">study_kwargs</span><span class="p">)</span>
+			<span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">slice</span><span class="o">=</span><span class="n">_slice</span><span class="p">,</span><span class="n">resample</span><span class="o">=</span><span class="n">_resample</span><span class="p">)</span>
+			<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">studies</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+				<span class="n">study_fig</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_study_figure</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+				<span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;boll&#39;</span><span class="p">,</span><span class="s1">&#39;sma&#39;</span><span class="p">,</span><span class="s1">&#39;ema&#39;</span><span class="p">,</span><span class="s1">&#39;ptps&#39;</span><span class="p">):</span>
+					<span class="n">study_fig</span><span class="o">.</span><span class="n">move_axis</span><span class="p">(</span><span class="n">yaxis</span><span class="o">=</span><span class="s1">&#39;y2&#39;</span><span class="p">)</span>                
+				<span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;rsi&#39;</span><span class="p">,</span><span class="s1">&#39;volume&#39;</span><span class="p">,</span><span class="s1">&#39;macd&#39;</span><span class="p">,</span><span class="s1">&#39;atr&#39;</span><span class="p">,</span><span class="s1">&#39;adx&#39;</span><span class="p">,</span><span class="s1">&#39;cci&#39;</span><span class="p">,</span><span class="s1">&#39;dmi&#39;</span><span class="p">):</span>
+					<span class="n">max_panel</span><span class="o">+=</span><span class="mi">1</span>
+					<span class="n">panel_data</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
+					<span class="n">study_fig</span><span class="o">.</span><span class="n">move_axis</span><span class="p">(</span><span class="n">yaxis</span><span class="o">=</span><span class="s1">&#39;y</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_panel</span><span class="p">))</span>
+				<span class="n">figures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">study_fig</span><span class="p">)</span>
+			<span class="n">figures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+			<span class="n">fig</span><span class="o">=</span><span class="n">tools</span><span class="o">.</span><span class="n">merge_figures</span><span class="p">(</span><span class="n">figures</span><span class="p">)</span>
+			<span class="n">fig</span><span class="p">[</span><span class="s1">&#39;layout&#39;</span><span class="p">][</span><span class="s1">&#39;xaxis1&#39;</span><span class="p">][</span><span class="s1">&#39;anchor&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;y2&#39;</span>
+		<span class="n">domains</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_panel_domains</span><span class="p">(</span><span class="o">**</span><span class="n">panel_data</span><span class="p">)</span>
+		<span class="n">fig</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">domains</span><span class="p">)</span>
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rangeslider&#39;</span><span class="p">,</span><span class="kc">False</span><span class="p">):</span>
+			<span class="k">try</span><span class="p">:</span>
+				<span class="k">del</span> <span class="n">fig</span><span class="p">[</span><span class="s1">&#39;layout&#39;</span><span class="p">][</span><span class="s1">&#39;yaxis1&#39;</span><span class="p">]</span>
+			<span class="k">except</span><span class="p">:</span>
+				<span class="k">pass</span>
+		<span class="k">if</span> <span class="n">asFigure</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">fig</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">fig</span><span class="o">.</span><span class="n">iplot</span><span class="p">(</span><span class="o">**</span><span class="n">export_kwargs</span><span class="p">)</span></div>
+	
+	<span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+			<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+		
+	<span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="n">_d</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+		<span class="k">del</span> <span class="n">_d</span><span class="p">[</span><span class="s1">&#39;df&#39;</span><span class="p">]</span>
+		<span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">_d</span><span class="p">,</span><span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+		<span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Jorge Santos.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

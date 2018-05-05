@@ -1,0 +1,439 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cufflinks.datagen &#8212; Cufflinks  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cufflinks.datagen</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">string</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">.auth</span> <span class="k">import</span> <span class="n">get_config_file</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="k">import</span> <span class="n">CufflinksError</span>
+
+
+<div class="viewcode-block" id="scattergeo"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.scattergeo">[docs]</a><span class="k">def</span> <span class="nf">scattergeo</span><span class="p">():</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;../data/scattergeo.csv&#39;</span><span class="p">)</span>
+	<span class="n">df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+	<span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">]</span>
+	<span class="n">df</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;airport&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;city&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="s1">&#39;Arrivals: &#39;</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;cnt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+	<span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;cnt&#39;</span><span class="p">:</span><span class="s1">&#39;z&#39;</span><span class="p">,</span><span class="s1">&#39;long&#39;</span><span class="p">:</span><span class="s1">&#39;lon&#39;</span><span class="p">})</span>
+	<span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="choropleth"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.choropleth">[docs]</a><span class="k">def</span> <span class="nf">choropleth</span><span class="p">():</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns </span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;../data/choropleth.csv&#39;</span><span class="p">)</span>
+	<span class="n">df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+	<span class="k">del</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">]</span>
+	<span class="n">df</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">))]</span>
+	<span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="scatter3d"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.scatter3d">[docs]</a><span class="k">def</span> <span class="nf">scatter3d</span><span class="p">(</span><span class="n">n_categories</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;category&#39;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a DataFrame with the required format for </span>
+<span class="sd">	a scatter3d plot</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		n_categories : int</span>
+<span class="sd">			Number of categories </span>
+<span class="sd">		n : int</span>
+<span class="sd">			Number of points for each trace</span>
+<span class="sd">		prefix : string</span>
+<span class="sd">			Name for each trace</span>
+<span class="sd">		mode : string</span>
+<span class="sd">			Format for each item</span>
+<span class="sd">				&#39;abc&#39; for alphabet columns</span>
+<span class="sd">				&#39;stocks&#39; for random stock names</span>
+<span class="sd">	&quot;&quot;&quot;</span>
+	<span class="n">categories</span><span class="o">=</span><span class="p">[]</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_categories</span><span class="p">):</span>
+		<span class="n">categories</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">prefix</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span><span class="o">*</span><span class="n">n</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">),</span>
+						 <span class="s1">&#39;y&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">),</span>
+						 <span class="s1">&#39;z&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">),</span>
+						 <span class="s1">&#39;text&#39;</span><span class="p">:</span><span class="n">getName</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">),</span>
+						 <span class="s1">&#39;categories&#39;</span><span class="p">:</span><span class="n">categories</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="bubble3d"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.bubble3d">[docs]</a><span class="k">def</span> <span class="nf">bubble3d</span><span class="p">(</span><span class="n">n_categories</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;category&#39;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a DataFrame with the required format for </span>
+<span class="sd">	a bubble3d plot</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		n_categories : int</span>
+<span class="sd">			Number of categories </span>
+<span class="sd">		n : int</span>
+<span class="sd">			Number of points for each trace</span>
+<span class="sd">		prefix : string</span>
+<span class="sd">			Name for each trace</span>
+<span class="sd">		mode : string</span>
+<span class="sd">			Format for each item</span>
+<span class="sd">				&#39;abc&#39; for alphabet columns</span>
+<span class="sd">				&#39;stocks&#39; for random stock names</span>
+<span class="sd">	&quot;&quot;&quot;</span>	
+	<span class="n">categories</span><span class="o">=</span><span class="p">[]</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_categories</span><span class="p">):</span>
+		<span class="n">categories</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">prefix</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span><span class="o">*</span><span class="n">n</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">),</span>
+						 <span class="s1">&#39;y&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">),</span>
+						 <span class="s1">&#39;z&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">),</span>
+						 <span class="s1">&#39;size&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">),</span>
+						 <span class="s1">&#39;text&#39;</span><span class="p">:</span><span class="n">getName</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">),</span>
+						 <span class="s1">&#39;categories&#39;</span><span class="p">:</span><span class="n">categories</span><span class="p">})</span> </div>
+
+<div class="viewcode-block" id="bubble"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.bubble">[docs]</a><span class="k">def</span> <span class="nf">bubble</span><span class="p">(</span><span class="n">n_categories</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;category&#39;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a DataFrame with the required format for </span>
+<span class="sd">	a bubble plot</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		n_categories : int</span>
+<span class="sd">			Number of categories </span>
+<span class="sd">		n : int</span>
+<span class="sd">			Number of points for each category</span>
+<span class="sd">		prefix : string</span>
+<span class="sd">			Name for each category</span>
+<span class="sd">		mode : string</span>
+<span class="sd">			Format for each item</span>
+<span class="sd">				&#39;abc&#39; for alphabet columns</span>
+<span class="sd">				&#39;stocks&#39; for random stock names</span>
+<span class="sd">	&quot;&quot;&quot;</span>	
+	<span class="n">categories</span><span class="o">=</span><span class="p">[]</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_categories</span><span class="p">):</span>
+		<span class="n">categories</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">prefix</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span><span class="o">*</span><span class="n">n</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">),</span>
+						 <span class="s1">&#39;y&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">),</span>
+						 <span class="s1">&#39;size&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">),</span>
+						 <span class="s1">&#39;text&#39;</span><span class="p">:</span><span class="n">getName</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">),</span>
+						 <span class="s1">&#39;categories&#39;</span><span class="p">:</span><span class="n">categories</span><span class="p">})</span> </div>
+
+<div class="viewcode-block" id="pie"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.pie">[docs]</a><span class="k">def</span> <span class="nf">pie</span><span class="p">(</span><span class="n">n_labels</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a DataFrame with the required format for </span>
+<span class="sd">	a pie plot</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		n_labels : int</span>
+<span class="sd">			Number of labels </span>
+<span class="sd">		mode : string</span>
+<span class="sd">			Format for each item</span>
+<span class="sd">				&#39;abc&#39; for alphabet columns</span>
+<span class="sd">				&#39;stocks&#39; for random stock names</span>
+<span class="sd">	&quot;&quot;&quot;</span>	
+	<span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;values&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="n">n_labels</span><span class="p">),</span>
+						 <span class="s1">&#39;labels&#39;</span><span class="p">:</span><span class="n">getName</span><span class="p">(</span><span class="n">n_labels</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)})</span>                               </div>
+
+<div class="viewcode-block" id="scatter"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.scatter">[docs]</a><span class="k">def</span> <span class="nf">scatter</span><span class="p">(</span><span class="n">n_categories</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;category&#39;</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a DataFrame with the required format for </span>
+<span class="sd">	a scatter plot</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		n_categories : int</span>
+<span class="sd">			Number of categories </span>
+<span class="sd">		n : int</span>
+<span class="sd">			Number of points for each category</span>
+<span class="sd">		prefix : string</span>
+<span class="sd">			Name for each category</span>
+<span class="sd">		mode : string</span>
+<span class="sd">			Format for each item</span>
+<span class="sd">				&#39;abc&#39; for alphabet columns</span>
+<span class="sd">				&#39;stocks&#39; for random stock names</span>
+<span class="sd">	&quot;&quot;&quot;</span>	
+	<span class="n">categories</span><span class="o">=</span><span class="p">[]</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_categories</span><span class="p">):</span>
+		<span class="n">categories</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">prefix</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span><span class="o">*</span><span class="n">n</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">),</span>
+						 <span class="s1">&#39;y&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">),</span>
+						 <span class="s1">&#39;text&#39;</span><span class="p">:</span><span class="n">getName</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n_categories</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">),</span>
+						 <span class="s1">&#39;categories&#39;</span><span class="p">:</span><span class="n">categories</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="heatmap"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.heatmap">[docs]</a><span class="k">def</span> <span class="nf">heatmap</span><span class="p">(</span><span class="n">n_x</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">n_y</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a DataFrame with the required format for </span>
+<span class="sd">	a heatmap plot</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		n_x : int</span>
+<span class="sd">			Number of x categories</span>
+<span class="sd">		n_y : int</span>
+<span class="sd">			Number of y categories</span>
+<span class="sd">	&quot;&quot;&quot;</span>	
+	<span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_x</span><span class="p">)]</span>
+	<span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;y_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">_</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_y</span><span class="p">)]</span>
+	<span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">surface</span><span class="p">(</span><span class="n">n_x</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">n_y</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="n">x</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="lines"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.lines">[docs]</a><span class="k">def</span> <span class="nf">lines</span><span class="p">(</span><span class="n">n_traces</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">dateIndex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a DataFrame with the required format for </span>
+<span class="sd">	a scatter (lines) plot</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		n_traces : int</span>
+<span class="sd">			Number of traces </span>
+<span class="sd">		n : int</span>
+<span class="sd">			Number of points for each trace</span>
+<span class="sd">		columns : [str]</span>
+<span class="sd">			List of column names</span>
+<span class="sd">		dateIndex : bool</span>
+<span class="sd">			If True it will return a datetime index</span>
+<span class="sd">			if False it will return a enumerated index</span>
+<span class="sd">		mode : string</span>
+<span class="sd">			Format for each item</span>
+<span class="sd">				&#39;abc&#39; for alphabet columns</span>
+<span class="sd">				&#39;stocks&#39; for random stock names</span>
+<span class="sd">	&quot;&quot;&quot;</span>	
+	<span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s1">&#39;1/1/15&#39;</span><span class="p">,</span><span class="n">periods</span><span class="o">=</span><span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">dateIndex</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+	<span class="n">df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">n_traces</span><span class="p">),</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+		<span class="n">columns</span><span class="o">=</span><span class="n">getName</span><span class="p">(</span><span class="n">n_traces</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">))</span>
+	<span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>  </div>
+
+<div class="viewcode-block" id="bars"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.bars">[docs]</a><span class="k">def</span> <span class="nf">bars</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">n_categories</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;category&#39;</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;abc&#39;</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a DataFrame with the required format for </span>
+<span class="sd">	a bar plot</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		n : int</span>
+<span class="sd">			Number of points for each trace</span>
+<span class="sd">		n_categories : int</span>
+<span class="sd">			Number of categories for each point</span>
+<span class="sd">		prefix : string</span>
+<span class="sd">			Name for each category</span>
+<span class="sd">		columns : [str]</span>
+<span class="sd">			List of column names</span>
+<span class="sd">		mode : string</span>
+<span class="sd">			Format for each item</span>
+<span class="sd">				&#39;abc&#39; for alphabet columns</span>
+<span class="sd">				&#39;stocks&#39; for random stock names</span>
+<span class="sd">	&quot;&quot;&quot;</span>		
+	<span class="n">categories</span><span class="o">=</span><span class="p">[]</span>
+	<span class="k">if</span> <span class="ow">not</span> <span class="n">columns</span><span class="p">:</span>
+		<span class="n">columns</span><span class="o">=</span><span class="n">getName</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_categories</span><span class="p">):</span>
+		<span class="n">categories</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">prefix</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)])</span>
+	<span class="n">data</span><span class="o">=</span><span class="nb">dict</span><span class="p">([(</span><span class="n">x</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="n">n_categories</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">])</span>
+	<span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="n">categories</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ohlc"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.ohlc">[docs]</a><span class="k">def</span> <span class="nf">ohlc</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a DataFrame with the required format for </span>
+<span class="sd">	a candlestick or ohlc plot</span>
+<span class="sd">	df[[&#39;open&#39;,&#39;high&#39;,&#39;low&#39;,&#39;close&#39;]]</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		n : int</span>
+<span class="sd">			Number of ohlc points</span>
+<span class="sd">		</span>
+<span class="sd">	&quot;&quot;&quot;</span>	
+	<span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s1">&#39;1/1/15&#39;</span><span class="p">,</span><span class="n">periods</span><span class="o">=</span><span class="n">n</span><span class="o">*</span><span class="mi">288</span><span class="p">,</span><span class="n">freq</span><span class="o">=</span><span class="s1">&#39;5min&#39;</span><span class="p">,</span><span class="n">tz</span><span class="o">=</span><span class="s1">&#39;utc&#39;</span><span class="p">)</span>
+	<span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="mi">288</span><span class="p">)</span>
+	<span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">100</span><span class="p">])</span>
+	<span class="n">df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+		<span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
+	<span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>  
+	<span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s1">&#39;1d&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">ohlc</span><span class="p">()</span>
+	<span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span>
+	<span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ohlcv"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.ohlcv">[docs]</a><span class="k">def</span> <span class="nf">ohlcv</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a DataFrame with the required format for </span>
+<span class="sd">	a candlestick or ohlc plot</span>
+<span class="sd">	df[[&#39;open&#39;,&#39;high&#39;,&#39;low&#39;,&#39;close&#39;,&#39;volume&#39;]</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		n : int</span>
+<span class="sd">			Number of ohlc points</span>
+<span class="sd">		</span>
+<span class="sd">	&quot;&quot;&quot;</span>	
+	<span class="n">df</span><span class="o">=</span><span class="n">ohlc</span><span class="p">()</span>
+	<span class="n">df</span><span class="p">[</span><span class="s1">&#39;volume&#39;</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">))]</span>
+	<span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="box"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.box">[docs]</a><span class="k">def</span> <span class="nf">box</span><span class="p">(</span><span class="n">n_traces</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a DataFrame with the required format for </span>
+<span class="sd">	a box plot</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		n_traces : int</span>
+<span class="sd">			Number of traces </span>
+<span class="sd">		n : int</span>
+<span class="sd">			Number of points for each trace</span>
+<span class="sd">		mode : string</span>
+<span class="sd">			Format for each item</span>
+<span class="sd">				&#39;abc&#39; for alphabet columns</span>
+<span class="sd">				&#39;stocks&#39; for random stock names</span>
+<span class="sd">	&quot;&quot;&quot;</span>	
+	<span class="n">df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">chisquare</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span><span class="n">n_traces</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)],</span>
+		<span class="n">columns</span><span class="o">=</span><span class="n">getName</span><span class="p">(</span><span class="n">n_traces</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">))</span>
+	<span class="k">return</span> <span class="n">df</span>       </div>
+
+<div class="viewcode-block" id="histogram"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.histogram">[docs]</a><span class="k">def</span> <span class="nf">histogram</span><span class="p">(</span><span class="n">n_traces</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a DataFrame with the required format for </span>
+<span class="sd">	a box plot</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		n_traces : int</span>
+<span class="sd">			Number of traces </span>
+<span class="sd">		n : int</span>
+<span class="sd">			Number of points for each trace</span>
+<span class="sd">		mode : string</span>
+<span class="sd">			Format for each item</span>
+<span class="sd">				&#39;abc&#39; for alphabet columns</span>
+<span class="sd">				&#39;stocks&#39; for random stock names</span>
+<span class="sd">	&quot;&quot;&quot;</span>	
+	<span class="n">df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">n_traces</span><span class="p">)</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_traces</span><span class="p">),</span>
+		<span class="n">columns</span><span class="o">=</span><span class="n">getName</span><span class="p">(</span><span class="n">n_traces</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">))</span>                     
+	<span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="surface"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.surface">[docs]</a><span class="k">def</span> <span class="nf">surface</span><span class="p">(</span><span class="n">n_x</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">n_y</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a DataFrame with the required format for </span>
+<span class="sd">	a surface plot</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		n_x : int</span>
+<span class="sd">			Number of points along the X axis</span>
+<span class="sd">		n_y : int</span>
+<span class="sd">			Number of points along the Y axis</span>
+<span class="sd">	&quot;&quot;&quot;</span>	
+	<span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">))]</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_x</span><span class="p">):</span>
+		<span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+	<span class="n">df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_y</span><span class="p">):</span>
+		<span class="n">df</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+	<span class="k">return</span> <span class="n">df</span>	</div>
+
+<div class="viewcode-block" id="sinwave"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.sinwave">[docs]</a><span class="k">def</span> <span class="nf">sinwave</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">inc</span><span class="o">=.</span><span class="mi">25</span><span class="p">):</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	Returns a DataFrame with the required format for </span>
+<span class="sd">	a surface (sine wave) plot</span>
+
+<span class="sd">	Parameters:</span>
+<span class="sd">	-----------</span>
+<span class="sd">		n : int</span>
+<span class="sd">			Ranges for X and Y axis (-n,n)</span>
+<span class="sd">		n_y : int</span>
+<span class="sd">			Size of increment along the axis</span>
+<span class="sd">	&quot;&quot;&quot;</span>	
+	<span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">inc</span><span class="p">)</span>
+	<span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">inc</span><span class="p">)</span>
+	<span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+	<span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">X</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">Y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+	<span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">R</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="o">*</span><span class="n">R</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="n">x</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="n">y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="getName"><a class="viewcode-back" href="../../cufflinks.datagen.html#cufflinks.datagen.getName">[docs]</a><span class="k">def</span> <span class="nf">getName</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">exchange</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;abc&#39;</span><span class="p">):</span>
+	<span class="k">if</span> <span class="n">columns</span><span class="p">:</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
+			<span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span>
+		<span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">):</span>
+			<span class="k">raise</span> <span class="n">CufflinksError</span><span class="p">(</span><span class="s2">&quot;Length of column names needs to be the </span><span class="se">\n</span><span class="s2">&quot;</span>
+				  <span class="s2">&quot;same length of traces&quot;</span><span class="p">)</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">mode</span><span class="o">=</span><span class="n">get_config_file</span><span class="p">()[</span><span class="s1">&#39;datagen_mode&#39;</span><span class="p">]</span>
+		<span class="k">if</span> <span class="n">mode</span><span class="o">==</span><span class="s1">&#39;abc&#39;</span><span class="p">:</span>
+			<span class="n">columns</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span><span class="p">[:</span><span class="n">n</span><span class="p">])</span>
+		<span class="k">elif</span> <span class="n">mode</span><span class="o">==</span><span class="s1">&#39;stocks&#39;</span><span class="p">:</span>
+			<span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_uppercase</span><span class="p">),</span><span class="n">name</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_uppercase</span><span class="p">),</span><span class="n">exchange</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">raise</span> <span class="n">CufflinksError</span><span class="p">(</span><span class="s2">&quot;Unknown mode: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+	<span class="k">return</span> <span class="n">columns</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Jorge Santos.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
