@@ -1,0 +1,864 @@
+{
+    "figures" : {
+        "scatter" : {
+            "description" : "Scatter or line chart",
+            "aka" : ["lines","line"],   
+            "examples" : [
+                "cf.datagen.lines(1).iplot(kind='scatter')",
+                "cf.datagen.scatter().iplot(kind='scatter',x='x',y='y',categories='categories',mode='markers')"
+            ]
+        },
+        "bar" : {
+            "description" : "Bar Chart",
+            "aka" : ["bars","column"]
+        },
+        "histogram" : {
+            "description" : "Histogram",
+            "aka" : ["hist"],
+            "examples" : [
+                "cf.datagen.histogram(2).iplot(kind='hist',opacity=.5)"
+            ]
+        },
+        "box" : {
+            "description" : "Box",
+            "aka" : [],
+            "examples" : [
+                "cf.datagen.box().iplot(kind='box',boxpoints='all')"
+            ]
+        },
+        "spread" : {
+            "description" : "Spread",
+            "aka" : [],
+            "examples" : []
+        },
+        "ratio" : {
+            "description" : "Ratio",
+            "aka" : [],
+            "examples" : []
+        },
+        "heatmap" : {
+            "description" : "Heatmap",
+            "aka" : [],
+            "examples" : []
+        },
+        "bubble" : {
+            "description" : "Bubble",
+            "aka" : [],
+            "examples" : [
+                "cf.datagen.bubble().iplot(kind='bubble',categories='categories',size='size',text='text',x='x',y='y')"
+            ]
+        },
+        "bubble3d" : {
+            "description" : "Bubble3d",
+            "aka" : [],
+            "examples" : []
+        },
+        "scatter3d" : {
+            "description" : "scatter3d",
+            "aka" : [],
+            "examples" : []
+        },
+        "scattergeo" : {
+            "description" : "scattergeo",
+            "aka" : [],
+            "examples" : []
+        },
+        "ohlc" : {
+            "description" : "ohlc",
+            "aka" : [],
+            "examples" : []
+        },
+        "candle" : {
+            "description" : "candle",
+            "aka" : [],
+            "examples" : []
+        },
+        "pie" : {
+            "description" : "Pie Chart",
+            "aka" : [],
+            "examples" : [
+                "cf.datagen.pie().iplot(kind='pie',labels='labels',values='values')",
+                "cf.datagen.pie().iplot(kind='pie',labels='labels',values='values',linecolor='white',hole=.1,width=2,pull=.05)"
+            ]
+        },
+        "choroplet" : {
+            "description" : "choroplet",
+            "aka" : [],
+            "examples" : []
+        }
+    },
+    "parameters" : 
+        {
+            "asFigure" : {
+                "applies" : ["all"],
+                "description" : ["If True then it returns a Plotly Figure"],
+                "group" : "exports",
+                "exceptions" : [],
+                "type" : "bool"
+            },
+            "asImage" : {
+                "applies" : ["all"],
+                "description" : ["If True then it returns an image (PNG)",
+                                 "While in ONLINE mode:",
+                                 "Image file is saved in the working directory",
+                                 "\tAccepts:",
+                                 "\t\tfilename",
+                                 "\t\tdimensions",
+                                 "\t\tscale",
+                                 "\t\tdisplay_image",
+                                 "While in OFFLINE mode:",
+                                 "Image file is downloaded (downloads folder) and a ",
+                                 "regular plotly chart is displayed in Jupyter",
+                                 "\tAccepts:",
+                                "\t\tfilename",
+                                 "\t\tdimensions"],
+                "group" : "exports",
+                "exceptions" : [],
+                "type" : "bool"
+            },
+            "asPlot" : {
+                "applies" : ["all"],
+                "description" : ["If True then the chart opens in a browser"],
+                "group" : "exports",
+                "exceptions" : [],
+                "type" : "bool"
+            },
+            "asURL" : {
+                "applies" : ["all"],
+                "description" : ["If True the chart url/path is returned.",
+                                 "No chart is displayed. ",
+                                 "\tIf ONLINE : The URL is returned",
+                                 "\tIf OFFLINE : the local path is returned"],
+                "group" : "exports",
+                "exceptions" : [],
+                "type" : "bool"
+            },
+            "data" : {
+                "applies" : ["all"],
+                "description" : "Plotly Figure",
+                "type" : "figure",
+                "exceptions" : []
+            },
+            "dimensions" : {
+                "applies" : ["all"],
+                "description" : ["Dimensions for image/chart",
+                                 "\t(width,height)"],
+                "exceptions" : [],
+                "group" :"layout",
+                "type" : "tuple "
+            },
+            "layout" : {
+                "applies" : ["all"],
+                "description" : "Plotly Layout",
+                "type" : "Layout",
+                "exceptions" : []
+            },
+            "keys" : {
+                "applies" : ["figure"],
+                "description" : ["List of colums to chart",
+                                 "Can also be used for custom sorting"],
+                "type" : "list",
+                "exceptions" : []
+            },
+            "filename" : {
+                "applies" : ["all"],
+                "description" : "Filename to be saved as",
+                "exceptions" : [],
+                "type" : "string",
+                "group" : "exports"
+            },
+            "bestfit" : {
+                "applies" : ["scatter"],
+                "description" : ["Displays a best fit line",
+                                 "If list, then a best fit line will be generated",
+                                 "for each trace key in the list"],
+                "exceptions" : [],
+                "type" : "bool or list"
+            },
+            "bestfit_colors" : {
+                "applies" : ["scatter"],
+                "description" : ["Sets the color for each best fit line",
+                                 "\t{key:color} to set the color for each trace",
+                                 "\t[color1, color2...] to set the colors in the specified order"],
+                "exceptions" : [],
+                "type" : "dict or list"
+            },
+            "categories" : {
+                "applies" : ["scatter","bar","bubble","bubble3d","scatter3d"],
+                "description" : ["Name of the column that contains the categories"],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "sharing" : {
+                "applies" : ["all"],
+                "description" : ["Sets the sharing level permission",
+                                 "\tpublic - anyone can see the chart",
+                                 "\tprivate - only you can see this chart",
+                                 "\tsecret - only people with the link can see the chart"],
+                "exceptions" : [],
+                "type" : "string",
+                "group" : "exports"
+            },
+            "x" : {
+                "applies" : ["scatter","bubble","bubble3d","scatter3d"],
+                "description" : ["Name of the column that contains the x axis value"],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "y" : {
+                "applies" : ["scatter","bubble","bubble3d","scatter3d"],
+                "description" : ["Name of the column that contains the y axis value"],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "z" : {
+                "applies" : ["bubble3d","scatter3d"],
+                "description" : ["Name of the column that contains the z axis value"],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "title" : {
+                "applies" : ["all"],
+                "description" : "Chart title",
+                "exceptions" : [],
+                "type" : "string",
+                "group" : "layout"
+            },
+            "xTitle" : {
+                "applies" : ["all"],
+                "description" : "X Axis Title",
+                "exceptions" : [],
+                "type" : "string",
+                "group" : "layout"
+            },
+            "yTitle" : {
+                "applies" : ["all"],
+                "description" : "Y Axis Title",
+                "exceptions" : [],
+                "type" : "string",
+                "group" : "layout"
+            },
+            "zTitle" : {
+                "applies" : ["bubble3d","scatter3d"],
+                "description" : "Y Axis Title",
+                "exceptions" : [],
+                "type" : "string",
+                "group" : "layout"
+            },
+            "theme" : {
+                "applies" : ["all"],
+                "description" : ["Layout theme",
+                                 "\tsolar",
+                                 "\tpearl",
+                                 "\twhite",
+                                 "see cufflinks.getThemes() for all available themes"
+                                ],
+                "exceptions" : [],
+                "type" : "string",
+                "group" : "layout"
+            },
+            "colors" : {
+                "applies" : ["all"],
+                "description" : ["Trace color",
+                        "\tstring : applies to all traces",
+                        "\tlist : applies to each trace in the order specified",
+                        "\tdict : {column:value} for each column in the dataframe",
+                        "values",
+                        "\tcolorname : see cufflinks.colors.cnames",
+                        "\thex : '#ffffff'",
+                        "\trgb : 'rgb(23,50,23)'",
+                        "\trgba : 'rgba(23,50,23,.5)"],
+                "exceptions" : [],
+                "type" : "dict, list or string"
+            },
+            "colorscale" : {
+                "applies" : ["all"],
+                "description" : ["Color scale name",
+                                 "If the color is preceded by a minus (-)",
+                                 "then the scale is inversed.",
+                                 "Only valid if 'colors' is null.",
+                                 "see cufflinks.colors.scales() for all available scales"
+                                ],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "fill" : {
+                "applies" : ["scatter","spread","ratio"],
+                "description" : "Fills the trace (area)",
+                "exceptions" : [],
+                "type" : "bool"
+            },
+            "width" : {
+                "applies" : ["all"],
+                "description" : ["Line width",
+                                 "\tint : applies to all traces",
+                                 "\tlist : applies to each trace in the order specified",
+                                 "\tdict : {column:value} for each column in the dataframe"],
+                "exceptions" : [],
+                "type" : "int, list or dict"
+            },
+            "dash" : {
+                "applies" : ["scatter","spread","ratio"],
+                "description" : ["Line style",
+                                 "\tstring : applies to all traces",
+                                 "\tlist : applies to each trace in the order specified",
+                                 "\tdict : {column:value} for each column in the dataframe",
+                                 "values    :",
+                                 "\tsolid",
+                                 "\tdash",
+                                 "\tdashdot",
+                                 "\tdot"],
+                "exceptions" : [],
+                "type" : "string, list or dict"
+            },
+            "mode" : {
+                "applies" : ["scatter"],
+                "description" : ["Line mode",
+                                 "\tstring : applies to all traces",
+                                 "\tlist : applies to each trace in the order specified",
+                                 "\tdict : {column:value} for each column in the dataframe",
+                                 "values    :",
+                                 "\tlines",
+                                 "\tmarkers",
+                                 "\tlines+text",
+                                 "\tmarkers+text",
+                                 "\tlines+markers+text"],
+                "exceptions" : [],
+                "type" : "string, list or dict"
+            },
+            "interpolation" : {
+                "applies" : ["scatter"],
+                "description" : ["Interpolation over missing empty line points",
+                                 "\tstring : applies to all traces",
+                                 "\tlist : applies to each trace in the order specified",
+                                 "\tdict : {column:value} for each column in the dataframe",
+                                 "values",
+                                 "\tlinear",
+                                 "\tspline",
+                                 "\tvhv",
+                                 "\thvh",
+                                 "\tvh",
+                                 "\thv"],
+                "exceptions" : [],
+                "type" : "string, list or dict"
+            },
+            "symbol" : {
+                "applies" : ["scatter"],
+                "description" : ["Symbol used when mode='markers'",
+                                 "\tstring : applies to all traces",
+                                 "\tlist : applies to each trace in the order specified",
+                                 "\tdict : {column:value} for each column in the dataframe",
+                                 "values",
+                                 "\tdot",
+                                 "\tcross",
+                                 "\tdiamond",
+                                 "\tsquare",
+                                 "\ttriangle-down",
+                                 "\ttriangle-left",
+                                 "\ttriangle-right",
+                                 "\ttriangle-up"
+                                ],
+                "exceptions" : [],
+                "type" : "string, list or dict"
+            },
+            "size" : {
+                "applies" : ["scatter"],
+                "description" : ["Size of symbol when mode='markers'"],
+                "exceptions" : [],
+                "type" : "int"
+            },
+            "barmode" : {
+                "applies" : ["bar"],
+                "description" : ["Bar mode",
+                                 "\tgroup",
+                                 "\tstack",
+                                 "\toverlay"],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "sortbars" : {
+                "applies" : ["bar"],
+                "description" : ["Sort bars in descending order"],
+                "exceptions" : [],
+                "type" : "bool"
+            },
+            "bargap" : {
+                "applies" : ["bar","histogram"],
+                "description" : ["Sets the gap between bars",
+                                 "\t[0,1)"],
+                "exceptions" : [],
+                "type" : "float"
+            },
+            "bargroupgap" : {
+                "applies" : ["bar","histogram"],
+                "description" : ["Sets the gap between groups",
+                                 "\t[0,1)"],
+                "exceptions" : [],
+                "type" : "float"
+            },
+            "bins" : {
+                "applies" : ["histogram"],
+                "description" : ["Number of histogram bins",
+                                 "\tint : number of bins",
+                                 "\ttuple : (start, end, size)"],
+                "exceptions" : [],
+                "type" : "int or tuple"
+            },
+            "histnorm" : {
+                "applies" : ["histogram"],
+                "description" : ["Sets the type of normalization for an histogram trace.",
+                                 "\t'' (frequency)",
+                                 "\tprobability",
+                                 "\tdensity",
+                                 "\tprobability density",
+                                 "By default the height of each bar displays the frequency",
+                                 "of occurrence, i.e., the number of times this value was found",
+                                 "in the corresponding bin. If set to 'percent', the height of ",
+                                 "each bar displays the percentage of total occurrences found ",
+                                 "within the corresponding bin. If set to 'probability', the height",
+                                 "of each bar displays the probability that an event will fall into",
+                                 "the corresponding bin. If set to 'density', the height of each bar is",
+                                 "equal to the number of occurrences in a bin divided by the size of",
+                                 "the bin interval such that summing the area of all bins will yield",
+                                 "the total number of occurrences. If set to 'probability density',",
+                                 "the height of each bar is equal to the number of probability that an",
+                                 "event will fall into the corresponding bin divided by the size of",
+                                 "the bin interval such that summing the area of all bins will yield 1"
+                                 ],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "histfunc" : {
+                "applies" : ["histogram"],
+                "description" : ["Sets the binning function used for an histogram trace.",
+                                 "\tcount",
+                                 "\tsum",
+                                 "\tavg",
+                                 "\tmin",
+                                 "\tmax"],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "orientation" : {
+                "applies" : ["histogram","bar","box"],
+                "description" : ["Sets the orientation of the bars.",
+                                 "\th",
+                                 "\tv"],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "annotations" : {
+                "applies" : ["all"],
+                "description" : ["Dictionary of annotations",
+                                 "\t{x_point : text}"],
+                "exceptions" : [],
+                "type" : "dict",
+                "group" : "layout"
+            },
+            "boxpoints" : {
+                "applies" : ["box"],
+                "description" : ["Displays data points in a box plot",
+                                 "\toutliers",
+                                 "\tall",
+                                 "\tsuspectedoutliers",
+                                 "\tFalse"],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "length" : {
+                "applies" : ["all"],
+                "description" : "width description goes here",
+                "type" : "int",
+                "exceptions" : [
+                    { "bar" : "description that applies to bar"},
+                    { "histogram" : "description that applies to hist"}
+                ]
+            },
+            "hline" : {
+                "applies" : ["all"],
+                "description" : ["Draws a horizontal line at the indicated 'y'",
+                                 "position(s).",
+                                 "Extra parameters can be passed in the form of a",
+                                 "dictionary (see 'shapes')",
+                                 "\thline=4",
+                                 "\thline=[2,10]",
+                                 "\thline=[{'y':2,'color':'blue'},{'y':3,'color':'red'}]"],
+                "exceptions" : [],
+                "group" : "shapes",
+                "type" : "float, list or dict"
+            },
+            "hspan" : {
+                "applies" : ["all"],
+                "description" : ["Draws a horizontal rectangle at the indicated",
+                                 "(y0,y1) positions.",
+                                 "Extra parameters can be passed in the form of a",
+                                 "dictionary (see 'shapes')",
+                                 "\thspan=(1,5)",
+                                 "\thspan=[(1,4),(6,10)]",
+                                 "\thspan=[{'y0':2,'y1':5,'color':'blue','fill':True,'opacity':.4}]"],
+                "exceptions" : [],
+                "group" : "shapes",
+                "type" : "tuple, list or dict"
+            },
+            "center_scale" : {
+                "applies" : ["heatmap","surface"],
+                "description" : ["Centers the colorscale at a specific value",
+                                 "Automatically sets the (zmin,zmax) values"],
+                "exceptions" : [],
+                "type" : "float"
+            },
+            "connectgaps" : {
+                "applies" : ["scatter"],
+                "description" : "If True, then empty values are connected",
+                "exceptions" : [],
+                "type" : "bool"
+            },
+            "error_trace" : {
+                "applies" : ["bar","scatter"],
+                "description" : ["Name of the DataFrame column for which error",
+                                 "should be plotted. If omitted then errors apply to all traces."],
+                "exceptions" : [],
+                "group" : "Error Bars",
+                "type" : "string"
+            },
+            "error_values_minus" : {
+                "applies" : ["bar","scatter"],
+                "description" : ["Values corresponding to the span of the error bars", 
+                                 "below the trace coordinate"],
+                "exceptions" : [],
+                "group" : "Error Bars",
+                "type" : "int, float or list"
+            },
+            "error_color" : {
+                "applies" : ["bar","scatter"],
+                "description" : ["Color for error bars"],
+                "exceptions" : [],
+                "group" : "Error Bars",
+                "type" : "string"
+            },
+            "error_thickness" : {
+                "applies" : ["bar","scatter"],
+                "description" : ["Sets the line thickness of the error bars"],
+                "exceptions" : [],
+                "group" : "Error Bars",
+                "type" : "float"
+            },
+            "error_opacity" : {
+                "applies" : ["bar","scatter"],
+                "description" : ["Color opacity for the error bars"],
+                "exceptions" : [],
+                "group" : "Error Bars",
+                "type" : "float [0,1]"
+            },
+            "error_x" : {
+                "applies" : ["bar","scatter"],
+                "description" : ["Error values for the x axis"],
+                "exceptions" : [],
+                "group" : "Error Bars",
+                "type" : "int, float or list"
+            },
+            "error_y" : {
+                "applies" : ["bar","scatter"],
+                "description" : ["Error values for the y axis"],
+                "exceptions" : [],
+                "group" : "Error Bars",
+                "type" : "int, float or list"
+            },
+            "error_type" : {
+                "applies" : ["bar","scatter"],
+                "description" : ["Type of error bars",
+                                 "\tdata",
+                                 "\tconstant",
+                                 "\tpercent",
+                                 "\tsqrt",
+                                 "\tcontinuous",
+                                 "\tcontinuous_percent"],
+                "exceptions" : [],
+                "group" : "Error Bars",
+                "type" : "string"
+            },
+            "error_width" : {
+                "applies" : ["bar","scatter"],
+                "description" : ["Sets the width (in pixels) of the cross-bar at both",
+                                "ends of the error bars"],
+                "exceptions" : [],
+                "group" : "Error Bars",
+                "type" : "int or float"
+            },
+            "gridcolor" : {
+                "applies" : ["all"],
+                "description" : ["Sets the grid color",
+                                "\tcolorname : see cufflinks.colors.cnames",
+                                "\thex : '#ffffff'",
+                                "\trgb : 'rgb(23,50,23)'",
+                                "\trgba : 'rgba(23,50,23,.5)"],
+                "exceptions" : [],
+                "group" : "layout",
+                "type" : "string"
+            },
+            "hole" : {
+                "applies" : ["pie"],
+                "description" : ["Sets the size of the inner hole"],
+                "exceptions" : [],
+                "type" : "float [0-1]"
+            },
+            "horizontal_spacing" : {
+                "applies" : ["all"],
+                "description" : ["Space between subplot columns"],
+                "exceptions" : [],
+                "group" : "subplots",
+                "type" : "float [0-1]"
+            },
+            "labels" : {
+                "applies" : ["pie"],
+                "description" : ["Name of the column containing the lables"],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "layout_update" : {
+                "applies" : ["all"],
+                "description" : ["The Layout will be explicitly modified",
+                                 "with the values stated in the dictionary.",
+                                 "Not valid when Layout is passed as a parameter"],
+                "exceptions" : [],
+                "group" :"layout",
+                "position" :"-1",
+                "type" : "dict"
+            },
+            "linecolor" : {
+                "applies" : ["pie","histogram"],
+                "description" : ["Sets the color for the contour line of the slices"],
+                "exceptions" : {
+                    "histogram":"Sets the color for the contour line of the bars"
+                },
+                "type" : "string"
+            },
+            "linewidth" : {
+                "applies" : ["pie"],
+                "description" : ["Sets the width for the contour line of the slices"],
+                "exceptions" : {},
+                "type" : "float"
+            },
+            "margin" : {
+                "applies" : ["all"],
+                "description" : ["Sets the margin dimensions",
+                                "\t{'l':low,'r':right,'b':bottom,'t':top}",
+                                "\t(low,right,bottom,top)"],
+                "exceptions" : [],
+                "group" : "layout",
+                "type" : "dict or tuple"
+            },
+            "online" : {
+                "applies" : ["all"],
+                "description" : ["If True then the chart/image is rendered on the server",
+                                "even when running in Offline mode"],
+                "exceptions" : [],
+                "group" : "exports",
+                "type" : "bool"
+            },
+            "pull" : {
+                "applies" : ["pie"],
+                "description" : ["Pulls the slices from the centre"],
+                "exceptions" : [],
+                "type" : "float [0-1]"
+            },
+            "secondary_y" : {
+                "applies" : ["scatter","ratio","spread","histogram","box",
+                                "bar","bubble"],
+                "description" : ["Name of the column(s) to be charted on",
+                                "the secondary axis"],
+                "exceptions" : [],
+                "group" : "layout",
+                "type" : "string"
+            },
+            "secondary_y_title" : {
+                "applies" : ["scatter","ratio","spread","histogram","box",
+                                "bar","bubble"],
+                "description" : ["Sets the title of the secondary axis"],
+                "exceptions" : [],
+                "group" : "layout",
+                "type" : "string"
+            },
+            "shape" : {
+                "applies" : ["all"],
+                "description" : ["Indicates the size of rows and columns.",
+                                 "If ommitted, then the shape is automatically set",
+                                 "* Only valid if subplots=True",
+                                 "\t(rows,columns)"],
+                "exceptions" : [],
+                "group" : "subplots",
+                "type" : "(int,int)"
+            },
+            "shapes" : {
+                "applies" : ["all"],
+                "description" : ["List of dictionaries with the specification",
+                                 "of a given shape.",
+                                 "For more information",
+                                 "see help(cufflinks.tools.get_shape)"],
+                "exceptions" : [],
+                "group" : "shapes",
+                "position" : "-1",
+                "type" : "list or dict"
+            },
+            "shared_xaxes" : {
+                "applies" : ["all"],
+                "description" : ["If True, subplots in the same grid column have one common",
+                                 "shared x-axis at the bottom of the grid."],
+                "exceptions" : [],
+                "group" : "subplots",
+                "type" : "bool"
+            },
+            "shared_yaxes" : {
+                "applies" : ["all"],
+                "description" : ["If True, subplots in the same grid row have one common",
+                                 "shared y-axis at the left of the grid."],
+                "exceptions" : [],
+                "group" : "subplots",
+                "type" : "bool"
+            },
+            "sort" : {
+                "applies" : ["pie"],
+                "description" : ["If True it sorts the labels by value"],
+                "exceptions" : [],
+                "type" : "bool"
+            },
+            "subplots" : {
+                "applies" : ["all"],
+                "description" : ["If True then each trace is placed in a subplot"],
+                "exceptions" : [],
+                "group" : "subplots",
+                "type" : "bool"
+            },
+            "subplot_titles" : {
+                "applies" : ["all"],
+                "description" : ["If True, chart titles are displayed",
+                                 "at the top of each subplot."],
+                "exceptions" : [],
+                "group" : "subplots",
+                "type" : "bool"
+            },
+            "text" : {
+                "applies" : ["all"],
+                "description" : ["Name of the column that contains the text values"],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "textcolor" : {
+                "applies" : ["pie"],
+                "description" : ["Sets the color for the text in the slices",
+                                 "\tcolorname : see cufflinks.colors.cnames",
+                                 "\thex : '#ffffff'",
+                                 "\trgb : 'rgb(23,50,23)'",
+                                 "\trgba : 'rgba(23,50,23,.5)"],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "textinfo" : {
+                "applies" : ["pie"],
+                "description" : ["Sets the information to be displayed on the hover text",
+                                 "\tlabel",
+                                 "\tpercent",
+                                 "\tvalue",
+                                 "\tor any combination of the above using '+'",
+                                 "\t\tie 'label+percent'"],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "textposition" : {
+                "applies" : ["pie"],
+                "description" : ["Sets the position of the legends for each slice",
+                                 "\toutside",
+                                 "\tinner"],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "values" : {
+                "applies" : ["pie"],
+                "description" : ["Name of the column containing the values"],
+                "exceptions" : [],
+                "type" : "string"
+            },
+            "vertical_spacing" : {
+                "applies" : ["all"],
+                "description" : ["Space between subplot rows"],
+                "exceptions" : [],
+                "group" : "subplots",
+                "type" : "float [0-1]"
+            },
+            "vline" : {
+                "applies" : ["all"],
+                "description" : ["Draws a vertical line at the indicated 'x'",
+                                 "position(s).",
+                                 "Extra parameters can be passed in the form of a",
+                                 "dictionary (see 'shapes')",
+                                 "\tvline=4",
+                                 "\tvline=[2,10]",
+                                 "\tvline=[{'x':'2015-02-08','color':'blue'},{'x':'2015-03-08','color':'red'}]"],
+                "exceptions" : [],
+                "group" : "shapes",
+                "type" : "float, list or dict"
+            },
+            "vspan" : {
+                "applies" : ["all"],
+                "description" : ["Draws a vertical rectangle at the indicated",
+                                 "(x0,x1) positions.",
+                                 "Extra parameters can be passed in the form of a",
+                                 "dictionary (see 'shapes')",
+                                 "\tvspan=('2015-02-08','2015-03-08')",
+                                 "\tvspan=[(1,4),(6,10)]",
+                                 "\tvspan=[{'x0':2,'x1':5,'color':'blue','fill':True,'opacity':.4}]"],
+                "exceptions" : [],
+                "group" : "shapes",
+                "type" : "tuple, list or dict"
+            },
+            "xrange" : {
+                "applies" : ["all"],
+                "description" : ["Sets the range for the x axis",
+                                 "\t(lower_bound,upper_bound)"],
+                "exceptions" : [],
+                "group" : "axis",
+                "type" : "tuple"
+            },
+            "yrange" : {
+                "applies" : ["all"],
+                "description" : ["Sets the range for the y axis",
+                                 "\t(lower_bound,upper_bound)"],
+                "exceptions" : [],
+                "group" : "axis",
+                "type" : "tuple"
+            },
+            "zerolinecolor" : {
+                "applies" : ["all"],
+                "description" : ["Sets the zero line color",
+                                "\tcolorname : see cufflinks.colors.cnames",
+                                "\thex : '#ffffff'",
+                                "\trgb : 'rgb(23,50,23)'",
+                                "\trgba : 'rgba(23,50,23,.5)"],
+                "exceptions" : [],
+                "group" :"layout",
+                "type" : "string"
+            },
+            "zmin" : {
+                "applies" : ["heatmap","surface"],
+                "description" : ["Defines the minimum range for the z values",
+                                 "This affects the range for the colorscale"],
+                "exceptions" : [],
+                "type" : "float"
+            },
+            "zmax" : {
+                "applies" : ["heatmap","surface"],
+                "description" : ["Defines the maximum range for the z values",
+                                 "This affects the range for the colorscale"],
+                "exceptions" : [],
+                "type" : "float"
+            },
+            "zrange" : {
+                "applies" : ["bubble3d","scatter3d","surface"],
+                "description" : ["Sets the range for the z axis",
+                                 "\t(lower_bound,upper_bound)"],
+                "exceptions" : [],
+                "group" : "axis",
+                "type" : "tuple"
+            }
+        }
+}

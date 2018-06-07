@@ -93,7 +93,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 				dash
 				dashdot
 				dot
-		sortbars : bool
+		sortbars : boole
 			Sort bars in descending order
 			* Only valid when kind='bar'
 		keys : list of columns
@@ -273,8 +273,8 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 			See cufflinks.colors.scales() for available scales
 		fill : bool
 			Filled Traces		
-		width : dict, list or string
-				string : applies to all traces
+		width : dict, list or int
+				int : applies to all traces
 				list : applies to each trace in the order 
 						specified
 				dict: {column:value} for each column in 
@@ -412,7 +412,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 			{x_point : text}
 		keys : list of columns
 			List of columns to chart.
-			Also can be usded for custom sorting.
+			Also can be used for custom sorting.
 		bestfit : boolean or list
 			If True then a best fit line will be generated for
 			all columns.
@@ -538,7 +538,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					  ie 'label+percent'
 
 		Histogram
-			line_color : string
+			linecolor : string
 				specifies the line color of the histogram
 
 		Heatmap and Surface
@@ -588,12 +588,12 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				shared y-axis on the left-hand side of the grid.
 
 		Shapes
-			hline : int, list or dict
+			hline : float, list or dict
 				Draws a horizontal line at the 
 				indicated y position(s)
 				Extra parameters can be passed in
 				the form of a dictionary (see shapes)
-			vline : int, list or dict
+			vline : float, list or dict
 				Draws a vertical line at the 
 				indicated x position(s)
 				Extra parameters can be passed in
@@ -676,7 +676,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 	PIE_KWARGS=['sort','pull','hole','textposition','textinfo','linecolor','linewidth','textcolor']
 	OHLC_KWARGS=['up_color','down_color','open','high','low','close','volume','name','decreasing','increasing']
 	SUBPLOT_KWARGS=['horizontal_spacing', 'vertical_spacing',
-					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles']
+					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles','shared_xaxis','shared_yaxis']
 	GEO_KWARGS=['locationmode','locationsrc','geo','lon','lat']
 	ERROR_KWARGS=['error_trace','error_values_minus','error_color','error_thickness',
 					'error_width','error_opacity']
@@ -733,10 +733,13 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 	def get_marker(marker={}):
 		if 'line' in dict_modifiers:
 			if 'color' not in dict_modifiers['line']:
-				if 'linecolor' in tools.getTheme(theme=theme):
-					linecolor=normalize(tools.getTheme(theme=theme)['linecolor'])
-				else: 
-					linecolor=tools.getLayout(theme=theme)['xaxis1']['titlefont']['color']
+				if 'linecolor' in kwargs:
+					linecolor=kwargs.get('linecolor')
+				else:
+					if 'linecolor' in tools.getTheme(theme=theme):
+						linecolor=normalize(tools.getTheme(theme=theme)['linecolor'])
+					else: 
+						linecolor=tools.getLayout(theme=theme)['xaxis1']['titlefont']['color']
 				dict_modifiers['line']['color']=linecolor			
 			dict_modifiers['line']=tools.updateColors(dict_modifiers['line'])
 			marker['line']=deep_update(marker['line'],dict_modifiers['line'])
@@ -1082,7 +1085,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 			figure.layout.yaxis2.title=secondary_y_title
 
 ## Error Bars
-	if kind in ('scatter','bar','barh','lines'):
+	if kind in ('scatter','bar','barh','lines','line'):
 		if any([error_x,error_y]):
 			def set_error(axis,**kwargs):
 				return tools.set_errors(figure,axis=axis,**kwargs)
@@ -1100,6 +1103,9 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 	if subplots:
 		fig=tools.strip_figures(figure)
 		kw=check_kwargs(kwargs,SUBPLOT_KWARGS)	
+		for _ in ['x','y']:
+			if 'shared_{0}axes'.format(_) not in kw:
+				kw['shared_{0}axes'.format(_)]=kw.pop('shared_{0}axis'.format(_),False)
 		if 'subplot_titles' in kwargs:
 			if kwargs['subplot_titles']==True:
 				kw['subplot_titles']=[d['name'] for d in data]
