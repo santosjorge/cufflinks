@@ -1018,13 +1018,16 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					if 'legend' in kwargs:
 						if type(kwargs['legend'])==bool:
 							showlegend=kwargs['legend']
-				
-				_d['increasing']=dict(line=dict(color=kw['up_color']) if 'up_color' in kw else dict(),showlegend=showlegend)
-				_d['decreasing']=dict(line=dict(color=kw['down_color']) if 'down_color' in kw else dict(),showlegend=showlegend)
+				# https://github.com/santosjorge/cufflinks/issues/113
+				# _d['increasing']=dict(line=dict(color=kw['up_color']) if 'up_color' in kw else dict(),showlegend=showlegend)
+				# _d['decreasing']=dict(line=dict(color=kw['down_color']) if 'down_color' in kw else dict(),showlegend=showlegend)
+				_d['increasing']=dict(line=dict(color=kw['up_color']) if 'up_color' in kw else dict())
+				_d['decreasing']=dict(line=dict(color=kw['down_color']) if 'down_color' in kw else dict())
 				for k in ('increasing','decreasing'):
 					if k in kw:
 						_d[k]=deep_update(_d[k],kw[k])
 				
+				_d['showlegend']=showlegend
 				_d['yaxis']='y2'
 				data=[_d]
 
