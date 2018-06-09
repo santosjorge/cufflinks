@@ -849,7 +849,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					orientation = 'h' if kind=='barh' else orientation
 					for trace in data:
 						trace.update(orientation=orientation)
-						if kind=='barh':
+						if orientation=='h':
 							trace['x'],trace['y']=trace['y'],trace['x']	
 						
 			elif kind=='bubble':
@@ -886,6 +886,11 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					if kind=='box':
 						__=go.Box(y=df[_].values.tolist(),marker=go.Marker(color=clrs[_]),name=_,
 								line=go.Line(width=width),boxpoints=boxpoints)
+						# 114 - Horizontal Box
+						__['orientation']=orientation
+						if orientation=='h':
+							__['x'],__['y']=__['y'],__['x']	
+						
 					else:
 						__=go.Histogram(x=df[_].values.tolist(),name=_,
 								marker=go.Marker(color=clrs[_], line=go.Line(width=width)),
