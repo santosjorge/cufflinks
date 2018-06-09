@@ -656,7 +656,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 			fontsize : int
 				Text size for annotations
 			textangle : int
-				Textt angle 
+				Text angle 
 			See https://plot.ly/python/reference/#layout-annotations 
 			for a complete list of valid parameters.
 
