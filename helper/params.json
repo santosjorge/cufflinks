@@ -42,34 +42,34 @@
             "examples" : []
         },
         "bubble" : {
-            "description" : "Bubble",
+            "description" : "Bubble Chart",
             "aka" : [],
             "examples" : [
                 "cf.datagen.bubble().iplot(kind='bubble',categories='categories',size='size',text='text',x='x',y='y')"
             ]
         },
         "bubble3d" : {
-            "description" : "Bubble3d",
+            "description" : "Bubble 3d Chart",
             "aka" : [],
             "examples" : []
         },
         "scatter3d" : {
-            "description" : "scatter3d",
+            "description" : "Scatter 3d Chart",
             "aka" : [],
             "examples" : []
         },
         "scattergeo" : {
-            "description" : "scattergeo",
+            "description" : "Scatter Geo Chart",
             "aka" : [],
             "examples" : []
         },
         "ohlc" : {
-            "description" : "ohlc",
+            "description" : "Open, High, Low, Close",
             "aka" : [],
             "examples" : []
         },
         "candle" : {
-            "description" : "candle",
+            "description" : "Candle Chart",
             "aka" : [],
             "examples" : []
         },
@@ -89,6 +89,15 @@
     },
     "parameters" : 
         {
+            "abs_size" : {
+                "applies" : ["bubble","bubble3d"],
+                "description" : ["If True then the size of the bubbles are",
+                                 "interpreted as absolute pixel values.",
+                                 "If False, all values are normalized.",
+                                 "Default: False"],
+                "exceptions" : [],
+                "type" : "bool"
+            },
             "asFigure" : {
                 "applies" : ["all"],
                 "description" : ["If True then it returns a Plotly Figure"],
@@ -149,8 +158,10 @@
             },
             "layout" : {
                 "applies" : ["all"],
-                "description" : "Plotly Layout",
-                "type" : "Layout",
+                "description" : ["If defined, this Layout is explicitly used for the Figure generation"],
+                "type" : "Plotly Layout",
+                "position" : "0",
+                "group" : "layout",
                 "exceptions" : []
             },
             "keys" : {
@@ -362,10 +373,17 @@
                 "type" : "string, list or dict"
             },
             "size" : {
-                "applies" : ["scatter"],
+                "applies" : ["scatter","bubble","bubble3d"],
                 "description" : ["Size of symbol when mode='markers'"],
-                "exceptions" : [],
-                "type" : "int"
+                "exceptions" : {
+                    "bubble" : ["Column that contains the size of the bubbles",
+                                "By default the size is normalized across all values.",
+                                "For absolute size use 'abs_size=True'"],
+                    "bubble3d" : ["Column that contains the size of the bubbles",
+                                "By default the size is normalized across all values.",
+                                "For absolute size use 'abs_size=True'"]
+                },
+                "type" : "int, string"
             },
             "barmode" : {
                 "applies" : ["bar"],
@@ -464,15 +482,6 @@
                                  "\tFalse"],
                 "exceptions" : [],
                 "type" : "string"
-            },
-            "length" : {
-                "applies" : ["all"],
-                "description" : "width description goes here",
-                "type" : "int",
-                "exceptions" : [
-                    { "bar" : "description that applies to bar"},
-                    { "histogram" : "description that applies to hist"}
-                ]
             },
             "hline" : {
                 "applies" : ["all"],

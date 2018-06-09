@@ -671,6 +671,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 
 	# Valid Kwargs
 	valid_kwargs = ['color','opacity','column','columns','labels','text','world_readable','colorbar']
+	BUBBLE_KWARGS = ['abs_size']
 	TRACE_KWARGS = ['hoverinfo','connectgaps']
 	HEATMAP_SURFACE_KWARGS = ['center_scale','zmin','zmax']
 	PIE_KWARGS=['sort','pull','hole','textposition','textinfo','linecolor','linewidth','textcolor']
@@ -681,7 +682,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 	ERROR_KWARGS=['error_trace','error_values_minus','error_color','error_thickness',
 					'error_width','error_opacity']
 	EXPORT_KWARGS=['display_image','scale']
-	kwargs_list = [tools.__LAYOUT_KWARGS,TRACE_KWARGS,
+	kwargs_list = [tools.__LAYOUT_KWARGS,BUBBLE_KWARGS,TRACE_KWARGS,
 				   OHLC_KWARGS,PIE_KWARGS,HEATMAP_SURFACE_KWARGS,SUBPLOT_KWARGS,GEO_KWARGS,ERROR_KWARGS,EXPORT_KWARGS]
 	[valid_kwargs.extend(_) for _ in kwargs_list]
 
@@ -858,10 +859,13 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				y=self[y].values.tolist()
 				z=size if size else z
 				rg=self[z].values
-				if len(rg) > 1:
-					z=[int(100*(float(_)-rg.min())/(rg.max()-rg.min()))+12 for _ in rg]
+				if not kwargs.get('abs_size',False):
+					if len(rg) > 1:
+						z=[int(100*(float(_)-rg.min())/(rg.max()-rg.min()))+12 for _ in rg]
+					else:
+						z=[12] if len(rg) else []
 				else:
-					z=[12] if len(rg) else []
+					z=rg
 				text=kwargs['labels'] if 'labels' in kwargs else text
 				labels=self[text].values.tolist() if text else ''
 				clrs=colors if colors else get_scales(colorscale)
@@ -956,7 +960,10 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				df['index']=keys
 				if kind=='bubble3d':
 					rg=self[size].values
-					size=[int(100*(float(_)-rg.min())/(rg.max()-rg.min()))+12 for _ in rg]
+					if not kwargs.get('abs_size',False):
+						size=[int(100*(float(_)-rg.min())/(rg.max()-rg.min()))+12 for _ in rg]
+					else:
+						size=rg
 				else:
 					size=[size for _ in range(len(keys))]	
 

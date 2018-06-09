@@ -95,20 +95,15 @@ def _printer(figure=None):
                         print("{0}{1}".format(get_tabs(tabs+1),__))
         
         # Params
+        print_params(fig['parameters'][figure].pop('params'),1)
+        print('\n')
+        print_params(fig['parameters']['all'].pop('params'),1)
         d=utils.deep_update(fig['parameters'][figure],fig['parameters']['all'])
-        params=d.pop('params')
-        print_params(params,1)
+
         for k,v in d.items():
                 print('\n{0}{1}'.format(get_tabs(1),k.upper()))
                 print_params(v,2)
 
-        # for _ in (figure,'all'):
-        #     params=fig['parameters'][_].pop('params')
-        #     print_params(params,1)
-        #     for k,v in fig['parameters'][_].items():
-        #         print('\n{0}{1}'.format(get_tabs(1),k.upper()))
-        #         print_params(v,2)
-        #     print('\n')
 
         if 'examples' in fig:
             print('\nEXAMPLES')
