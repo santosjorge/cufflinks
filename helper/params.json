@@ -1,7 +1,7 @@
 {
     "figures" : {
         "scatter" : {
-            "description" : "Scatter or line chart",
+            "description" : "Scatter plot or line chart",
             "aka" : ["lines","line"],   
             "examples" : [
                 "cf.datagen.lines(1).iplot(kind='scatter')",

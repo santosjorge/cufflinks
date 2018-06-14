@@ -60,8 +60,8 @@ def _printer(figure=None):
         d=_get_params()
         keys=list(d['figures'].keys())
         keys.sort()
-        print("Use 'cufflinks.help(figure) to see the list of available parameters for the given figure.")
-        print("Use 'DataFrame.iplot(kind=figure) to plot the respective figure")
+        print("Use 'cufflinks.help(figure)' to see the list of available parameters for the given figure.")
+        print("Use 'DataFrame.iplot(kind=figure)' to plot the respective figure")
         print('Figures:')
         for k in keys:
             print('\t{0}'.format(k))

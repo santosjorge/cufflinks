@@ -786,7 +786,13 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					if 'bubble' in kind:
 						rg=__[size].values
 						rgo=self[size].values
-						_size=[int(100*(float(i)-rgo.min())/(rgo.max()-rgo.min()))+12 for i in rg]		
+						if not kwargs.get('abs_size',False):
+							if len(rgo)>1:
+								_size=[int(100*(float(i)-rgo.min( ))/(rgo.max()-rgo.min()))+12 for i in rg]		
+							else:
+								_size=[12] if len(rgo) else []
+						else:
+							_size=rgo
 					else:
 						_size=size
 					_data=go.Scatter3d(x=_x,y=_y,mode=mode,name=_,
