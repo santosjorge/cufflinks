@@ -10,7 +10,7 @@ from . import auth, ta
 from .colors import normalize, to_rgba
 from .themes import THEMES
 from .utils import (check_kwargs, deep_update, dict_replace_keyword,
-                    kwargs_from_keyword, merge_dict)
+                    kwargs_from_keyword, merge_dict, is_list)
 
 __LAYOUT_VALID_KWARGS = ['legend','logx','logy','logz','layout_update','title',
 					'xrange','yrange','zrange','rangeselector','rangeslider','showlegend','fontfamily']
@@ -1451,12 +1451,21 @@ def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=N
 		width=width if width else .5
 		opacity=opacity if opacity else .3
 		def get_traces(trace,value,type,color=None,width=.2,opacity=.3):
-			if 'percent' in type:
-				y_up=trace['y']*(1+value/100.00)
-				y_down=trace['y']*(1-value/100.00)
+			if not is_list(value):
+				value=[value]*len(trace['y'])
+			if values_minus:
+				if is_list(values_minus):
+					min_value=values_minus
+				else:
+					min_value=[values_minus]*len(trace['y'])
 			else:
-				y_up=trace['y']+value
-				y_down=trace['y']-value
+				min_value=value
+			if 'percent' in type:
+				y_up=[trace['y'][_]*(1+value[_]/100.00) for _ in range(len(value))]
+				y_down=[trace['y'][_]*(1-min_value[_]/100.00) for _ in range(len(min_value))]
+			else:
+				y_up=[trace['y'][_]+value[_] for _ in range(len(value))]
+				y_down=[trace['y'][_]-min_value[_] for _ in range(len(min_value))]
 			y=trace['y']
 			upper=go.Scatter(y=y_up,mode='lines',showlegend=False,
 							 line=go.Line(width=width),x=trace['x'])
