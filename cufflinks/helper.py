@@ -69,7 +69,12 @@ def _printer(figure=None):
         figure=_get_aka(figure)
         fig=_help(figure)
         print(figure.upper())
-        print(fig['description'],'\n')
+        if type(fig['description'])==str:
+            print(fig['description'])
+        else:
+            for _ in fig['description']:
+                print(_)
+        print('\n')
         print('Parameters:\n{0}'.format('='*11))  
         def get_tabs(val):
             return ' '*4*val

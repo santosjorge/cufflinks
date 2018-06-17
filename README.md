@@ -18,6 +18,20 @@ This tutorial assumes that the plotly user credentials have already been configu
 ![3D Charts](img/ukswaps.gif)
 
 ### Release Notes
+
+### v0.13.0
+New `iplot` helper. 
+To see a comprehensive list of parameters 
+**cf.help()**
+
+```python
+# For a list of supported figures
+cf.help()
+# Or to see the parameters supported that apply to a given figure try
+cf.help('scatter')
+cf.help('candle') #etc
+```
+
 ### v0.12.0
 
 Removed dependecies on ta-lib. 

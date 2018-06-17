@@ -465,7 +465,6 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 		if key not in __ANN_KWARGS:
 			raise Exception("Invalid keyword : '{0}'".format(key))
 
-	l=[]
 	theme_data = getTheme(theme)
 
 	kwargs['fontcolor']=kwargs.pop('fontcolor',theme_data['annotations']['fontcolor'])

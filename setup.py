@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='cufflinks',
-      version='0.12.5',
+      version='0.13.0',
       description='Productivity Tools for Plotly + Pandas',
       author='Jorge Santos',
       author_email='santos.jorge@gmail.com',
