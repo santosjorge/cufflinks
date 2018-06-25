@@ -286,7 +286,7 @@ def box(n_traces=5,n=100,mode=None):
 def histogram(n_traces=1,n=500,mode=None):
 	"""
 	Returns a DataFrame with the required format for 
-	a box plot
+	a histogram plot
 
 	Parameters:
 	-----------
