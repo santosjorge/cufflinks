@@ -1,16 +1,5 @@
 {
     "figures" : {
-        "scatter" : {
-            "description" : ["Scatter plot",
-                             "2D chart based in an x and y axis.",
-                             "Can be a line chart (default) or a set of scatter points (markers)"],
-            "aka" : ["lines","line"],   
-            "examples" : [
-                "cf.datagen.lines(1).iplot(kind='scatter')",
-                "cf.datagen.scatter().iplot(kind='scatter',x='x',y='y',categories='categories',mode='markers')",
-                "cf.datagen.lines(1).iplot(kind='scatter',error_type='continuous_percent',error_y=15)"
-            ]
-        },
         "bar" : {
             "description" : ["Bar Chart",
                              "Supports categories and horizontal bar charts"],
@@ -20,15 +9,6 @@
                 "cf.datagen.bars().iplot(kind='bar',orientation='h')"
             ]
         },
-        "histogram" : {
-            "description" : "Histogram",
-            "aka" : ["hist"],
-            "examples" : [
-                "cf.datagen.histogram(2).iplot(kind='hist',opacity=.5)",
-                "cf.datagen.histogram().iplot(kind='hist',orientation='h')",
-                "cf.datagen.histogram(2).iplot(kind='hist',bins=10)"
-            ]
-        },
         "box" : {
             "description" : ["Box Chart",
                              "Defines the distribution (quartiles) of a given dataset"],
@@ -36,30 +16,6 @@
             "examples" : [
                 "cf.datagen.box().iplot(kind='box',boxpoints='all')",
                 "cf.datagen.box(3).iplot(kind='box',orientation='h')"
-            ]
-        },
-        "spread" : {
-            "description" : ["Spread Chart",
-                             "Spread between two traces"],
-            "aka" : [],
-            "examples" : [
-                "cf.datagen.lines(2).iplot(kind='spread')"
-            ]
-        },
-        "ratio" : {
-            "description" : ["Ratio Chart",
-                "Ratio between two traces"],
-            "aka" : [],
-            "examples" : [
-                "cf.datagen.lines(2).iplot(kind='ratio')"
-            ]
-        },
-        "heatmap" : {
-            "description" : "Heatmap",
-            "aka" : [],
-            "examples" : [
-                "cf.datagen.heatmap().iplot(kind='heatmap')",
-                "cf.datagen.heatmap().iplot(kind='heatmap',colorscale='rdbu',center_scale=50)"
             ]
         },
         "bubble" : {
@@ -79,6 +35,72 @@
                 "cf.datagen.bubble3d(5,2).iplot(kind='bubble3d',x='x',y='y',z='z',size='size',categories='categories')"
             ]
         },
+        "candle" : {
+            "description" : "Candle OHLC Chart (Open, High, Low, Close)",
+            "aka" : ["candlestick"],
+            "examples" : [
+                "cf.datagen.ohlc().iplot(kind='candle')"
+            ]
+        },
+        "choroplet" : {
+            "description" : "choroplet",
+            "aka" : [],
+            "examples" : []
+        },
+        "distplot" : {
+            "description" : ["The distplot can be composed of all or any combination of the following",
+                "3 components: (1) histogram, (2) curve: (a) kernel density estimation",
+                "or (b) normal curve, and (3) rug plot. Additionally, multiple distplots",
+                "(from multiple datasets) can be created in the same plot."],
+            "aka" : [],
+            "examples" : [
+                "cf.datagen.histogram(3).iplot(kind='distplot',bin_size=.1)",
+                "cf.datagen.histogram(5,200,1).iplot(kind='distplot',colorscale='rdylgn')"
+            ]
+        },
+        "heatmap" : {
+            "description" : "Heatmap",
+            "aka" : [],
+            "examples" : [
+                "cf.datagen.heatmap().iplot(kind='heatmap')",
+                "cf.datagen.heatmap().iplot(kind='heatmap',colorscale='rdbu',center_scale=50)"
+            ]
+        },
+        "histogram" : {
+            "description" : "Histogram",
+            "aka" : ["hist"],
+            "examples" : [
+                "cf.datagen.histogram(2).iplot(kind='hist',opacity=.5)",
+                "cf.datagen.histogram().iplot(kind='hist',orientation='h')",
+                "cf.datagen.histogram(2).iplot(kind='hist',bins=10)"
+            ]
+        },
+        "ohlc" : {
+            "description" : "Bar OHLC Chart (Open, High, Low, Close)",
+            "aka" : [],
+            "examples" : [
+                "cf.datagen.ohlc().iplot(kind='ohlc')"
+            ]
+        },
+        "pie" : {
+            "description" : "Pie Chart",
+            "aka" : [],
+            "examples" : [
+                "cf.datagen.pie().iplot(kind='pie',labels='labels',values='values')",
+                "cf.datagen.pie().iplot(kind='pie',labels='labels',values='values',linecolor='white',hole=.1,width=2,pull=.05)"
+            ]
+        },
+        "scatter" : {
+            "description" : ["Scatter plot",
+                             "2D chart based in an x and y axis.",
+                             "Can be a line chart (default) or a set of scatter points (markers)"],
+            "aka" : ["lines","line"],   
+            "examples" : [
+                "cf.datagen.lines(1).iplot(kind='scatter')",
+                "cf.datagen.scatter().iplot(kind='scatter',x='x',y='y',categories='categories',mode='markers')",
+                "cf.datagen.lines(1).iplot(kind='scatter',error_type='continuous_percent',error_y=15)"
+            ]
+        },
         "scatter3d" : {
             "description" : ["Scatter Chart",
                              "Scatter 3d chart (x,y,z)"],
@@ -92,32 +114,21 @@
             "aka" : [],
             "examples" : []
         },
-        "ohlc" : {
-            "description" : "Bar OHLC Chart (Open, High, Low, Close)",
+        "spread" : {
+            "description" : ["Spread Chart",
+                             "Spread between two traces"],
             "aka" : [],
             "examples" : [
-                "cf.datagen.ohlc().iplot(kind='ohlc')"
+                "cf.datagen.lines(2).iplot(kind='spread')"
             ]
         },
-        "candle" : {
-            "description" : "Candle OHLC Chart (Open, High, Low, Close)",
-            "aka" : ["candlestick"],
-            "examples" : [
-                "cf.datagen.ohlc().iplot(kind='candle')"
-            ]
-        },
-        "pie" : {
-            "description" : "Pie Chart",
+        "ratio" : {
+            "description" : ["Ratio Chart",
+                "Ratio between two traces"],
             "aka" : [],
             "examples" : [
-                "cf.datagen.pie().iplot(kind='pie',labels='labels',values='values')",
-                "cf.datagen.pie().iplot(kind='pie',labels='labels',values='values',linecolor='white',hole=.1,width=2,pull=.05)"
+                "cf.datagen.lines(2).iplot(kind='ratio')"
             ]
-        },
-        "choroplet" : {
-            "description" : "choroplet",
-            "aka" : [],
-            "examples" : []
         }
     },
     "parameters" : 
@@ -135,7 +146,9 @@
                 "applies" : ["all"],
                 "description" : ["Dictionary of annotations",
                                  "\t{x_point : text}"],
-                "exceptions" : [],
+                "exceptions" : {
+                    "distplot":false
+                },
                 "type" : "dict",
                 "position" : "0",
                 "group" : "annotations"
@@ -223,6 +236,13 @@
                 "exceptions" : [],
                 "type" : "dict or list"
             },
+            "bin_size" : {
+                "applies" : ["distplot"],
+                "description" : ["Size of histogram bins",
+                                 "Default size: 1"],
+                "exceptions" : [],
+                "type" : "int or list[int]"
+            },
             "bins" : {
                 "applies" : ["histogram"],
                 "description" : ["Number of histogram bins",
@@ -292,6 +312,13 @@
                 "exceptions" : [],
                 "type" : "bool"
             },
+            "curve_type" : {
+                "applies" : ["distplot"],
+                "description" : ["'kde' or 'normal'",
+                                 "Default : 'kde'"],
+                "exceptions" : [],
+                "type" : "string"
+            },
             "dash" : {
                 "applies" : ["scatter","spread","ratio"],
                 "description" : ["Line style",
@@ -310,7 +337,9 @@
                 "applies" : ["all"],
                 "description" : "Plotly Figure",
                 "type" : "figure",
-                "exceptions" : []
+                "exceptions" : {
+                    "distplot" : false
+                }
             },
             "dimensions" : {
                 "applies" : ["all"],
@@ -427,7 +456,9 @@
             "fontcolor" : {
                 "applies" : ["all"],
                 "description" : ["Text color"],
-                "exceptions" : [],
+                "exceptions" : {
+                    "distplot":false
+                },
                 "type" : "string",
                 "group" : "annotations"
             },
@@ -446,7 +477,9 @@
             "fontsize" : {
                 "applies" : ["all"],
                 "description" : ["Text size"],
-                "exceptions" : [],
+                "exceptions" : {
+                    "distplot":false
+                },
                 "type" : "int",
                 "group" : "annotations"
             },
@@ -460,6 +493,14 @@
                 "exceptions" : [],
                 "group" : "layout",
                 "type" : "string"
+            },
+            "group_labels" : {
+                "applies" : ["distplot"],
+                "description" : ["Names for each dataset",
+                                "If not stated, then the column headers",
+                                "are used"],
+                "exceptions" : [],
+                "type" : "list[string]"
             },
             "high" : {
                 "applies" : ["ohlc","candle"],
@@ -480,7 +521,7 @@
                 "type" : "string"
             },
             "histnorm" : {
-                "applies" : ["histogram"],
+                "applies" : ["histogram","distplot"],
                 "description" : ["Sets the type of normalization for an histogram trace.",
                                  "\t'' (frequency)",
                                  "\tprobability",
@@ -525,7 +566,9 @@
             "horizontal_spacing" : {
                 "applies" : ["all"],
                 "description" : ["Space between subplot columns"],
-                "exceptions" : [],
+                "exceptions" : {
+                    "distplot":false
+                },
                 "group" : "subplots",
                 "type" : "float [0-1]"
             },
@@ -718,6 +761,12 @@
                 "exceptions" : [],
                 "type" : "bool or dict"
             },
+            "rug_text" : {
+                "applies" : ["distplot"],
+                "description" : ["Hover text for rug values"],
+                "exceptions" : [],
+                "type" : "list[list[string]]]"
+            },
             "scale" : {
                 "applies" : ["all"],
                 "description" : ["Increase the resolution of the image by `scale` amount",
@@ -749,7 +798,9 @@
                                  "If ommitted, then the shape is automatically set",
                                  "* Only valid if subplots=True",
                                  "\t(rows,columns)"],
-                "exceptions" : [],
+                "exceptions" : {
+                    "distplot":false
+                },
                 "group" : "subplots",
                 "type" : "(int,int)"
             },
@@ -768,7 +819,9 @@
                 "applies" : ["all"],
                 "description" : ["If True, subplots in the same grid column have one common",
                                  "shared x-axis at the bottom of the grid."],
-                "exceptions" : [],
+                "exceptions" : {
+                    "distplot":false
+                },
                 "group" : "subplots",
                 "type" : "bool"
             },
@@ -776,7 +829,9 @@
                 "applies" : ["all"],
                 "description" : ["If True, subplots in the same grid row have one common",
                                  "shared y-axis at the left of the grid."],
-                "exceptions" : [],
+                "exceptions" : {
+                    "distplot":false
+                },
                 "group" : "subplots",
                 "type" : "bool"
             },
@@ -789,6 +844,27 @@
                 "exceptions" : [],
                 "type" : "string",
                 "group" : "exports"
+            },
+            "show_curve" : {
+                "applies" : ["distplot"],
+                "description" : ["Defines if the curve is displayed",
+                                 "Default: True"],
+                "exceptions" : [],
+                "type" : "bool"
+            },
+            "show_hist" : {
+                "applies" : ["distplot"],
+                "description" : ["Defines if the histogram is displayed",
+                                 "Default: True"],
+                "exceptions" : [],
+                "type" : "bool"
+            },
+            "show_rug" : {
+                "applies" : ["distplot"],
+                "description" : ["Defines if the rug is displayed",
+                                 "Default: True"],
+                "exceptions" : [],
+                "type" : "bool"
             },
             "showlegend" : {
                 "applies" : ["all"],
@@ -826,14 +902,18 @@
                 "applies" : ["all"],
                 "description" : ["If True, chart titles are displayed",
                                  "at the top of each subplot."],
-                "exceptions" : [],
+                "exceptions" : {
+                    "distplot":false
+                },
                 "group" : "subplots",
                 "type" : "bool"
             },
             "subplots" : {
                 "applies" : ["all"],
                 "description" : ["If True then each trace is placed in a subplot"],
-                "exceptions" : [],
+                "exceptions" : {
+                    "distplot":false
+                },
                 "group" : "subplots",
                 "type" : "bool"
             },
@@ -859,13 +939,17 @@
             "text" : {
                 "applies" : ["all"],
                 "description" : ["Name of the column that contains the text values"],
-                "exceptions" : [],
+                "exceptions" : {
+                    "distplot":false
+                },
                 "type" : "string"
             },
             "textangle" : {
                 "applies" : ["all"],
                 "description" : ["Text angle"],
-                "exceptions" : [],
+                "exceptions" : {
+                    "distplot":false
+                },
                 "type" : "int",
                 "group" : "annotations"
             },
@@ -936,7 +1020,9 @@
             "vertical_spacing" : {
                 "applies" : ["all"],
                 "description" : ["Space between subplot rows"],
-                "exceptions" : [],
+                "exceptions" : {
+                    "distplot":false
+                },
                 "group" : "subplots",
                 "type" : "float [0-1]"
             },
@@ -972,7 +1058,9 @@
                                  "\tint : applies to all traces",
                                  "\tlist : applies to each trace in the order specified",
                                  "\tdict : {column:value} for each column in the dataframe"],
-                "exceptions" : [],
+                "exceptions" : {
+                    "distplot":false
+                },
                 "type" : "int, list or dict"
             },
             "x" : {

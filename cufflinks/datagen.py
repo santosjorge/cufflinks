@@ -283,7 +283,7 @@ def box(n_traces=5,n=100,mode=None):
 		columns=getName(n_traces,mode=mode))
 	return df       
 
-def histogram(n_traces=1,n=500,mode=None):
+def histogram(n_traces=1,n=500,dispersion=2,mode=None):
 	"""
 	Returns a DataFrame with the required format for 
 	a histogram plot
@@ -299,7 +299,7 @@ def histogram(n_traces=1,n=500,mode=None):
 				'abc' for alphabet columns
 				'stocks' for random stock names
 	"""	
-	df=pd.DataFrame(np.random.randn(n,n_traces)+np.random.randint(-1,2),
+	df=pd.DataFrame(np.transpose([np.random.randn(n)+np.random.randint(-1*dispersion,dispersion) for _ in range(n_traces)]),
 		columns=getName(n_traces,mode=mode))                     
 	return df
 

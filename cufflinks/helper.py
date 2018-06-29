@@ -22,8 +22,11 @@ def _help(figure):
             for _ in [figure,'all']:
                 if _ in v['applies']:
                     param={}
-                    if _ in v['exceptions']:
-                        param['description']=v['exceptions'][figure]
+                    if figure in v['exceptions']:
+                        if v['exceptions'][figure]:
+                            param['description']=v['exceptions'][figure]
+                        else:
+                            break
                     else:
                         param['description']=v['description']
                     param['type']=v.get('type','')

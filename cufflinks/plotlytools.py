@@ -4,6 +4,7 @@ import time
 import copy
 # from plotly.graph_objs import *
 import plotly.graph_objs as go
+import plotly.figure_factory as ff
 from collections import defaultdict
 from IPython.display import display,Image
 from .exceptions import CufflinksError
@@ -682,8 +683,10 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 	ERROR_KWARGS=['error_trace','error_values_minus','error_color','error_thickness',
 					'error_width','error_opacity']
 	EXPORT_KWARGS=['display_image','scale']
+	FF_DISTPLOT=["group_labels", "bin_size", "curve_type", "rug_text", "show_hist", "show_curve", "show_rug"]
 	kwargs_list = [tools.__LAYOUT_KWARGS,BUBBLE_KWARGS,TRACE_KWARGS,
-				   OHLC_KWARGS,PIE_KWARGS,HEATMAP_SURFACE_KWARGS,SUBPLOT_KWARGS,GEO_KWARGS,ERROR_KWARGS,EXPORT_KWARGS]
+				   OHLC_KWARGS,PIE_KWARGS,HEATMAP_SURFACE_KWARGS,SUBPLOT_KWARGS,GEO_KWARGS,ERROR_KWARGS,EXPORT_KWARGS,
+				   FF_DISTPLOT]
 	[valid_kwargs.extend(_) for _ in kwargs_list]
 
 	dict_modifiers_keys = ['line']
@@ -876,7 +879,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				labels=self[text].values.tolist() if text else ''
 				clrs=colors if colors else get_scales(colorscale)
 				clrs=[clrs] if not isinstance(clrs,list) else clrs
-				clrs=[clrs[0]]*len(x)
+				clrs=[clrs[0]]*len(x) if len(clrs)==1 else clrs
 				marker=go.Marker(color=clrs,size=z,symbol=symbol,
 								line=go.Line(width=width))
 				trace=go.Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
@@ -1074,6 +1077,21 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				validate=False
 				data=go.Data()
 				data.append(geo_data)
+
+			# Figure Factory
+			elif kind in ('distplot'):
+				colors=get_colors(colors,colorscale,self.keys(),asList=True)
+				hist_data=self.transpose().values
+				kw=check_kwargs(kwargs,FF_DISTPLOT)
+				group_labels=kw.pop('group_labels',self.columns)
+				if histnorm:
+					kw['histnorm']=histnorm
+				fig=ff.create_distplot(hist_data=hist_data,group_labels=group_labels,
+										 colors=colors,**kw)
+				data=fig.data
+				layout=tools.merge_dict(layout,fig.layout)
+				
+
 	
 ## Sharing Values
 	if all(['world_readable' in kwargs,sharing is None]):
