@@ -303,6 +303,24 @@ def histogram(n_traces=1,n=500,dispersion=2,mode=None):
 		columns=getName(n_traces,mode=mode))                     
 	return df
 
+def distplot(n_traces=1,n=500,dispersion=3,mode=None):
+	"""
+	Returns a DataFrame with the required format for 
+	a histogram plot
+
+	Parameters:
+	-----------
+		n_traces : int
+			Number of traces 
+		n : int
+			Number of points for each trace
+		mode : string
+			Format for each item
+				'abc' for alphabet columns
+				'stocks' for random stock names
+	"""	
+	return histogram(n_traces,n,dispersion,mode)
+
 def surface(n_x=20,n_y=20):
 	"""
 	Returns a DataFrame with the required format for 

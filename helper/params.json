@@ -54,8 +54,8 @@
                 "(from multiple datasets) can be created in the same plot."],
             "aka" : [],
             "examples" : [
-                "cf.datagen.histogram(3).iplot(kind='distplot',bin_size=.1)",
-                "cf.datagen.histogram(5,200,1).iplot(kind='distplot',colorscale='rdylgn')"
+                "cf.datagen.distplot(3).iplot(kind='distplot',bin_size=.1)",
+                "cf.datagen.distplot(5,200,1).iplot(kind='distplot',colorscale='rdylgn')"
             ]
         },
         "heatmap" : {
