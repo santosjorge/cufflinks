@@ -62,6 +62,20 @@ def getThemes():
 	"""
 	return list(THEMES.keys())
 
+def updateColors(layout):
+	for k,v in list(layout.items()):
+		if isinstance(v,dict):
+			updateColors(v)
+		else:
+			if isinstance(v,list):
+				for _ in v:
+					if isinstance(_,dict):
+						updateColors(_)
+			if 'color' in k.lower():
+				if 'rgba' not in v:
+					layout[k]=normalize(v)
+	return layout
+
 def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
 			  margin=None, dimensions=None, width=None, height=None,
 			  annotations=None,is3d=False,**kwargs):
@@ -198,7 +212,9 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		theme = auth.get_config_file()['theme']
 
 	theme_data = getTheme(theme)
-	layout=go.Layout(theme_data['layout'])
+
+
+	layout=go.Layout(updateColors(theme_data['layout']))
 	layout['xaxis1'].update({'title':xTitle})
 	layout['yaxis1'].update({'title':yTitle})
 
@@ -423,23 +439,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 
 	if 'layout_update' in kwargs:
 		layout=deep_update(layout,kwargs['layout_update'])
-
-	def updateColors(layout):
-		for k,v in list(layout.items()):
-			if isinstance(v,dict):
-				updateColors(v)
-			else:
-				if isinstance(v,list):
-					for _ in v:
-						if isinstance(_,dict):
-							updateColors(_)
-				if 'color' in k.lower():
-					if 'rgba' not in v:
-						layout[k]=normalize(v)
-		return layout
-
-
-	return updateColors(layout)
+	return layout
 
 
 def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):

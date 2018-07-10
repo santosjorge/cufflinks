@@ -127,7 +127,7 @@ def scatter_plot_input_argument_tests():
 		'x': ['x'],
 		'y': ['y'],
 		'mode': ['markers'],
-		'symbol': ['dot'],
+		'symbol': ['circle-dot'],
 		'colors': [['orange', 'teal']],
 		'size': [10]
 	}
