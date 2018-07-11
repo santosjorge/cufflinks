@@ -1,4 +1,4 @@
-from plotly.graph_objs import YAxis,XAxis
+from plotly.graph_objs import YAxis, XAxis
 
 THEMES = {
 		'ggplot' : {

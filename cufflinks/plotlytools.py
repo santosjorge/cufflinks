@@ -915,7 +915,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 
 						if orientation=='h':
 							__['y']=__['x']
-							del __['x']
+							# del __['x']  # FIXME TKP
 						if bins:
 							if type(bins) in (tuple,list):
 								try:
