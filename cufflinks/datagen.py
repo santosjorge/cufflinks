@@ -306,7 +306,7 @@ def histogram(n_traces=1,n=500,dispersion=2,mode=None):
 def distplot(n_traces=1,n=500,dispersion=3,mode=None):
 	"""
 	Returns a DataFrame with the required format for 
-	a histogram plot
+	a distribution plot (distplot)
 
 	Parameters:
 	-----------
@@ -320,6 +320,26 @@ def distplot(n_traces=1,n=500,dispersion=3,mode=None):
 				'stocks' for random stock names
 	"""	
 	return histogram(n_traces,n,dispersion,mode)
+
+def violin(n=500,dispersion=3,categories=True,n_categories=5):
+	"""
+	Returns a DataFrame with the required format for 
+	a distribution plot (distplot)
+
+	Parameters:
+	-----------
+		n : int
+			Number of points 
+		categories : bool or int
+			If True, then a column with categories is added
+		n_categories : int
+			Number of categories
+	"""	
+	df = histogram(1,n,dispersion,'abc')
+	df=df.rename(columns={'a':'data'})
+	if categories:
+		df['categories']=['category_{0}'.format(np.random.randint(n_categories)) for _ in range(n)]
+	return df
 
 def surface(n_x=20,n_y=20):
 	"""

@@ -129,6 +129,15 @@
             "examples" : [
                 "cf.datagen.lines(2).iplot(kind='ratio')"
             ]
+
+        },
+        "violin" : {
+            "description" : ["Violin Chart",
+                "Distribution chart"],
+            "aka" : [],
+            "examples" : [
+                "cf.datagen.violin().iplot(kind='violin',categories='categories',sort=True,colorscale='piyg')"
+            ]
         }
     },
     "parameters" : 
@@ -262,7 +271,7 @@
                 "type" : "string"
             },
             "categories" : {
-                "applies" : ["scatter","bar","bubble","bubble3d","scatter3d"],
+                "applies" : ["scatter","bar","bubble","bubble3d","scatter3d","violin"],
                 "description" : ["Name of the column that contains the categories"],
                 "exceptions" : [],
                 "type" : "string"
@@ -340,6 +349,13 @@
                 "exceptions" : {
                     "distplot" : false
                 }
+            },
+            "data_header" : {
+                "applies" : ["violin"],
+                "description" : "Name of column that contains the data",
+                "type" : "string",
+                "exceptions" : {},
+                "position" : "0"
             },
             "dimensions" : {
                 "applies" : ["all"],
@@ -887,9 +903,11 @@
                 "type" : "int, string"
             },
             "sort" : {
-                "applies" : ["pie"],
+                "applies" : ["pie","violin"],
                 "description" : ["If True it sorts the labels by value"],
-                "exceptions" : [],
+                "exceptions" : {
+                    "violin" : "If True then the categories are sorted in alphabetical order"
+                },
                 "type" : "bool"
             },
             "sortbars" : {
