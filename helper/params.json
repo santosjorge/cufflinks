@@ -156,7 +156,8 @@
                 "description" : ["Dictionary of annotations",
                                  "\t{x_point : text}"],
                 "exceptions" : {
-                    "distplot":false
+                    "distplot":false,
+                    "violin":false
                 },
                 "type" : "dict",
                 "position" : "0",
@@ -347,7 +348,8 @@
                 "description" : "Plotly Figure",
                 "type" : "figure",
                 "exceptions" : {
-                    "distplot" : false
+                    "distplot" : false,
+                    "violin":false
                 }
             },
             "data_header" : {
@@ -473,7 +475,8 @@
                 "applies" : ["all"],
                 "description" : ["Text color"],
                 "exceptions" : {
-                    "distplot":false
+                    "distplot":false,
+                    "violin":false
                 },
                 "type" : "string",
                 "group" : "annotations"
@@ -494,7 +497,8 @@
                 "applies" : ["all"],
                 "description" : ["Text size"],
                 "exceptions" : {
-                    "distplot":false
+                    "distplot":false,
+                    "violin":false
                 },
                 "type" : "int",
                 "group" : "annotations"
@@ -583,7 +587,8 @@
                 "applies" : ["all"],
                 "description" : ["Space between subplot columns"],
                 "exceptions" : {
-                    "distplot":false
+                    "distplot":false,
+                    "violin":false
                 },
                 "group" : "subplots",
                 "type" : "float [0-1]"
@@ -815,7 +820,8 @@
                                  "* Only valid if subplots=True",
                                  "\t(rows,columns)"],
                 "exceptions" : {
-                    "distplot":false
+                    "distplot":false,
+                    "violin":false
                 },
                 "group" : "subplots",
                 "type" : "(int,int)"
@@ -836,7 +842,8 @@
                 "description" : ["If True, subplots in the same grid column have one common",
                                  "shared x-axis at the bottom of the grid."],
                 "exceptions" : {
-                    "distplot":false
+                    "distplot":false,
+                    "violin":false
                 },
                 "group" : "subplots",
                 "type" : "bool"
@@ -846,7 +853,8 @@
                 "description" : ["If True, subplots in the same grid row have one common",
                                  "shared y-axis at the left of the grid."],
                 "exceptions" : {
-                    "distplot":false
+                    "distplot":false,
+                    "violin":false
                 },
                 "group" : "subplots",
                 "type" : "bool"
@@ -876,7 +884,7 @@
                 "type" : "bool"
             },
             "show_rug" : {
-                "applies" : ["distplot"],
+                "applies" : ["distplot","violin"],
                 "description" : ["Defines if the rug is displayed",
                                  "Default: True"],
                 "exceptions" : [],
@@ -906,7 +914,8 @@
                 "applies" : ["pie","violin"],
                 "description" : ["If True it sorts the labels by value"],
                 "exceptions" : {
-                    "violin" : "If True then the categories are sorted in alphabetical order"
+                    "violin" : ["If True then the categories are sorted in alphabetical order",
+                                "Default: False"]
                 },
                 "type" : "bool"
             },
@@ -921,7 +930,8 @@
                 "description" : ["If True, chart titles are displayed",
                                  "at the top of each subplot."],
                 "exceptions" : {
-                    "distplot":false
+                    "distplot":false,
+                    "violin":false
                 },
                 "group" : "subplots",
                 "type" : "bool"
@@ -930,7 +940,8 @@
                 "applies" : ["all"],
                 "description" : ["If True then each trace is placed in a subplot"],
                 "exceptions" : {
-                    "distplot":false
+                    "distplot":false,
+                    "violin":false
                 },
                 "group" : "subplots",
                 "type" : "bool"
@@ -958,7 +969,8 @@
                 "applies" : ["all"],
                 "description" : ["Name of the column that contains the text values"],
                 "exceptions" : {
-                    "distplot":false
+                    "distplot":false,
+                    "violin":false
                 },
                 "type" : "string"
             },
@@ -966,7 +978,8 @@
                 "applies" : ["all"],
                 "description" : ["Text angle"],
                 "exceptions" : {
-                    "distplot":false
+                    "distplot":false,
+                    "violin":false
                 },
                 "type" : "int",
                 "group" : "annotations"
@@ -1039,7 +1052,8 @@
                 "applies" : ["all"],
                 "description" : ["Space between subplot rows"],
                 "exceptions" : {
-                    "distplot":false
+                    "distplot":false,
+                    "violin":false
                 },
                 "group" : "subplots",
                 "type" : "float [0-1]"
@@ -1077,7 +1091,8 @@
                                  "\tlist : applies to each trace in the order specified",
                                  "\tdict : {column:value} for each column in the dataframe"],
                 "exceptions" : {
-                    "distplot":false
+                    "distplot":false,
+                    "violin":false
                 },
                 "type" : "int, list or dict"
             },

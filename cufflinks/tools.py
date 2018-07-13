@@ -1465,7 +1465,6 @@ def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=N
 			else:
 				y_up=[trace['y'][_]+value[_] for _ in range(len(value))]
 				y_down=[trace['y'][_]-min_value[_] for _ in range(len(min_value))]
-			y=trace['y']
 			upper=go.Scatter(y=y_up,mode='lines',showlegend=False,
 							 line=go.Line(width=width),x=trace['x'])
 			if 'yaxis' in trace:
