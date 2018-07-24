@@ -287,10 +287,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 
 	# Need to update this for an add_axis approach. 
 	if kind in ('candlestick','ohlc','candle'):
-		if isinstance(layout['yaxis1'], dict):
-			layout['yaxis2']=layout['yaxis1'].copy()
-		else:
-			layout['yaxis2'] = layout['yaxis1']
+		layout['yaxis2']=layout['yaxis1'].copy()
 		layout['yaxis1'].update(showticklabels=False)
 
 	## Kwargs
@@ -561,9 +558,9 @@ def get_base_layout(figs):
 	"""
 	layout={}
 	for fig in figs:
-		for k,v in list(fig['layout']._props.items()):
+		for k,v in list(fig['layout'].items()):
 			layout[k]=v
-	return 
+	return layout
 
 def figures(df,specs,asList=False):
 	"""
@@ -600,12 +597,14 @@ def merge_figures(figures):
 		figures : list(Figures)
 			List of figures to be merged. 
 	"""
+	figure=go.Figure()
 	data=go.Data()
 	for fig in figures:
 		for trace in fig['data']:
 			data.append(trace)
 	layout=get_base_layout(figures)
-	figure=go.Figure(data=data, layout=layout)
+	figure['data']=data
+	figure['layout']=layout
 	return figure
 
 def subplots(figures,shape=None,
@@ -736,9 +735,9 @@ def subplots(figures,shape=None,
 		for _ in figures[i]['data']:
 			for axe in lr:
 				_.update({'{0}axis'.format(axe[0]):axe})
-			# sp['data'].append(_)  # FIXME TKP
+			sp['data'].append(_)
 	# Remove extra plots
-	for k in list(sp['layout']._props.keys()):
+	for k in list(sp['layout'].keys()):
 		try:
 			if int(k[-1])>len(figures):
 				del sp['layout'][k]
@@ -858,7 +857,7 @@ def get_subplots(rows=1,cols=1,
 	sp=py.plotly.tools.make_subplots(rows=rows,cols=cols,shared_xaxes=shared_xaxes,
 										   shared_yaxes=shared_yaxes,print_grid=False,
 											start_cell=start_cell,**kwargs)
-	for k,v in list(layout._props.items()):
+	for k,v in list(layout.items()):
 		if not isinstance(v,go.XAxis) and not isinstance(v,go.YAxis):
 			sp['layout'].update({k:v})
 
@@ -874,7 +873,7 @@ def get_subplots(rows=1,cols=1,
 		for k,v in list(layout[axis].items()):
 			sp_item.update({k:v})
 
-	for k,v in list(sp['layout']._props.items()):
+	for k,v in list(sp['layout'].items()):
 		if isinstance(v,go.XAxis):
 			update_items(v,layout,'xaxis1')
 		elif isinstance(v,go.YAxis):
@@ -993,12 +992,7 @@ def get_ref(figure):
 
 def get_def(figure):
 	d={}
-	if 'scene' in figure['layout'] and figure['layout']['scene']._props is not None:
-		items = list(figure['layout']['scene']._props.items())
-		list(figure['layout']._props.items())
-	else:
-		items = list(figure['layout']._props.items())
-
+	items=list(figure['layout']['scene'].items()) if 'scene' in figure['layout'] else list(figure['layout'].items())
 	for k,v in items:
 		if 'axis' in k:
 			d['{0}{1}'.format(k[0],1 if k[-1]=='s' else k[-1])]=v
@@ -1006,12 +1000,7 @@ def get_def(figure):
 
 def get_len(figure):
 	d={}
-
-	if 'scene' in figure['layout'] and figure['layout']['scene']._props is not None:
-		keys = list(figure['layout']['scene']._props.keys())
-	else:
-		keys = list(figure['layout']._props.keys())
-
+	keys=list(figure['layout']['scene'].keys()) if 'scene' in figure['layout'] else list(figure['layout'].keys())
 	for k in keys:
 		if 'axis' in k:
 			d[k[0]] = d[k[0]]+1 if k[0] in d else 1
@@ -1019,10 +1008,7 @@ def get_len(figure):
 
 def get_which(figure):
 	d={}
-	if 'scene' in figure['layout'] and figure['layout']['scene']._props is not None:
-		keys = list(figure['layout']['scene']._props.keys())
-	else:
-		keys = list(figure['layout']._props.keys())
+	keys=list(figure['layout']['scene'].keys()) if 'scene' in figure['layout'] else list(figure['layout'].keys())
 	for k in keys:
 		if 'axis' in k:
 			if k[0] in d:
@@ -1552,12 +1538,11 @@ def _update_traces(self,**kwargs):
 def _move_axis(self,xaxis=None,yaxis=None):
 	def update_axis(self,axis):
 		_axis=axis[0]
-		# FIXME TKP
-		# from_axis=self.data[0].pop('{0}axis'.format(_axis),'{0}1'.format(_axis))
-		# from_axis=_axis+'axis'+from_axis[1:]
-		# to_axis=_axis+'axis'+axis[1:]
-		# self.layout[to_axis]=self.layout.pop(from_axis)
-		# self.update_traces(**{'{0}axis'.format(_axis):axis})
+		from_axis=self.data[0].pop('{0}axis'.format(_axis),'{0}1'.format(_axis))
+		from_axis=_axis+'axis'+from_axis[1:]
+		to_axis=_axis+'axis'+axis[1:]
+		self.layout[to_axis]=self.layout.pop(from_axis)
+		self.update_traces(**{'{0}axis'.format(_axis):axis})
 	
 	if xaxis:
 		update_axis(self,xaxis)

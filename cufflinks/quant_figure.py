@@ -1063,7 +1063,7 @@ class QuantFig(object):
 			local_kwargs,params=get_params(['fill','fillcolor'],params,display)
 			fig=df.ta_figure(study=kind,**params)
 			if local_kwargs['fill']:
-				fillcolor=local_kwargs.pop('fillcolor', fig.data[2].line.color or 'rgba(200,200,200,.1)')
+				fillcolor=local_kwargs.pop('fillcolor',fig.data[2].line.get('color','rgba(200,200,200,.1)'))
 				fillcolor=colors.to_rgba(fillcolor,.1)
 				fig.data[2].update(fill='tonexty',fillcolor=fillcolor)
 		
@@ -1212,7 +1212,7 @@ class QuantFig(object):
 			fig=tools.merge_figures(figures)
 			fig['layout']['xaxis1']['anchor']='y2'
 		domains=self._panel_domains(**panel_data)
-		# fig.layout.update(**domains)  # FIXME TKP
+		fig.layout.update(**domains)
 		if not d.get('rangeslider',False):
 			try:
 				del fig['layout']['yaxis1']
