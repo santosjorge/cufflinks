@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import plotly.offline as py_offline
 import plotly.plotly as py
-import plotly.graph_objs as go
+from plotly.graph_objs import XAxis, YAxis, Figure, Data
 
 from . import auth, ta
 from .colors import normalize, to_rgba
@@ -34,8 +34,8 @@ __LAYOUT_AXIS=['autorange','autotick','backgroundcolor','categoryarray','categor
 			   'ticksuffix','ticktext','ticktextsrc','tickvals','tickvalssrc','tickwidth','titlefont',
 			   'zeroline','zerolinecolor','zerolinewidth']
 
-__LAYOUT_AXIS_X=['xaxis_'+_ for _ in go.XAxis().__dir__()]
-__LAYOUT_AXIS_Y=['yaxis_'+_ for _ in go.YAxis().__dir__()]
+__LAYOUT_AXIS_X=['xaxis_'+_ for _ in XAxis().__dir__()]
+__LAYOUT_AXIS_Y=['yaxis_'+_ for _ in YAxis().__dir__()]
 
 __LAYOUT_KWARGS = []
 [__LAYOUT_KWARGS.extend(_) for _ in [__LAYOUT_VALID_KWARGS,__SHAPES_KWARGS,__GEO_KWARGS,__ANN_KWARGS,__LAYOUT_AXIS,
@@ -542,7 +542,7 @@ def strip_figures(figure):
 	"""
 	fig=[]
 	for trace in figure['data']:
-		fig.append(go.Figure(data=[trace],layout=figure['layout']))
+		fig.append(dict(data=[trace],layout=figure['layout']))
 	return fig
 
 
@@ -597,8 +597,8 @@ def merge_figures(figures):
 		figures : list(Figures)
 			List of figures to be merged. 
 	"""
-	figure=go.Figure()
-	data=go.Data()
+	figure={}
+	data={}
 	for fig in figures:
 		for trace in fig['data']:
 			data.append(trace)
@@ -722,11 +722,11 @@ def subplots(figures,shape=None,
 		else:
 			cols=2
 			rows=len(figures)//2+len(figures)%2
-	sp=get_subplots(rows=rows,cols=cols,
-				  shared_xaxes=shared_xaxes, shared_yaxes=shared_yaxes,
-				  start_cell=start_cell, theme=theme,base_layout=base_layout,
-				  **kwargs)
-	list_ref=(col for row in sp._grid_ref for col in row)
+	sp,grid_ref=get_subplots(rows=rows,cols=cols,
+				             shared_xaxes=shared_xaxes, shared_yaxes=shared_yaxes,
+				             start_cell=start_cell, theme=theme,base_layout=base_layout,
+				             **kwargs)
+	list_ref=(col for row in grid_ref for col in row)
 	for i in range(len(figures)):
 		while True:
 			lr=next(list_ref)
@@ -854,11 +854,17 @@ def get_subplots(rows=1,cols=1,
 		theme = auth.get_config_file()['theme']
 
 	layout= base_layout if base_layout else getLayout(theme)
+
+	print('\n\n\n\n\n')
+	print(layout)
+	print('\n\n\n\n\n')
 	sp=py.plotly.tools.make_subplots(rows=rows,cols=cols,shared_xaxes=shared_xaxes,
 										   shared_yaxes=shared_yaxes,print_grid=False,
 											start_cell=start_cell,**kwargs)
+	sp, grid_ref = sp.to_dict(), sp._grid_ref
+
 	for k,v in list(layout.items()):
-		if not isinstance(v,go.XAxis) and not isinstance(v,go.YAxis):
+		if not isinstance(v,XAxis) and not isinstance(v,YAxis):
 			sp['layout'].update({k:v})
 
 	# if 'subplot_titles' in kwargs:
@@ -874,12 +880,12 @@ def get_subplots(rows=1,cols=1,
 			sp_item.update({k:v})
 
 	for k,v in list(sp['layout'].items()):
-		if isinstance(v,go.XAxis):
+		if isinstance(v,XAxis):
 			update_items(v,layout,'xaxis1')
-		elif isinstance(v,go.YAxis):
+		elif isinstance(v,YAxis):
 			update_items(v,layout,'xaxis1')
 
-	return sp
+	return sp, grid_ref
 
 # Candlesticks and OHLC
 
@@ -893,7 +899,7 @@ def get_ohlc(df,up_color=None,down_color=None,theme=None,layout=None,**kwargs):
 	args=[df[c_dir[_]] for _ in ohlc]
 	args.append(df.index)
 	fig=py.plotly.tools.FigureFactory.create_ohlc(*args,**kwargs)
-	ohlc_bars=go.Figure()
+	ohlc_bars={}
 	ohlc_bars['data']=fig['data']
 	ohlc_bars['layout']=fig['layout']
 	data=ohlc_bars['data']
@@ -914,7 +920,7 @@ def get_candle(df,up_color=None,down_color=None,theme=None,layout=None,**kwargs)
 	args=[df[c_dir[_]] for _ in ohlc]
 	args.append(df.index)
 	fig=py.plotly.tools.FigureFactory.create_candlestick(*args,**kwargs)
-	candle=go.Figure()
+	candle={}
 	candle['data']=fig['data']
 	candle['layout']=layout
 	data=candle['data']
@@ -1075,7 +1081,7 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 			Sets the title of the axis
 			Applies only to new axis
 	"""
-	fig=go.Figure()
+	fig={}
 	fig_cpy=self.copy()
 	fig['data']=fig_cpy['data']
 	fig['layout']=fig_cpy['layout']
@@ -1432,7 +1438,7 @@ def get_error_bar(axis='y',type='data',values=None,values_minus=None,color=None,
 
 def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=None,color=None,thickness=1,width=None,
 				 opacity=None,**kwargs):
-	figure=go.Figure(copy.deepcopy(figure))
+	figure=copy.deepcopy(figure)
 	if 'value' in kwargs:
 		values=kwargs['value']
 	data=figure['data']
@@ -1563,10 +1569,10 @@ def is_offline():
 
 
 
-go.Figure.axis=axis
-go.Figure.trace_dict=trace_dict
-go.Figure.set_axis=_set_axis
-go.Figure.update_traces=_update_traces
-go.Figure.move_axis=_move_axis
-go.Figure.nodata=_figure_no_data
-go.Data.nodata=_nodata
+Figure.axis=axis
+Figure.trace_dict=trace_dict
+Figure.set_axis=_set_axis
+Figure.update_traces=_update_traces
+Figure.move_axis=_move_axis
+Figure.nodata=_figure_no_data
+Data.nodata=_nodata

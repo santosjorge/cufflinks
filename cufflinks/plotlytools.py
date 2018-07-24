@@ -34,7 +34,7 @@ def dict_to_iplot(d):
 	return go.Data(l)
 
 
-def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',interpolation='linear',symbol='circle-dot',size='12',fill=False,
+def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',interpolation='linear',symbol='dot',size='12',fill=False,
 		width=3,dash='solid',sortbars=False,keys=False,bestfit=False,bestfit_colors=None,
 		mean=False,mean_colors=None,asDates=False,asTimestamp=False,text=None,**kwargs):
 	"""
@@ -915,7 +915,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 
 						if orientation=='h':
 							__['y']=__['x']
-							del __['x']
+							# del __['x'] # FIXME TKP
 						if bins:
 							if type(bins) in (tuple,list):
 								try:
