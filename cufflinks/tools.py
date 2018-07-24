@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import plotly.offline as py_offline
 import plotly.plotly as py
-from plotly.graph_objs import XAxis, YAxis, Figure, Data
+from plotly.graph_objs import XAxis, YAxis, Figure, Data, Scene, Annotation, ErrorX, ErrorY, Annotations, Scatter, Line
 
 from . import auth, ta
 from .colors import normalize, to_rgba
@@ -52,7 +52,7 @@ def getTheme(theme=None):
 		theme = auth.get_config_file()['theme']
 
 	if theme in THEMES:
-		return copy.deepcopy(THEMES[theme])
+		return updateColors(copy.deepcopy(THEMES[theme]))
 	else:
 		raise Exception("Invalid Theme: {0}".format(theme))
 
@@ -63,18 +63,20 @@ def getThemes():
 	return list(THEMES.keys())
 
 def updateColors(layout):
-       for k,v in list(layout.items()):
-               if isinstance(v,dict):
-                       updateColors(v)
-               else:
-                       if isinstance(v,list):
-                               for _ in v:
-                                       if isinstance(_,dict):
-                                               updateColors(_)
-                       if 'color' in k.lower():
-                               if 'rgba' not in v:
-                                       layout[k]=normalize(v)
-       return layout
+	for k,v in list(layout.items()):
+		if isinstance(v,dict):
+			updateColors(v)
+		else:
+			if isinstance(v,list):
+				for _ in v:
+					if isinstance(_,dict):
+						updateColors(_)
+			if 'colorscale' in k.lower():
+				continue
+			if 'color' in k.lower():
+				if 'rgba' not in v:
+					layout[k]=normalize(v)
+	return layout
 
 
 def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
@@ -213,7 +215,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		theme = auth.get_config_file()['theme']
 
 	theme_data = getTheme(theme)
-	layout=updateColors(theme_data['layout'])
+	layout=theme_data['layout']
 	layout['xaxis1'].update({'title':xTitle})
 	layout['yaxis1'].update({'title':yTitle})
 
@@ -271,7 +273,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 			layout=deep_update(layout,theme_data['3d'])
 		zaxis=layout['xaxis1'].copy()
 		zaxis.update(title=zTitle)
-		scene=go.Scene(xaxis=layout['xaxis1'].copy(),yaxis=layout['yaxis1'].copy(),zaxis=zaxis)
+		scene=Scene(xaxis=layout['xaxis1'].copy(),yaxis=layout['yaxis1'].copy(),zaxis=zaxis)
 		layout.update(scene=scene)
 		del layout['xaxis1']
 		del layout['yaxis1']
@@ -476,12 +478,12 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 		try:
 			_annotation=dict_replace_keyword({},'font',annotation,False)
 			_annotation=dict_replace_keyword(_annotation,'font',kwargs,False)
-			local_list.append(go.Annotation(_annotation))
+			local_list.append(Annotation(_annotation))
 			
 		except:
 			if 'title' in annotation:
 				local_list.append(
-						go.Annotation(	
+						Annotation(	
 								text=annotation['title'],
 								showarrow=False,
 								x=0,
@@ -501,7 +503,7 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 				else:
 					maxv=df.ix[k].sum() if k in df.index else 0
 					yref='y1'
-				ann=go.Annotation(
+				ann=Annotation(
 								x=k,
 								y=maxv,
 								xref='x',
@@ -528,7 +530,7 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 	_list_ann=[]
 	for ann in annotations:
 		_list_ann.extend(check_ann(ann))
-	return go.Annotations(_list_ann)
+	return Annotations(_list_ann)
 
 
 def strip_figures(figure):
@@ -854,10 +856,6 @@ def get_subplots(rows=1,cols=1,
 		theme = auth.get_config_file()['theme']
 
 	layout= base_layout if base_layout else getLayout(theme)
-
-	print('\n\n\n\n\n')
-	print(layout)
-	print('\n\n\n\n\n')
 	sp=py.plotly.tools.make_subplots(rows=rows,cols=cols,shared_xaxes=shared_xaxes,
 										   shared_yaxes=shared_yaxes,print_grid=False,
 											start_cell=start_cell,**kwargs)
@@ -1105,7 +1103,7 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 			try:
 				new_axis=fig.axis['dom']['y'][domain][side]
 			except KeyError:
-				axis=go.YAxis(fig.axis['def'][curr_y].copy())
+				axis=YAxis(fig.axis['def'][curr_y].copy())
 				### check overlaying values
 				axis.update(title=title,overlaying=curr_y,side=side,anchor=curr_x)
 				axis_idx=str(fig.axis['len']['y']+1)
@@ -1409,7 +1407,7 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,
 
 def get_error_bar(axis='y',type='data',values=None,values_minus=None,color=None,thickness=1,width=5,
 				 opacity=1):
-	error=go.ErrorY() if axis=='y' else go.ErrorX()
+	error=ErrorY() if axis=='y' else ErrorX()
 	if type=='data':
 		if isinstance(values,list) or isinstance(values,np.ndarray):
 			if values_minus:
@@ -1472,8 +1470,8 @@ def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=N
 				y_up=[trace['y'][_]+value[_] for _ in range(len(value))]
 				y_down=[trace['y'][_]-min_value[_] for _ in range(len(min_value))]
 			y=trace['y']
-			upper=go.Scatter(y=y_up,mode='lines',showlegend=False,
-							 line=go.Line(width=width),x=trace['x'])
+			upper=Scatter(y=y_up,mode='lines',showlegend=False,
+							 line=Line(width=width),x=trace['x'])
 			if 'yaxis' in trace:
 				upper['yaxis']=trace['yaxis']
 			if color:
@@ -1500,24 +1498,6 @@ def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=N
 				figure['data'].extend([upper,lower])
 	return figure
 
-
-def updateColors(d):
-	for k,v in list(d.items()):
-		if isinstance(v,dict):
-			updateColors(v)
-		else:
-			if isinstance(v,list):
-				if 'color' in k:
-					d[k]=[normalize(_) for _ in v]
-				else:
-					for _ in v:
-						if isinstance(_,dict):
-							updateColors(_)
-			else:
-				if 'color' in k.lower():
-					if 'rgba' not in v:
-						d[k]=normalize(v)
-	return d
 
 def _nodata(self):
 	d=[]

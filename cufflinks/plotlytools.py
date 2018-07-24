@@ -31,7 +31,7 @@ def dict_to_iplot(d):
 	l=[]
 	for v in list(d.values()):
 		l.append(v)
-	return go.Data(l)
+	return l
 
 
 def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',interpolation='linear',symbol='dot',size='12',fill=False,
@@ -180,7 +180,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 			line['line']['dash']='dash'
 			if not bestfit_colors:
 				line['line']['color']=to_rgba(line['line']['color'],.6)
-		data=go.Data(lines_plotly)
+		data=lines_plotly
 		data.extend(bestfit_lines)
 		return data
 
@@ -196,13 +196,13 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 			line['line']['dash']='dash'
 			if not mean_colors:
 				line['line']['color']=to_rgba(line['line']['color'],.6)
-		data=go.Data(lines_plotly)
+		data=[lines_plotly]
 		data.extend(mean_lines)
 		return data
-	return go.Data(lines_plotly)
+	return lines_plotly
 
 def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,title='',xTitle='',yTitle='',zTitle='',theme=None,colors=None,colorscale=None,fill=False,width=None,
-			dash='solid',mode='lines',interpolation='linear',symbol='circle-dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
+			dash='solid',mode='lines',interpolation='linear',symbol='circle',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
 			bestfit_colors=None,mean=False,mean_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,
 			zerolinecolor=None,margin=None,labels=None,values=None,secondary_y='',secondary_y_title='',subplots=False,shape=None,error_x=None,
@@ -767,7 +767,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 
 	if not data:
 		if categories:
-			data=go.Data()
+			data=[]
 			if 'bar' in kind:
 				df=self.copy()
 				df=df.set_index(categories)
@@ -842,8 +842,12 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 							trace=trace.to_iplot(colors={'positive':'green','negative':'red'},width=0.5)
 						else:
 							trace=self.apply(lambda x:x[0]*1.0/x[1],axis=1).to_iplot(colors=['green'],width=1)
-						trace.update({'xaxis':'x2','yaxis':'y2','fill':'tozeroy',
-										'name':kind.capitalize(),'connectgaps':False,'showlegend':False})
+						print('\n\n\n\n\n\n\n\n')
+						print(trace)
+						print('\n\n\n\n\n\n\n\n')
+						for t in trace:
+							t.update({'xaxis':'x2','yaxis':'y2','fill':'tozeroy',
+											'name':kind.capitalize(),'connectgaps':False,'showlegend':False})
 						data.append(go.Scatter(trace[0]))
 						if kind=='spread':
 							data.append(go.Scatter(trace[1]))
@@ -883,13 +887,13 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				marker=go.Marker(color=clrs,size=z,symbol=symbol,
 								line=go.Line(width=width))
 				trace=go.Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
-				data=go.Data([trace])
+				data=[trace]
 			elif kind in ('box','histogram','hist'):
 				if isinstance(self,pd.core.series.Series):
 					df=pd.DataFrame({self.name:self})
 				else:
 					df=self.copy()
-				data=go.Data()
+				data=[]
 				clrs=get_colors(colors,colorscale,df.columns)
 				if 'hist' in kind:
 					barmode = 'overlay' if barmode=='' else	 barmode 
@@ -956,12 +960,12 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				zmin=kwargs.get('zmin',zmin)
 				zmax=kwargs.get('zmax',zmax)
 				if kind=='heatmap':
-					data=go.Data([go.Heatmap(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)])
+					data=[go.Heatmap(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)]
 				else:
-					data=go.Data([go.Surface(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)])
+					data=[go.Surface(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)]
 
 			elif kind in ('scatter3d','bubble3d'):
-				data=go.Data()
+				data=[]
 				keys=self[text].values if text else list(range(len(self)))
 				colors=get_colors(colors,colorscale,keys,asList=True)
 				mode='markers' if 'markers' not in mode else mode 
@@ -996,7 +1000,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				kw=check_kwargs(kwargs,PIE_KWARGS)
 				kw['textfont']={'color':kw.pop('textcolor',None)}
 				pie.update(kw)
-				data=go.Data()
+				data=[]
 				del layout['xaxis1']
 				del layout['yaxis1']
 				data.append(pie)
@@ -1075,7 +1079,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				if text:
 					geo_data.update(text=self[text])
 				validate=False
-				data=go.Data()
+				data=[]
 				data.append(geo_data)
 
 			# Figure Factory
