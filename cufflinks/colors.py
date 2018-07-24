@@ -12,6 +12,7 @@ from collections import deque
 from six import string_types
 from IPython.display import HTML, display
 
+from . import themes
 from .utils import inverseDict
 from .auth import get_config_file
 
@@ -296,14 +297,13 @@ def colorgen(colors=None, n=None, scale=None, theme=None):
             colorgen(['blue','red','pink'])
             colorgen(['#f03','rgb(23,25,25)'])
     """
-    from .themes import THEMES
     step = .1
     if not colors:
         if not scale:
             if not theme:
                 scale = get_config_file()['colorscale']
             else:
-                scale = THEMES[theme]['colorscale']
+                scale = themes.THEMES[theme]['colorscale']
         colors = get_scales(scale)
     dq = deque(colors)
     if n:
