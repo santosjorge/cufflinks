@@ -962,7 +962,8 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				if kind=='heatmap':
 					data=[go.Heatmap(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)]
 				else:
-					data=[go.Surface(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)]
+					# data=[go.Surface(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)] # FIXME TKP
+					data=[go.Surface(z=z,x=x,y=y,colorscale=colorscale)]
 
 			elif kind in ('scatter3d','bubble3d'):
 				data=[]
