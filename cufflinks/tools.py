@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import plotly.offline as py_offline
 import plotly.plotly as py
-from plotly.graph_objs import XAxis, YAxis, Figure, Data, Scene, Annotation, ErrorX, ErrorY, Annotations, Scatter, Line
+from plotly.graph_objs import XAxis, YAxis, Figure, Data, Annotation, ErrorX, ErrorY, Annotations, Scatter, Line
 
 from . import auth, ta
 from .colors import normalize, to_rgba
@@ -273,7 +273,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 			layout=deep_update(layout,theme_data['3d'])
 		zaxis=layout['xaxis1'].copy()
 		zaxis.update(title=zTitle)
-		scene=Scene(xaxis=layout['xaxis1'].copy(),yaxis=layout['yaxis1'].copy(),zaxis=zaxis)
+		scene=dict(xaxis=layout['xaxis1'].copy(),yaxis=layout['yaxis1'].copy(),zaxis=zaxis)
 		layout.update(scene=scene)
 		del layout['xaxis1']
 		del layout['yaxis1']
@@ -600,7 +600,7 @@ def merge_figures(figures):
 			List of figures to be merged. 
 	"""
 	figure={}
-	data={}
+	data=[]
 	for fig in figures:
 		for trace in fig['data']:
 			data.append(trace)

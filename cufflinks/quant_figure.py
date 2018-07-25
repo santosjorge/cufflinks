@@ -14,10 +14,12 @@ Try it out:
 
 from __future__ import absolute_import
 
+import plotly.graph_objs as go
 import json
 import copy
 import pandas as pd
 
+from .plotlytools import iplot as pt_iplot
 from . import tools
 from . import ta
 from . import utils
@@ -91,7 +93,7 @@ class QuantFig(object):
 		
 		# self.theme initial values
 		self.theme['theme']=kwargs.pop('theme',auth.get_config_file()['theme'])
-		self.theme['up_color']=kwargs.pop('up_color','java')
+		self.theme['up_color']=kwargs.pop('up_color','#17BECF')  # java
 		self.theme['down_color']=kwargs.pop('down_color','grey')
 		
 		# self.panels initial values
@@ -1052,7 +1054,7 @@ class QuantFig(object):
 				else:
 					bar_colors.append(down_color)
 			fig=df[params['column']].figure(kind='bar',theme=params['theme'],**kwargs)
-			fig.data[0].update(marker=dict(color=bar_colors,line=dict(color=bar_colors)),
+			fig['data'][0].update(marker=dict(color=bar_colors,line=dict(color=bar_colors)),
 					  opacity=0.8)
 
 		if kind in ('sma','ema','atr','adx','dmi','ptps'):
@@ -1063,9 +1065,9 @@ class QuantFig(object):
 			local_kwargs,params=get_params(['fill','fillcolor'],params,display)
 			fig=df.ta_figure(study=kind,**params)
 			if local_kwargs['fill']:
-				fillcolor=local_kwargs.pop('fillcolor',fig.data[2].line.get('color','rgba(200,200,200,.1)'))
+				fillcolor=local_kwargs.pop('fillcolor',fig['data'][2].line['color'] or 'rgba(200,200,200,.1)')
 				fillcolor=colors.to_rgba(fillcolor,.1)
-				fig.data[2].update(fill='tonexty',fillcolor=fillcolor)
+				fig['data'][2].update(fill='tonexty',fillcolor=fillcolor)
 		
 		if kind=='rsi':
 			locals_list=['rsi_lower','rsi_upper','showbands']
@@ -1104,24 +1106,26 @@ class QuantFig(object):
 			fig=df.ta_figure(study=kind,**params)
 
 		if local_kwargs.get('legendgroup',False):
-			fig.update_traces(legendgroup=name,showlegend=False)
-			fig.data[0].update(showlegend=True,name=name)
+			for trace in fig['data']:
+				trace['legendgroup'] = name
+				trace['showlegend'] = False
+			fig['data'][0].update(showlegend=True,name=name)
 		
 		## Has Bands
 		if kind in ('rsi','cci'):
 			_upper='{0}_upper'.format(kind)
 			_lower='{0}_lower'.format(kind)
-			del fig.layout['shapes']
+			del fig['layout']['shapes']
 			if local_kwargs['showbands']:
 				up_color=kwargs.get('up_color',self.theme['up_color'])
 				down_color=kwargs.get('down_color',self.theme['down_color'])
 				for _ in (_lower,_upper):
-					trace=fig.data[0].copy()
+					trace=copy.deepcopy(fig['data'][0])
 					trace.update(y=[local_kwargs[_] for x in trace['x']])
 					trace.update(name='')
 					color=down_color if 'lower' in _ else up_color
 					trace.update(line=dict(color=color,width=1))
-					fig.data.append(trace)
+					fig['data'].append(trace)
 
 
 		return fig
@@ -1183,15 +1187,24 @@ class QuantFig(object):
 				d=utils.merge_dict(d,_)
 		d=utils.deep_update(d,kwargs)
 		d=tools.updateColors(d)
+
 		fig=df.figure(**d)
+
 		if d['kind'] not in ('candle','candlestick','ohlc'):
-			fig.move_axis(yaxis='y2')
+			# fig.move_axis(yaxis='y2')  # FIXME TKP
+			pass
 		else:
 			if not datalegend:
-				fig.data[0]['decreasing'].update(showlegend=False)
-				fig.data[0]['increasing'].update(showlegend=False)
+				fig['data'][0]['decreasing'].update(showlegend=False)
+				fig['data'][0]['increasing'].update(showlegend=False)
+
 		panel_data['n']=1
-		which=fig.axis['which']['y']
+
+		# print([x['yaxis'] for x in fig['data']])
+		# print([x for x in fig['layout'].keys() if 'yaxis' in x])
+
+		# which=fig.axis['which']['y']
+		which = [x['yaxis'] for x in fig['data']]
 		which.sort()
 		max_panel=int(which[-1][1:])
 		figures=[]
@@ -1202,26 +1215,27 @@ class QuantFig(object):
 			for k,v in list(self.studies.items()):
 				study_fig=self._get_study_figure(k,**kwargs)
 				if v['kind'] in ('boll','sma','ema','ptps'):
-					study_fig.move_axis(yaxis='y2')                
+					# study_fig.move_axis(yaxis='y2') # FIXME TKP
+					pass
 				if v['kind'] in ('rsi','volume','macd','atr','adx','cci','dmi'):
 					max_panel+=1
 					panel_data['n']+=1
-					study_fig.move_axis(yaxis='y{0}'.format(max_panel))
+					# study_fig.move_axis(yaxis='y{0}'.format(max_panel))  # FIXME TKP
 				figures.append(study_fig)
 			figures.append(fig)
 			fig=tools.merge_figures(figures)
 			fig['layout']['xaxis1']['anchor']='y2'
 		domains=self._panel_domains(**panel_data)
-		fig.layout.update(**domains)
+		fig['layout'].update(**domains)
 		if not d.get('rangeslider',False):
 			try:
 				del fig['layout']['yaxis1']
 			except:
 				pass
 		if asFigure:
-			return fig
+			return go.Figure(fig)
 		else:
-			return fig.iplot(**export_kwargs)
+			return pt_iplot(fig, **export_kwargs)
 	
 	def __getitem__(self,key):
 			return self.__dict__[key]
