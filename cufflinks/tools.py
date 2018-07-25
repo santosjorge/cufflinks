@@ -475,53 +475,53 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 
 	def check_ann(annotation):
 		local_list=[]
-		try:
-			_annotation=dict_replace_keyword({},'font',annotation,False)
-			_annotation=dict_replace_keyword(_annotation,'font',kwargs,False)
-			local_list.append(Annotation(_annotation))
-			
-		except:
-			if 'title' in annotation:
-				local_list.append(
-						Annotation(	
-								text=annotation['title'],
-								showarrow=False,
-								x=0,
-								y=1,
-								xref='paper',
-								yref='paper',
-								font={'size':24 if not 'fontsize' in kwargs else kwargs['fontsize']}
-							)
-					)
-				del annotation['title']
+		# try:
+		# _annotation=dict_replace_keyword({},'font',annotation,False)
+		# _annotation=dict_replace_keyword(_annotation,'font',kwargs,False)
+		# local_list.append(Annotation(_annotation))
 		
-			for k,v in list(annotation.items()):
-				if kind in ('candlestick','ohlc','candle'):
-					d=ta._ohlc_dict(df)
-					maxv=df[d['high']].ix[k]
-					yref='y2'
-				else:
-					maxv=df.ix[k].sum() if k in df.index else 0
-					yref='y1'
-				ann=Annotation(
-								x=k,
-								y=maxv,
-								xref='x',
-								yref=yref,
-								text=v,
-								showarrow=True,
-								arrowhead=7,
-								ax=0,
-								ay=-100,
-								textangle=-90
-								)
-				local_list.append(ann)
+		# except:
+		if 'title' in annotation:
+			local_list.append(
+					Annotation(	
+							text=annotation['title'],
+							showarrow=False,
+							x=0,
+							y=1,
+							xref='paper',
+							yref='paper',
+							font={'size':24 if not 'fontsize' in kwargs else kwargs['fontsize']}
+						)
+				)
+			del annotation['title']
+	
+		for k,v in list(annotation.items()):
+			if kind in ('candlestick','ohlc','candle'):
+				d=ta._ohlc_dict(df)
+				maxv=df[d['high']].ix[k]
+				yref='y2'
+			else:
+				maxv=df.ix[k].sum() if k in df.index else 0
+				yref='y1'
+			ann=Annotation(
+							x=k,
+							y=maxv,
+							xref='x',
+							yref=yref,
+							text=v,
+							showarrow=True,
+							arrowhead=7,
+							ax=0,
+							ay=-100,
+							textangle=-90
+							)
+			local_list.append(ann)
 
-			_l=[]
-			for i in local_list:
-				_l.append(dict_replace_keyword(i,'font',kwargs,True))
-			
-			local_list=_l
+		_l=[]
+		for i in local_list:
+			_l.append(dict_replace_keyword(i,'font',kwargs,True))
+		
+		local_list=_l
 
 		return local_list
 

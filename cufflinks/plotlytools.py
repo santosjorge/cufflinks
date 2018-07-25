@@ -842,15 +842,12 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 							trace=trace.to_iplot(colors={'positive':'green','negative':'red'},width=0.5)
 						else:
 							trace=self.apply(lambda x:x[0]*1.0/x[1],axis=1).to_iplot(colors=['green'],width=1)
-						print('\n\n\n\n\n\n\n\n')
-						print(trace)
-						print('\n\n\n\n\n\n\n\n')
 						for t in trace:
 							t.update({'xaxis':'x2','yaxis':'y2','fill':'tozeroy',
 											'name':kind.capitalize(),'connectgaps':False,'showlegend':False})
-						data.append(go.Scatter(trace[0]))
+						data.append(trace[0])
 						if kind=='spread':
-							data.append(go.Scatter(trace[1]))
+							data.append(trace[1])
 						layout['yaxis1'].update({'domain':[.3,1]})
 						layout['yaxis2']=copy.deepcopy(layout['yaxis1'])
 						layout['xaxis2']=copy.deepcopy(layout['xaxis1'])
@@ -1351,7 +1348,9 @@ def iplot(figure,validate=True,sharing=None,filename='',
 
 	## Filename Handling
 	if not filename:
-		if figure['layout']['title']:
+		if not figure.get('layout', None):
+			figure['layout'] = {}
+		if figure['layout'].get('title', ''):
 			filename=figure['layout']['title']
 		else:
 			filename='Plotly Playground {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
