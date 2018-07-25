@@ -684,9 +684,10 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					'error_width','error_opacity']
 	EXPORT_KWARGS=['display_image','scale']
 	FF_DISTPLOT=["group_labels", "bin_size", "curve_type", "rug_text", "show_hist", "show_curve", "show_rug"]
+	FF_VIOLIN=["data_header","group_header","show_rug","sort"]
 	kwargs_list = [tools.__LAYOUT_KWARGS,BUBBLE_KWARGS,TRACE_KWARGS,
 				   OHLC_KWARGS,PIE_KWARGS,HEATMAP_SURFACE_KWARGS,SUBPLOT_KWARGS,GEO_KWARGS,ERROR_KWARGS,EXPORT_KWARGS,
-				   FF_DISTPLOT]
+				   FF_DISTPLOT,FF_VIOLIN]
 	[valid_kwargs.extend(_) for _ in kwargs_list]
 
 	dict_modifiers_keys = ['line']
@@ -764,9 +765,9 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 								bargap=bargap,bargroupgap=bargroupgap,annotations=annotations,gridcolor=gridcolor,
 							   dimensions=dimensions,
 								zerolinecolor=zerolinecolor,margin=margin,is3d='3d' in kind,**l_kwargs)
-
+	
 	if not data:
-		if categories:
+		if categories and kind not in ('violin'):
 			data=[]
 			if 'bar' in kind:
 				df=self.copy()
@@ -1092,6 +1093,40 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 										 colors=colors,**kw)
 				data=fig.data
 				layout=tools.merge_dict(layout,fig.layout)
+			elif kind in ('violin'):
+				df=pd.DataFrame(self) if type(self)==pd.core.series.Series else self.copy()
+				kw=check_kwargs(kwargs,FF_VIOLIN)
+				kw['rugplot']=kw.pop('show_rug',True)
+				kw['title']=title
+				if 'group_header' not in kw:
+					kw['group_header']=categories if categories else None
+				categories=kw.get('group_header')
+				colors=get_colors(colors,colorscale,df[categories].value_counts().values if categories else df.keys(),asList=True)
+				kw['colors']=colors
+				if categories:
+					for _ in range(2,df[categories].value_counts().size+1):
+						layout['xaxis{0}'.format(_)]=layout['xaxis1'].copy()
+					if categories not in df:
+						raise CufflinksError('Column "{0}" not found in DataFrame'.format(categories))
+					elif len(df.columns)==1:
+						raise CufflinksError('When "categories" are specified, two columns are expected. \n Only one column was found.')
+					elif len(df.columns)==2:
+						cols=list(df.columns)
+						cols.remove(categories)
+						kw['data_header']=cols[0]
+					else: 
+						if 'data_header' not in kw:
+							raise CufflinksError('data_header must be the column name with the desired numeric data for the violin plot.')
+				else:
+					if len(df.columns)==1:
+						kw['data_header']=df.columns[0]
+					elif len(df.columns)>1:
+						if 'data_header' not in kw:
+							raise CufflinksError('data_header must be the column name with the desired numeric data for the violin plot.')
+				fig=ff.create_violin(df,**kw)
+				data=fig.data
+				layout=tools.merge_dict(layout,fig.layout)
+
 				
 
 	
