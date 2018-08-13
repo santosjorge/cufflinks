@@ -853,7 +853,7 @@ def get_subplots(rows=1,cols=1,
 	if not theme:
 		theme = auth.get_config_file()['theme']
 
-	layout= base_layout if base_layout else getLayout(theme)
+	layout= base_layout if base_layout else getLayout(theme,**check_kwargs(kwargs,__LAYOUT_AXIS))
 	sp=py.plotly.tools.make_subplots(rows=rows,cols=cols,shared_xaxes=shared_xaxes,
 										   shared_yaxes=shared_yaxes,print_grid=False,
 											start_cell=start_cell,**kwargs)
@@ -861,6 +861,16 @@ def get_subplots(rows=1,cols=1,
 		if not isinstance(v,go.XAxis) and not isinstance(v,go.YAxis):
 			sp['layout'].update({k:v})
 
+	def update_axis(fig,layout):
+		for axis, n in list(fig.axis['len'].items()):
+			for _ in range(1,n+1):
+				for k,v in list(layout['{0}axis1'.format(axis)].items()):
+					if k not in fig.layout['{0}axis{1}'.format(axis,_)]:
+						fig.layout['{0}axis{1}'.format(axis,_)][k]=v
+
+	update_axis(sp,layout)
+	# 124 - zeroline on the first figure
+	
 	# if 'subplot_titles' in kwargs:
 	# 	if 'annotations' in layout:
 	# 		annotation=sp['layout']['annotations'][0]
@@ -869,15 +879,18 @@ def get_subplots(rows=1,cols=1,
 	# 	for ann in sp['layout']['annotations']:
 	# 		ann.update(font=dict(color=annotation['font']['color']))
 
-	def update_items(sp_item,layout,axis):
-		for k,v in list(layout[axis].items()):
-			sp_item.update({k:v})
+	# def update_items(sp_item,layout,axis):
+	# 	for k,v in list(layout[axis].items()):
+	# 		sp_item.update({k:v})
 
-	for k,v in list(sp['layout'].items()):
-		if isinstance(v,go.XAxis):
-			update_items(v,layout,'xaxis1')
-		elif isinstance(v,go.YAxis):
-			update_items(v,layout,'xaxis1')
+	# for k,v in list(sp['layout'].items()):
+	# 	if isinstance(v,go.XAxis):
+	# 		update_items(v,layout,'xaxis1')
+	# 	elif isinstance(v,go.YAxis):
+	# 		update_items(v,layout,'xaxis1')
+
+
+
 
 	return sp
 
