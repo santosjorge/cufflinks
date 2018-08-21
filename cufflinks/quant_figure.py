@@ -1199,10 +1199,6 @@ class QuantFig(object):
 
 		panel_data['n']=1
 
-		# print([x['yaxis'] for x in fig['data']])
-		# print([x for x in fig['layout'].keys() if 'yaxis' in x])
-
-		# which=fig.axis['which']['y']
 		which = [x['yaxis'] for x in fig['data']]
 		which.sort()
 		max_panel=int(which[-1][1:])
@@ -1243,5 +1239,4 @@ class QuantFig(object):
 	def __repr__(self):
 		_d=self.__dict__.copy()
 		del _d['df']
-		print(json.dumps(_d,sort_keys=True, indent=4))
 		return ''

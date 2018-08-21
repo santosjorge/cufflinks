@@ -1432,7 +1432,6 @@ def iplot(figure,validate=True,sharing=None,filename='',
 
 	## iplot
 	if offline.is_offline() and not online:	
-		return FigureWidget(data=figure['data'], layout=figure['layout'])
 		return offline.py_offline.iplot(figure,validate=validate, filename=filename, show_link=show_link,link_text=link_text)
 	else:		
 		return py.iplot(figure,validate=validate,sharing=sharing,
