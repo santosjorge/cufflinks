@@ -908,8 +908,8 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 							__['x'],__['y']=__['y'],__['x']	
 						
 					else:
-						__=go.Histogram(x=df[_].values.tolist(),name=_,
-								marker=HistMarker(color=clrs[_], line=dict(width=width)),
+						__=dict(x=df[_].values.tolist(),name=_,
+								marker=dict(color=clrs[_], line=dict(width=width)),
 								orientation=orientation,
 								opacity=kwargs['opacity'] if 'opacity' in kwargs else .8, histfunc=histfunc,
 								histnorm=histnorm)
@@ -918,8 +918,8 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 
 						if orientation=='h':
 							__['y']=__['x']
-							import ipdb; ipdb.set_trace()
-							# del __['x'] # FIXME TKP
+							del __['x']
+						__ = go.Histogram(__)
 						if bins:
 							if type(bins) in (tuple,list):
 								try:
