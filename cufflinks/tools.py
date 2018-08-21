@@ -4,7 +4,8 @@ import numpy as np
 import pandas as pd
 import plotly.offline as py_offline
 import plotly.plotly as py
-from plotly.graph_objs import XAxis, YAxis, Figure, Data, Annotation, ErrorX, ErrorY, Annotations, Scatter, Line
+from plotly.graph_objs import Figure, Data, Annotation, ErrorX, ErrorY, Annotations, Scatter, Line
+from plotly.graph_objs.layout import XAxis, YAxis
 
 from . import auth, ta
 from .colors import normalize, to_rgba
