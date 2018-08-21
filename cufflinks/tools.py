@@ -730,7 +730,6 @@ def subplots(figures,shape=None,
 				             start_cell=start_cell, theme=theme,base_layout=base_layout,
 				             **kwargs)
 	list_ref=(col for row in grid_ref for col in row)
-	import ipdb; ipdb.set_trace()
 	for i in range(len(figures)):
 		while True:
 			lr=next(list_ref)
@@ -864,7 +863,7 @@ def get_subplots(rows=1,cols=1,
 	sp, grid_ref = sp.to_dict(), sp._grid_ref
 
 	for k,v in list(layout.items()):
-		if not isinstance(v,XAxis) and not isinstance(v,YAxis):
+		if 'xaxis' not in k and 'yaxis' not in k:
 			sp['layout'].update({k:v})
 
 	# if 'subplot_titles' in kwargs:

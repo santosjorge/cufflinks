@@ -4,7 +4,6 @@ import time
 import copy
 # from plotly.graph_objs import *
 import plotly.graph_objs as go
-from plotly.graph_objs.histogram import Marker as HistMarker
 import plotly.figure_factory as ff
 from collections import defaultdict
 from IPython.display import display,Image
