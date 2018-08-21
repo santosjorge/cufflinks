@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import plotly.offline as py_offline
 import plotly.plotly as py
-from plotly.graph_objs import Figure, Data, Annotation, ErrorX, ErrorY, Annotations, Scatter, Line
+from plotly.graph_objs import Figure, Data, ErrorX, ErrorY, Scatter, Line
 from plotly.graph_objs.layout import XAxis, YAxis
 
 from . import auth, ta
@@ -484,7 +484,7 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 		# except:
 		if 'title' in annotation:
 			local_list.append(
-					Annotation(	
+					dict(	
 							text=annotation['title'],
 							showarrow=False,
 							x=0,
@@ -504,7 +504,7 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 			else:
 				maxv=df.ix[k].sum() if k in df.index else 0
 				yref='y1'
-			ann=Annotation(
+			ann=dict(
 							x=k,
 							y=maxv,
 							xref='x',
@@ -531,7 +531,7 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 	_list_ann=[]
 	for ann in annotations:
 		_list_ann.extend(check_ann(ann))
-	return Annotations(_list_ann)
+	return _list_ann
 
 
 def strip_figures(figure):
@@ -730,6 +730,7 @@ def subplots(figures,shape=None,
 				             start_cell=start_cell, theme=theme,base_layout=base_layout,
 				             **kwargs)
 	list_ref=(col for row in grid_ref for col in row)
+	import ipdb; ipdb.set_trace()
 	for i in range(len(figures)):
 		while True:
 			lr=next(list_ref)
