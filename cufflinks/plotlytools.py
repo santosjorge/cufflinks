@@ -72,15 +72,11 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 		symbol : string
 			The symbol that is drawn on the plot for each marker
 			Valid only when mode includes markers
-				dot
-				cross
+				circle
+				circle-dot
 				diamond
 				square
-				triangle-down
-				triangle-left
-				triangle-right
-				triangle-up
-				x
+				and many more...(see plotly.validators.scatter.marker.SymbolValidator.values)
 		size : string or int 
 			Size of marker 
 			Valid only if marker in mode
@@ -326,15 +322,11 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 						the dataframe
 			The symbol that is drawn on the plot for each marker
 			Valid only when mode includes markers
-				dot
-				cross
+				circle
+				circle-dot
 				diamond
 				square
-				triangle-down
-				triangle-left
-				triangle-right
-				triangle-up
-				x
+				and many more...(see plotly.validators.scatter.marker.SymbolValidator.values)
 		size : string or int 
 			Size of marker 
 			Valid only if marker in mode
