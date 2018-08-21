@@ -4,6 +4,7 @@ import time
 import copy
 # from plotly.graph_objs import *
 import plotly.graph_objs as go
+from plotly.graph_objs.histogram import Marker as HistMarker
 import plotly.figure_factory as ff
 from collections import defaultdict
 from IPython.display import display,Image
@@ -156,7 +157,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 			lines[key]["line"]={'color':colors[key],'width':width[key],'dash':dash[key], 'shape':interpolation[key]}
 			lines[key]["mode"]=mode[key]
 			if 'marker' in mode[key]:
-				lines[key]["marker"]=go.Marker(symbol=symbol[key],size=size)
+				lines[key]["marker"]=dict(symbol=symbol[key],size=size)
 			if fill:
 				lines[key]["fill"]='tonexty' if kind=='area' else 'tozeroy'
 				lines[key]["fillcolor"]=to_rgba(colors[key],kwargs['opacity'] if 'opacity' in kwargs else .3		)
@@ -800,16 +801,16 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					else:
 						_size=size
 					_data=go.Scatter3d(x=_x,y=_y,mode=mode,name=_,
-								marker=go.Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-												line=go.Line(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
+								marker=dict(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
+												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
 					if '3d' in kind:
 						_data=go.Scatter3d(x=_x,y=_y,z=_z,mode=mode,name=_,
-								marker=go.Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-												line=go.Line(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
+								marker=dict(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
+												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
 					else:
 						_data=go.Scatter(x=_x,y=_y,mode=mode,name=_,
-								marker=go.Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-												line=go.Line(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
+								marker=dict(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
+												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
 					if text:
 						_data.update(text=_text)
 					data.append(_data)
@@ -882,8 +883,8 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				clrs=colors if colors else get_scales(colorscale)
 				clrs=[clrs] if not isinstance(clrs,list) else clrs
 				clrs=[clrs[0]]*len(x) if len(clrs)==1 else clrs
-				marker=go.Marker(color=clrs,size=z,symbol=symbol,
-								line=go.Line(width=width))
+				marker=dict(color=clrs,size=z,symbol=symbol,
+								line=dict(width=width))
 				trace=go.Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
 				data=[trace]
 			elif kind in ('box','histogram','hist'):
@@ -899,8 +900,8 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				columns=keys if keys else df.columns
 				for _ in columns:
 					if kind=='box':
-						__=go.Box(y=df[_].values.tolist(),marker=go.Marker(color=clrs[_]),name=_,
-								line=go.Line(width=width),boxpoints=boxpoints)
+						__=go.Box(y=df[_].values.tolist(),marker=dict(color=clrs[_]),name=_,
+								line=dict(width=width),boxpoints=boxpoints)
 						# 114 - Horizontal Box
 						__['orientation']=orientation
 						if orientation=='h':
@@ -908,7 +909,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 						
 					else:
 						__=go.Histogram(x=df[_].values.tolist(),name=_,
-								marker=go.Marker(color=clrs[_], line=go.Line(width=width)),
+								marker=HistMarker(color=clrs[_], line=dict(width=width)),
 								orientation=orientation,
 								opacity=kwargs['opacity'] if 'opacity' in kwargs else .8, histfunc=histfunc,
 								histnorm=histnorm)
@@ -917,6 +918,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 
 						if orientation=='h':
 							__['y']=__['x']
+							import ipdb; ipdb.set_trace()
 							# del __['x'] # FIXME TKP
 						if bins:
 							if type(bins) in (tuple,list):
@@ -960,7 +962,6 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				if kind=='heatmap':
 					data=[go.Heatmap(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)]
 				else:
-					# data=[go.Surface(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)] # FIXME TKP
 					data=[go.Surface(z=z,x=x,y=y,colorscale=colorscale)]
 
 			elif kind in ('scatter3d','bubble3d'):
@@ -980,7 +981,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					size=[size for _ in range(len(keys))]	
 
 				_data=go.Scatter3d(x=df[x].values.tolist(),y=df[y].values.tolist(),z=df[z].values.tolist(),mode=mode,name=keys,
-									marker=go.Marker(color=colors,symbol=symbol,size=size,opacity=.8))
+									marker=dict(color=colors,symbol=symbol,size=size,opacity=.8))
 				if text:
 					_data.update(text=keys)
 				data.append(_data)
@@ -992,8 +993,8 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					raise CufflinksError('Missing: values')
 				labels=self[labels].values.tolist()
 				values=self[values].values.tolist()
-				marker=go.Marker(colors=get_colors(colors,colorscale,labels,asList=True))
-				marker.update(line=go.Line(color=kwargs.pop('linecolor',None),width=kwargs.pop('linewidth',width)))
+				marker=dict(colors=get_colors(colors,colorscale,labels,asList=True))
+				marker.update(line=dict(color=kwargs.pop('linecolor',None),width=kwargs.pop('linewidth',width)))
 				pie=go.Pie(values=values,labels=labels,name='',marker=marker)
 				
 				kw=check_kwargs(kwargs,PIE_KWARGS)
@@ -1064,12 +1065,12 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 						raise Exception("Choropleth maps require a 'location' and 'z' column names specified")
 					geo_data={'type':'choropleth','locations':self[locations],'z':self[z],
 							'colorscale':get_colorscale(colorscale),
-							'marker':get_marker(go.Marker(line=go.Line(width=width)))}
+							'marker':get_marker(dict(line=dict(width=width)))}
 				elif kind=='scattergeo':
 					if not all([x!=None for x in (lon,lat)]):
 						raise Exception("Scattergeo maps require a 'lon' and 'lat' column names specified")
 					geo_data={'type':'scattergeo','lat':self[lat],'lon':self[lon],
-							'marker':get_marker(go.Marker(line=go.Line(width=width),
+							'marker':get_marker(dict(line=dict(width=width),
 												symbol=symbol,colorscale=get_colorscale(colorscale),
 												color=self[z] if z else None))}
 				if 'colorbar' in kwargs:
@@ -1440,12 +1441,13 @@ def iplot(figure,validate=True,sharing=None,filename='',
 
 	## iplot
 	if offline.is_offline() and not online:	
+		return go.FigureWidget(data=figure['data'], layout=figure['layout'])
 		return offline.py_offline.iplot(figure,validate=validate, filename=filename, show_link=show_link,link_text=link_text)
 	else:		
 		return py.iplot(figure,validate=validate,sharing=sharing,
 						filename=filename)
 
-		
+
 
 def _ta_figure(self,**kwargs):
 	"""
