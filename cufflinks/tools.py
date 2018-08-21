@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import plotly.offline as py_offline
 import plotly.plotly as py
-from plotly.graph_objs import Figure, Data, ErrorX, ErrorY, Scatter, Line
+from plotly.graph_objs import Figure, ErrorX, ErrorY, Scatter, Line
 from plotly.graph_objs.layout import XAxis, YAxis
 
 from . import auth, ta
@@ -1555,4 +1555,3 @@ Figure.set_axis=_set_axis
 Figure.update_traces=_update_traces
 Figure.move_axis=_move_axis
 Figure.nodata=_figure_no_data
-Data.nodata=_nodata

@@ -306,6 +306,8 @@ def colorgen(colors=None, n=None, scale=None, theme=None):
                 scale = THEMES[theme]['colorscale']
         colors = get_scales(scale)
     dq = deque(colors)
+    if len(dq) == 0:
+        dq = deque(get_scales('ggplot'))
     if n:
         step = len(dq) * 0.8 / n if len(dq) * 8 < n else .1
     for i in np.arange(.2, 1, step):
