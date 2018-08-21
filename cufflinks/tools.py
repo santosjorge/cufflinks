@@ -1517,23 +1517,23 @@ def _figure_no_data(self):
 	return {'data':self.data.nodata(),
 	'layout':self.layout}
 
-def _update_traces(self,**kwargs):
-	for _ in self.data:
+def _update_traces(d, **kwargs):
+	for _ in d['data']:
 		_.update(**kwargs)
 
-def _move_axis(self,xaxis=None,yaxis=None):
-	def update_axis(self,axis):
-		_axis=axis[0]
-		from_axis=self.data[0].pop('{0}axis'.format(_axis),'{0}1'.format(_axis))
-		from_axis=_axis+'axis'+from_axis[1:]
-		to_axis=_axis+'axis'+axis[1:]
-		self.layout[to_axis]=self.layout.pop(from_axis)
-		self.update_traces(**{'{0}axis'.format(_axis):axis})
-	
+def _update_axis(d, axis):
+	_axis=axis[0]
+	from_axis=d['data'][0].pop('{0}axis'.format(_axis),'{0}1'.format(_axis))
+	from_axis=_axis+'axis'+from_axis[1:]
+	to_axis=_axis+'axis'+axis[1:]
+	d['layout'][to_axis]=d['layout'].pop(from_axis)
+	_update_traces(d, **{'{0}axis'.format(_axis):axis})
+
+def _move_axis(d, xaxis=None, yaxis=None):
 	if xaxis:
-		update_axis(self,xaxis)
+		_update_axis(d, xaxis)
 	if yaxis:
-		update_axis(self,yaxis)
+		_update_axis(d, yaxis)
 
 ### Offline
 
@@ -1552,6 +1552,4 @@ def is_offline():
 Figure.axis=axis
 Figure.trace_dict=trace_dict
 Figure.set_axis=_set_axis
-Figure.update_traces=_update_traces
-Figure.move_axis=_move_axis
 Figure.nodata=_figure_no_data

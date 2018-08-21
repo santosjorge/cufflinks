@@ -3,7 +3,7 @@ import plotly.plotly as py
 import time
 import copy
 # from plotly.graph_objs import *
-import plotly.graph_objs as go
+from plotly.graph_objs import Figure, Bar, Box, Scatter, FigureWidget, Scatter3d, Histogram, Heatmap, Surface, Pie
 import plotly.figure_factory as ff
 from collections import defaultdict
 from IPython.display import display,Image
@@ -161,9 +161,9 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 				lines[key]["fill"]='tonexty' if kind=='area' else 'tozeroy'
 				lines[key]["fillcolor"]=to_rgba(colors[key],kwargs['opacity'] if 'opacity' in kwargs else .3		)
 	if 'bar' in kind:
-		lines_plotly=[go.Bar(lines[key]) for key in keys]
+		lines_plotly=[Bar(lines[key]).to_plotly_json() for key in keys]
 	else:
-		lines_plotly=[go.Scatter(lines[key]) for key in keys]
+		lines_plotly=[Scatter(lines[key]).to_plotly_json() for key in keys]
 	for trace in lines_plotly:
 		if isinstance(trace['name'],pd.Timestamp):
 			trace.update(name=str(trace['name']))
@@ -799,15 +799,15 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 							_size=rgo
 					else:
 						_size=size
-					_data=go.Scatter3d(x=_x,y=_y,mode=mode,name=_,
+					_data=Scatter3d(x=_x,y=_y,mode=mode,name=_,
 								marker=dict(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
 												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
 					if '3d' in kind:
-						_data=go.Scatter3d(x=_x,y=_y,z=_z,mode=mode,name=_,
+						_data=Scatter3d(x=_x,y=_y,z=_z,mode=mode,name=_,
 								marker=dict(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
 												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
 					else:
-						_data=go.Scatter(x=_x,y=_y,mode=mode,name=_,
+						_data=Scatter(x=_x,y=_y,mode=mode,name=_,
 								marker=dict(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
 												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
 					if text:
@@ -884,7 +884,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				clrs=[clrs[0]]*len(x) if len(clrs)==1 else clrs
 				marker=dict(color=clrs,size=z,symbol=symbol,
 								line=dict(width=width))
-				trace=go.Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
+				trace=Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
 				data=[trace]
 			elif kind in ('box','histogram','hist'):
 				if isinstance(self,pd.core.series.Series):
@@ -899,7 +899,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				columns=keys if keys else df.columns
 				for _ in columns:
 					if kind=='box':
-						__=go.Box(y=df[_].values.tolist(),marker=dict(color=clrs[_]),name=_,
+						__=Box(y=df[_].values.tolist(),marker=dict(color=clrs[_]),name=_,
 								line=dict(width=width),boxpoints=boxpoints)
 						# 114 - Horizontal Box
 						__['orientation']=orientation
@@ -918,7 +918,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 						if orientation=='h':
 							__['y']=__['x']
 							del __['x']
-						__ = go.Histogram(__)
+						__ = Histogram(__)
 						if bins:
 							if type(bins) in (tuple,list):
 								try:
@@ -959,9 +959,9 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				zmin=kwargs.get('zmin',zmin)
 				zmax=kwargs.get('zmax',zmax)
 				if kind=='heatmap':
-					data=[go.Heatmap(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)]
+					data=[Heatmap(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)]
 				else:
-					data=[go.Surface(z=z,x=x,y=y,colorscale=colorscale)]
+					data=[Surface(z=z,x=x,y=y,colorscale=colorscale)]
 
 			elif kind in ('scatter3d','bubble3d'):
 				data=[]
@@ -979,7 +979,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				else:
 					size=[size for _ in range(len(keys))]	
 
-				_data=go.Scatter3d(x=df[x].values.tolist(),y=df[y].values.tolist(),z=df[z].values.tolist(),mode=mode,name=keys,
+				_data=Scatter3d(x=df[x].values.tolist(),y=df[y].values.tolist(),z=df[z].values.tolist(),mode=mode,name=keys,
 									marker=dict(color=colors,symbol=symbol,size=size,opacity=.8))
 				if text:
 					_data.update(text=keys)
@@ -994,7 +994,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				values=self[values].values.tolist()
 				marker=dict(colors=get_colors(colors,colorscale,labels,asList=True))
 				marker.update(line=dict(color=kwargs.pop('linecolor',None),width=kwargs.pop('linewidth',width)))
-				pie=go.Pie(values=values,labels=labels,name='',marker=marker)
+				pie=Pie(values=values,labels=labels,name='',marker=marker)
 				
 				kw=check_kwargs(kwargs,PIE_KWARGS)
 				kw['textfont']={'color':kw.pop('textcolor',None)}
@@ -1440,7 +1440,7 @@ def iplot(figure,validate=True,sharing=None,filename='',
 
 	## iplot
 	if offline.is_offline() and not online:	
-		return go.FigureWidget(data=figure['data'], layout=figure['layout'])
+		return FigureWidget(data=figure['data'], layout=figure['layout'])
 		return offline.py_offline.iplot(figure,validate=validate, filename=filename, show_link=show_link,link_text=link_text)
 	else:		
 		return py.iplot(figure,validate=validate,sharing=sharing,
@@ -1711,6 +1711,6 @@ pd.Series.ta_plot=_ta_plot
 pd.Series.figure=_figure
 pd.Series.to_iplot=_to_iplot
 pd.Series.iplot=_iplot
-go.Figure.iplot=_fig_iplot
+Figure.iplot=_fig_iplot
 
 

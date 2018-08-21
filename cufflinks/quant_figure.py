@@ -1065,7 +1065,7 @@ class QuantFig(object):
 			local_kwargs,params=get_params(['fill','fillcolor'],params,display)
 			fig=df.ta_figure(study=kind,**params)
 			if local_kwargs['fill']:
-				fillcolor=local_kwargs.pop('fillcolor',fig['data'][2].line['color'] or 'rgba(200,200,200,.1)')
+				fillcolor=local_kwargs.pop('fillcolor',fig['data'][2]['line']['color'] or 'rgba(200,200,200,.1)')
 				fillcolor=colors.to_rgba(fillcolor,.1)
 				fig['data'][2].update(fill='tonexty',fillcolor=fillcolor)
 		
@@ -1188,10 +1188,11 @@ class QuantFig(object):
 		d=utils.deep_update(d,kwargs)
 		d=tools.updateColors(d)
 
-		fig=df.figure(**d)
+		fig = df.figure(**d)
 
 		if d['kind'] not in ('candle','candlestick','ohlc'):
-			# fig.move_axis(yaxis='y2')  # FIXME TKP
+			import ipdb; ipdb.set_trace()
+			tools._move_axis(fig, yaxis='y2')  # FIXME TKP
 			pass
 		else:
 			if not datalegend:
@@ -1215,12 +1216,14 @@ class QuantFig(object):
 			for k,v in list(self.studies.items()):
 				study_fig=self._get_study_figure(k,**kwargs)
 				if v['kind'] in ('boll','sma','ema','ptps'):
-					# study_fig.move_axis(yaxis='y2') # FIXME TKP
+					import ipdb; ipdb.set_trace()
+					tools._move_axis(study_fig, yaxis='y2')  # FIXME TKP
 					pass
 				if v['kind'] in ('rsi','volume','macd','atr','adx','cci','dmi'):
 					max_panel+=1
 					panel_data['n']+=1
-					# study_fig.move_axis(yaxis='y{0}'.format(max_panel))  # FIXME TKP
+					import ipdb; ipdb.set_trace()
+					tools._move_axis(study_fig, yaxis='y{0}'.format(max_panel))  # FIXME TKP
 				figures.append(study_fig)
 			figures.append(fig)
 			fig=tools.merge_figures(figures)
