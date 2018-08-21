@@ -1187,11 +1187,9 @@ class QuantFig(object):
 				d=utils.merge_dict(d,_)
 		d=utils.deep_update(d,kwargs)
 		d=tools.updateColors(d)
-
 		fig = df.figure(**d)
 
 		if d['kind'] not in ('candle','candlestick','ohlc'):
-			import ipdb; ipdb.set_trace()
 			tools._move_axis(fig, yaxis='y2')  # FIXME TKP
 			pass
 		else:
@@ -1216,18 +1214,17 @@ class QuantFig(object):
 			for k,v in list(self.studies.items()):
 				study_fig=self._get_study_figure(k,**kwargs)
 				if v['kind'] in ('boll','sma','ema','ptps'):
-					import ipdb; ipdb.set_trace()
 					tools._move_axis(study_fig, yaxis='y2')  # FIXME TKP
 					pass
 				if v['kind'] in ('rsi','volume','macd','atr','adx','cci','dmi'):
 					max_panel+=1
 					panel_data['n']+=1
-					import ipdb; ipdb.set_trace()
 					tools._move_axis(study_fig, yaxis='y{0}'.format(max_panel))  # FIXME TKP
 				figures.append(study_fig)
 			figures.append(fig)
 			fig=tools.merge_figures(figures)
 			fig['layout']['xaxis1']['anchor']='y2'
+
 		domains=self._panel_domains(**panel_data)
 		fig['layout'].update(**domains)
 		if not d.get('rangeslider',False):

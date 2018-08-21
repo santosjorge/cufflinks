@@ -1018,10 +1018,10 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				kw=check_kwargs(kwargs,OHLC_KWARGS)
 				d=ta._ohlc_dict(self,validate='ohlc',**kw)
 				_d=dict(type=kind,
-							open=self[d['open']].values,
-							high=self[d['high']].values,
-							low=self[d['low']].values,
-							close=self[d['close']].values,
+							open=self[d['open']].values.tolist(),
+							high=self[d['high']].values.tolist(),
+							low=self[d['low']].values.tolist(),
+							close=self[d['close']].values.tolist(),
 							x=self.index
 												)
 				if 'name' in kw:
