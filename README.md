@@ -19,6 +19,9 @@ This tutorial assumes that the plotly user credentials have already been configu
 
 ### Release Notes
 
+### v0.14.0
+Support for Plotly 3.0
+
 ### v0.13.0
 New `iplot` helper. 
 To see a comprehensive list of parameters 
