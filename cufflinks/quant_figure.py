@@ -1194,8 +1194,15 @@ class QuantFig(object):
 			pass
 		else:
 			if not datalegend:
+
 				fig['data'][0]['decreasing'].update(showlegend=False)
 				fig['data'][0]['increasing'].update(showlegend=False)
+
+		## 126 Shapes in wrong axis
+		for shape in fig.layout['shapes']:
+			if 'yref' in shape:
+				if len(shape['yref'])==1: #not an explicity yref
+					shape.update(yref='y2')
 
 		panel_data['n']=1
 
