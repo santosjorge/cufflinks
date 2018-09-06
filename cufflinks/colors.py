@@ -12,7 +12,6 @@ from collections import deque
 from six import string_types
 from IPython.display import HTML, display
 
-from . import themes
 from .utils import inverseDict
 from .auth import get_config_file
 
@@ -297,15 +296,18 @@ def colorgen(colors=None, n=None, scale=None, theme=None):
             colorgen(['blue','red','pink'])
             colorgen(['#f03','rgb(23,25,25)'])
     """
+    from .themes import THEMES
     step = .1
     if not colors:
         if not scale:
             if not theme:
                 scale = get_config_file()['colorscale']
             else:
-                scale = themes.THEMES[theme]['colorscale']
+                scale = THEMES[theme]['colorscale']
         colors = get_scales(scale)
     dq = deque(colors)
+    if len(dq) == 0:
+        dq = deque(get_scales('ggplot'))
     if n:
         step = len(dq) * 0.8 / n if len(dq) * 8 < n else .1
     for i in np.arange(.2, 1, step):

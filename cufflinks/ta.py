@@ -36,7 +36,7 @@ def _ohlc_dict(df_or_figure,open='',high='',low='',close='',volume='',
 	ohlcv=['open','high','low','close','volume']
 	if type(df_or_figure)==pd.DataFrame:
 		cnames=df_or_figure.columns
-	elif type(df_or_figure)==Figure:
+	elif type(df_or_figure)==Figure or type(df_or_figure) == dict:
 		cnames=df_or_figure.axis['ref'].keys()
 	elif type(df_or_figure)==pd.Series:
 		cnames=[df_or_figure.name]

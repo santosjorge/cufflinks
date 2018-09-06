@@ -3,7 +3,7 @@ import plotly.plotly as py
 import time
 import copy
 # from plotly.graph_objs import *
-import plotly.graph_objs as go
+from plotly.graph_objs import Figure, Bar, Box, Scatter, FigureWidget, Scatter3d, Histogram, Heatmap, Surface, Pie
 import plotly.figure_factory as ff
 from collections import defaultdict
 from IPython.display import display,Image
@@ -31,7 +31,7 @@ def dict_to_iplot(d):
 	l=[]
 	for v in list(d.values()):
 		l.append(v)
-	return go.Data(l)
+	return l
 
 
 def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',interpolation='linear',symbol='dot',size='12',fill=False,
@@ -72,15 +72,11 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 		symbol : string
 			The symbol that is drawn on the plot for each marker
 			Valid only when mode includes markers
-				dot
-				cross
+				circle
+				circle-dot
 				diamond
 				square
-				triangle-down
-				triangle-left
-				triangle-right
-				triangle-up
-				x
+				and many more...(see plotly.validators.scatter.marker.SymbolValidator.values)
 		size : string or int 
 			Size of marker 
 			Valid only if marker in mode
@@ -156,14 +152,14 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 			lines[key]["line"]={'color':colors[key],'width':width[key],'dash':dash[key], 'shape':interpolation[key]}
 			lines[key]["mode"]=mode[key]
 			if 'marker' in mode[key]:
-				lines[key]["marker"]=go.Marker(symbol=symbol[key],size=size)
+				lines[key]["marker"]=dict(symbol=symbol[key],size=size)
 			if fill:
 				lines[key]["fill"]='tonexty' if kind=='area' else 'tozeroy'
 				lines[key]["fillcolor"]=to_rgba(colors[key],kwargs['opacity'] if 'opacity' in kwargs else .3		)
 	if 'bar' in kind:
-		lines_plotly=[go.Bar(lines[key]) for key in keys]
+		lines_plotly=[Bar(lines[key]).to_plotly_json() for key in keys]
 	else:
-		lines_plotly=[go.Scatter(lines[key]) for key in keys]
+		lines_plotly=[Scatter(lines[key]).to_plotly_json() for key in keys]
 	for trace in lines_plotly:
 		if isinstance(trace['name'],pd.Timestamp):
 			trace.update(name=str(trace['name']))
@@ -180,7 +176,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 			line['line']['dash']='dash'
 			if not bestfit_colors:
 				line['line']['color']=to_rgba(line['line']['color'],.6)
-		data=go.Data(lines_plotly)
+		data=lines_plotly
 		data.extend(bestfit_lines)
 		return data
 
@@ -196,13 +192,13 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 			line['line']['dash']='dash'
 			if not mean_colors:
 				line['line']['color']=to_rgba(line['line']['color'],.6)
-		data=go.Data(lines_plotly)
+		data=[lines_plotly]
 		data.extend(mean_lines)
 		return data
-	return go.Data(lines_plotly)
+	return lines_plotly
 
 def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,title='',xTitle='',yTitle='',zTitle='',theme=None,colors=None,colorscale=None,fill=False,width=None,
-			dash='solid',mode='lines',interpolation='linear',symbol='dot',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
+			dash='solid',mode='lines',interpolation='linear',symbol='circle',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
 			bestfit_colors=None,mean=False,mean_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,
 			zerolinecolor=None,margin=None,labels=None,values=None,secondary_y='',secondary_y_title='',subplots=False,shape=None,error_x=None,
@@ -326,15 +322,11 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 						the dataframe
 			The symbol that is drawn on the plot for each marker
 			Valid only when mode includes markers
-				dot
-				cross
+				circle
+				circle-dot
 				diamond
 				square
-				triangle-down
-				triangle-left
-				triangle-right
-				triangle-up
-				x
+				and many more...(see plotly.validators.scatter.marker.SymbolValidator.values)
 		size : string or int 
 			Size of marker 
 			Valid only if marker in mode
@@ -768,7 +760,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 	
 	if not data:
 		if categories and kind not in ('violin'):
-			data=go.Data()
+			data=[]
 			if 'bar' in kind:
 				df=self.copy()
 				df=df.set_index(categories)
@@ -799,17 +791,17 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 							_size=rgo
 					else:
 						_size=size
-					_data=go.Scatter3d(x=_x,y=_y,mode=mode,name=_,
-								marker=go.Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-												line=go.Line(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
+					_data=Scatter3d(x=_x,y=_y,mode=mode,name=_,
+								marker=dict(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
+												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
 					if '3d' in kind:
-						_data=go.Scatter3d(x=_x,y=_y,z=_z,mode=mode,name=_,
-								marker=go.Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-												line=go.Line(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
+						_data=Scatter3d(x=_x,y=_y,z=_z,mode=mode,name=_,
+								marker=dict(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
+												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
 					else:
-						_data=go.Scatter(x=_x,y=_y,mode=mode,name=_,
-								marker=go.Marker(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-												line=go.Line(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
+						_data=Scatter(x=_x,y=_y,mode=mode,name=_,
+								marker=dict(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
+												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
 					if text:
 						_data.update(text=_text)
 					data.append(_data)
@@ -843,11 +835,12 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 							trace=trace.to_iplot(colors={'positive':'green','negative':'red'},width=0.5)
 						else:
 							trace=self.apply(lambda x:x[0]*1.0/x[1],axis=1).to_iplot(colors=['green'],width=1)
-						trace.update({'xaxis':'x2','yaxis':'y2','fill':'tozeroy',
-										'name':kind.capitalize(),'connectgaps':False,'showlegend':False})
-						data.append(go.Scatter(trace[0]))
+						for t in trace:
+							t.update({'xaxis':'x2','yaxis':'y2','fill':'tozeroy',
+											'name':kind.capitalize(),'connectgaps':False,'showlegend':False})
+						data.append(trace[0])
 						if kind=='spread':
-							data.append(go.Scatter(trace[1]))
+							data.append(trace[1])
 						layout['yaxis1'].update({'domain':[.3,1]})
 						layout['yaxis2']=copy.deepcopy(layout['yaxis1'])
 						layout['xaxis2']=copy.deepcopy(layout['xaxis1'])
@@ -881,16 +874,16 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				clrs=colors if colors else get_scales(colorscale)
 				clrs=[clrs] if not isinstance(clrs,list) else clrs
 				clrs=[clrs[0]]*len(x) if len(clrs)==1 else clrs
-				marker=go.Marker(color=clrs,size=z,symbol=symbol,
-								line=go.Line(width=width))
-				trace=go.Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
-				data=go.Data([trace])
+				marker=dict(color=clrs,size=z,symbol=symbol,
+								line=dict(width=width))
+				trace=Scatter(x=x,y=y,marker=marker,mode='markers',text=labels)
+				data=[trace]
 			elif kind in ('box','histogram','hist'):
 				if isinstance(self,pd.core.series.Series):
 					df=pd.DataFrame({self.name:self})
 				else:
 					df=self.copy()
-				data=go.Data()
+				data=[]
 				clrs=get_colors(colors,colorscale,df.columns)
 				if 'hist' in kind:
 					barmode = 'overlay' if barmode=='' else	 barmode 
@@ -898,16 +891,16 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				columns=keys if keys else df.columns
 				for _ in columns:
 					if kind=='box':
-						__=go.Box(y=df[_].values.tolist(),marker=go.Marker(color=clrs[_]),name=_,
-								line=go.Line(width=width),boxpoints=boxpoints)
+						__=Box(y=df[_].values.tolist(),marker=dict(color=clrs[_]),name=_,
+								line=dict(width=width),boxpoints=boxpoints)
 						# 114 - Horizontal Box
 						__['orientation']=orientation
 						if orientation=='h':
 							__['x'],__['y']=__['y'],__['x']	
 						
 					else:
-						__=go.Histogram(x=df[_].values.tolist(),name=_,
-								marker=go.Marker(color=clrs[_], line=go.Line(width=width)),
+						__=dict(x=df[_].values.tolist(),name=_,
+								marker=dict(color=clrs[_], line=dict(width=width)),
 								orientation=orientation,
 								opacity=kwargs['opacity'] if 'opacity' in kwargs else .8, histfunc=histfunc,
 								histnorm=histnorm)
@@ -917,6 +910,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 						if orientation=='h':
 							__['y']=__['x']
 							del __['x']
+						__ = Histogram(__)
 						if bins:
 							if type(bins) in (tuple,list):
 								try:
@@ -957,12 +951,12 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				zmin=kwargs.get('zmin',zmin)
 				zmax=kwargs.get('zmax',zmax)
 				if kind=='heatmap':
-					data=go.Data([go.Heatmap(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)])
+					data=[Heatmap(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)]
 				else:
-					data=go.Data([go.Surface(z=z,x=x,y=y,zmin=zmin,zmax=zmax,colorscale=colorscale)])
+					data=[Surface(z=z,x=x,y=y,colorscale=colorscale)]
 
 			elif kind in ('scatter3d','bubble3d'):
-				data=go.Data()
+				data=[]
 				keys=self[text].values if text else list(range(len(self)))
 				colors=get_colors(colors,colorscale,keys,asList=True)
 				mode='markers' if 'markers' not in mode else mode 
@@ -977,8 +971,8 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				else:
 					size=[size for _ in range(len(keys))]	
 
-				_data=go.Scatter3d(x=df[x].values.tolist(),y=df[y].values.tolist(),z=df[z].values.tolist(),mode=mode,name=keys,
-									marker=go.Marker(color=colors,symbol=symbol,size=size,opacity=.8))
+				_data=Scatter3d(x=df[x].values.tolist(),y=df[y].values.tolist(),z=df[z].values.tolist(),mode=mode,name=keys,
+									marker=dict(color=colors,symbol=symbol,size=size,opacity=.8))
 				if text:
 					_data.update(text=keys)
 				data.append(_data)
@@ -990,14 +984,14 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					raise CufflinksError('Missing: values')
 				labels=self[labels].values.tolist()
 				values=self[values].values.tolist()
-				marker=go.Marker(colors=get_colors(colors,colorscale,labels,asList=True))
-				marker.update(line=go.Line(color=kwargs.pop('linecolor',None),width=kwargs.pop('linewidth',width)))
-				pie=go.Pie(values=values,labels=labels,name='',marker=marker)
+				marker=dict(colors=get_colors(colors,colorscale,labels,asList=True))
+				marker.update(line=dict(color=kwargs.pop('linecolor',None),width=kwargs.pop('linewidth',width)))
+				pie=Pie(values=values,labels=labels,name='',marker=marker)
 				
 				kw=check_kwargs(kwargs,PIE_KWARGS)
 				kw['textfont']={'color':kw.pop('textcolor',None)}
 				pie.update(kw)
-				data=go.Data()
+				data=[]
 				del layout['xaxis1']
 				del layout['yaxis1']
 				data.append(pie)
@@ -1024,10 +1018,10 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				kw=check_kwargs(kwargs,OHLC_KWARGS)
 				d=ta._ohlc_dict(self,validate='ohlc',**kw)
 				_d=dict(type=kind,
-							open=self[d['open']].values,
-							high=self[d['high']].values,
-							low=self[d['low']].values,
-							close=self[d['close']].values,
+							open=self[d['open']].values.tolist(),
+							high=self[d['high']].values.tolist(),
+							low=self[d['low']].values.tolist(),
+							close=self[d['close']].values.tolist(),
 							x=self.index
 												)
 				if 'name' in kw:
@@ -1062,12 +1056,12 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 						raise Exception("Choropleth maps require a 'location' and 'z' column names specified")
 					geo_data={'type':'choropleth','locations':self[locations],'z':self[z],
 							'colorscale':get_colorscale(colorscale),
-							'marker':get_marker(go.Marker(line=go.Line(width=width)))}
+							'marker':get_marker(dict(line=dict(width=width)))}
 				elif kind=='scattergeo':
 					if not all([x!=None for x in (lon,lat)]):
 						raise Exception("Scattergeo maps require a 'lon' and 'lat' column names specified")
 					geo_data={'type':'scattergeo','lat':self[lat],'lon':self[lon],
-							'marker':get_marker(go.Marker(line=go.Line(width=width),
+							'marker':get_marker(dict(line=dict(width=width),
 												symbol=symbol,colorscale=get_colorscale(colorscale),
 												color=self[z] if z else None))}
 				if 'colorbar' in kwargs:
@@ -1076,7 +1070,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				if text:
 					geo_data.update(text=self[text])
 				validate=False
-				data=go.Data()
+				data=[]
 				data.append(geo_data)
 
 			# Figure Factory
@@ -1148,7 +1142,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 	
 
 ## Figure defintion
-	figure=go.Figure()
+	figure={}
 	figure['data']=data
 	figure['layout']=layout
 
@@ -1381,7 +1375,9 @@ def iplot(figure,validate=True,sharing=None,filename='',
 
 	## Filename Handling
 	if not filename:
-		if figure['layout']['title']:
+		if not figure.get('layout', None):
+			figure['layout'] = {}
+		if figure['layout'].get('title', ''):
 			filename=figure['layout']['title']
 		else:
 			filename='Plotly Playground {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
@@ -1441,7 +1437,7 @@ def iplot(figure,validate=True,sharing=None,filename='',
 		return py.iplot(figure,validate=validate,sharing=sharing,
 						filename=filename)
 
-		
+
 
 def _ta_figure(self,**kwargs):
 	"""
@@ -1706,6 +1702,6 @@ pd.Series.ta_plot=_ta_plot
 pd.Series.figure=_figure
 pd.Series.to_iplot=_to_iplot
 pd.Series.iplot=_iplot
-go.Figure.iplot=_fig_iplot
+Figure.iplot=_fig_iplot
 
 
