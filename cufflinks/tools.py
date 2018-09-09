@@ -183,7 +183,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 				see help(cf.tools.get_range_selector) for more information
 				Example:
 					{'steps':['1y','2 months','5 weeks','ytd','2mtd'],
-					 'axis':'xaxis1', 'bgcolor' : ('blue',.3),
+					 'axis':'xaxis', 'bgcolor' : ('blue',.3),
 					 'x': 0.2 , 'y' : 0.9}
 
 		Range Slider
@@ -217,8 +217,8 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 
 	theme_data = getTheme(theme)
 	layout=theme_data['layout']
-	layout['xaxis1'].update({'title':xTitle})
-	layout['yaxis1'].update({'title':yTitle})
+	layout['xaxis'].update({'title':xTitle})
+	layout['yaxis'].update({'title':yTitle})
 
 	fontfamily=kwargs.pop('fontfamily',None)
 	if fontfamily:
@@ -272,12 +272,12 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	if is3d:
 		if '3d' in theme_data:
 			layout=deep_update(layout,theme_data['3d'])
-		zaxis=layout['xaxis1'].copy()
+		zaxis=layout['xaxis'].copy()
 		zaxis.update(title=zTitle)
-		scene=dict(xaxis=layout['xaxis1'].copy(),yaxis=layout['yaxis1'].copy(),zaxis=zaxis)
+		scene=dict(xaxis=layout['xaxis'].copy(),yaxis=layout['yaxis'].copy(),zaxis=zaxis)
 		layout.update(scene=scene)
-		del layout['xaxis1']
-		del layout['yaxis1']
+		del layout['xaxis']
+		del layout['yaxis']
 
 	## Axis Range
 	for r in ['x','y','z']:
@@ -285,12 +285,12 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 			if is3d:
 				layout['scene']['{0}axis'.format(r)].update(range=kwargs['{0}range'.format(r)])
 			else:
-				layout['{0}axis1'.format(r)].update(range=kwargs['{0}range'.format(r)])
+				layout['{0}axis'.format(r)].update(range=kwargs['{0}range'.format(r)])
 
 	# Need to update this for an add_axis approach. 
 	if kind in ('candlestick','ohlc','candle'):
-		layout['yaxis2']=layout['yaxis1'].copy()
-		layout['yaxis1'].update(showticklabels=False)
+		layout['yaxis2']=layout['yaxis'].copy()
+		layout['yaxis'].update(showticklabels=False)
 
 	## Kwargs
 
@@ -318,7 +318,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 					layout['scene']['{0}axis'.format(_)]['type']='log'
 			else:
 				if kwargs['log{0}'.format(_)]:
-					layout['{0}axis1'.format(_)]['type']='log'
+					layout['{0}axis'.format(_)]['type']='log'
 
 	# Shapes
 
@@ -405,8 +405,8 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		kw_=kwargs_from_keyword(kw,{},'projection')
 		deep_update(kw,kw_)
 		layout['geo']=kw
-		del layout['xaxis1']
-		del layout['yaxis1']
+		del layout['xaxis']
+		del layout['yaxis']
 		if not margin:
 			layout['margin']={'autoexpand':True}
 
@@ -417,22 +417,22 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 			axis=rs['axis']
 			del rs['axis']
 		else:
-			axis='xaxis1'
+			axis='xaxis'
 		layout[axis]['rangeselector']=get_range_selector(**rs)
 
 	# Range Slider
 	if 'rangeslider' in kwargs:
 		if type(kwargs['rangeslider'])==bool:
 			if kwargs['rangeslider']:
-				layout['xaxis1']['rangeslider']=dict(visible=kwargs['rangeslider'])
+				layout['xaxis']['rangeslider']=dict(visible=kwargs['rangeslider'])
 			else:
-				layout['xaxis1']['rangeslider']=dict(visible=False)
+				layout['xaxis']['rangeslider']=dict(visible=False)
 				# layout['yaxis1'].update(domain=(0,0))
 		else:
-			layout['xaxis1']['rangeslider']=kwargs['rangeslider']
+			layout['xaxis']['rangeslider']=kwargs['rangeslider']
 	else:
 		if kind in ('ohlc','candle','candlestick'):
-			layout['xaxis1']['rangeslider']=dict(visible=False)
+			layout['xaxis']['rangeslider']=dict(visible=False)
 			# layout['yaxis1'].update(domain=(0,0))
 
 
@@ -869,11 +869,12 @@ def get_subplots(rows=1,cols=1,
 			sp['layout'].update({k:v})
 
 	def update_axis(fig,layout):
-		for axis, n in list(fig.axis['len'].items()):
+		for axis, n in list(Figure(fig).axis['len'].items()):
 			for _ in range(1,n+1):
-				for k,v in list(layout['{0}axis1'.format(axis)].items()):
-					if k not in fig.layout['{0}axis{1}'.format(axis,_)]:
-						fig.layout['{0}axis{1}'.format(axis,_)][k]=v
+				for k,v in list(layout['{0}axis'.format(axis)].items()):
+					_='' if _==1 else _
+					if k not in fig['layout']['{0}axis{1}'.format(axis,_)]:
+						fig['layout']['{0}axis{1}'.format(axis,_)][k]=v
 
 	update_axis(sp,layout)
 	# 124 - zeroline on the first figure
@@ -980,8 +981,8 @@ def scatter_matrix(df,theme=None,bins=10,color='grey',size=2):
 			else:
 				figs.append(df.iplot(kind='scatter',mode='markers',x=j,y=i,asFigure=True,size=size,colors=[color]))
 	layout=getLayout(theme)
-	layout['xaxis1'].update(showgrid=False)
-	layout['yaxis1'].update(showgrid=False)
+	layout['xaxis'].update(showgrid=False)
+	layout['yaxis'].update(showgrid=False)
 	sm=subplots(figs,shape=(len(df.columns),len(df.columns)),shared_xaxes=False,shared_yaxes=False,
 					  horizontal_spacing=.05,vertical_spacing=.07,base_layout=layout)
 	sm['layout'].update(bargap=.02,showlegend=False)
