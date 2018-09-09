@@ -1113,6 +1113,7 @@ class QuantFig(object):
 		
 		## Has Bands
 		if kind in ('rsi','cci'):
+			fig=tools.fig_to_dict(fig)
 			_upper='{0}_upper'.format(kind)
 			_lower='{0}_lower'.format(kind)
 			del fig['layout']['shapes']
@@ -1199,7 +1200,7 @@ class QuantFig(object):
 				fig['data'][0]['increasing'].update(showlegend=False)
 
 		## 126 Shapes in wrong axis
-		for shape in fig.layout['shapes']:
+		for shape in fig['layout']['shapes']:
 			if 'yref' in shape:
 				if len(shape['yref'])==1: #not an explicity yref
 					shape.update(yref='y2')
@@ -1216,6 +1217,10 @@ class QuantFig(object):
 			kwargs.update(slice=_slice,resample=_resample)
 			for k,v in list(self.studies.items()):
 				study_fig=self._get_study_figure(k,**kwargs)
+				study_fig=tools.fig_to_dict(study_fig)
+				if 'yaxis' in study_fig['layout']:
+					study_fig['layout']['yaxis1']=study_fig['layout']['yaxis'].copy()
+					del study_fig['layout']['yaxis']
 				if v['kind'] in ('boll','sma','ema','ptps'):
 					tools._move_axis(study_fig, yaxis='y2')  # FIXME TKP
 					pass
@@ -1226,7 +1231,11 @@ class QuantFig(object):
 				figures.append(study_fig)
 			figures.append(fig)
 			fig=tools.merge_figures(figures)
-			fig['layout']['xaxis1']['anchor']='y2'
+			try:
+				fig['layout']['xaxis1']['anchor']='y2'
+			except:
+				fig['layout']['xaxis']['anchor']='y2'
+				
 
 		domains=self._panel_domains(**panel_data)
 		fig['layout'].update(**domains)
@@ -1246,4 +1255,5 @@ class QuantFig(object):
 	def __repr__(self):
 		_d=self.__dict__.copy()
 		del _d['df']
+		print(json.dumps(_d,sort_keys=True, indent=4))
 		return ''

@@ -561,6 +561,8 @@ def get_base_layout(figs):
 	"""
 	layout={}
 	for fig in figs:
+		if not isinstance(fig,dict):
+			fig=fig.to_dict()
 		for k,v in list(fig['layout'].items()):
 			layout[k]=v
 	return layout
@@ -1536,6 +1538,8 @@ def _update_traces(d, **kwargs):
 
 def _update_axis(d, axis):
 	_axis=axis[0]
+	if not isinstance(d,dict):
+		d=d.to_dict()
 	from_axis=d['data'][0].pop('{0}axis'.format(_axis),'{0}1'.format(_axis))
 	from_axis=_axis+'axis'+from_axis[1:]
 	to_axis=_axis+'axis'+axis[1:]
@@ -1560,7 +1564,12 @@ def go_offline(connected = False, offline=True):
 def is_offline():
 	return py_offline.__PLOTLY_OFFLINE_INITIALIZED
 
+### Plotly 3
 
+def fig_to_dict(fig):
+	if not isinstance(fig,dict):
+		fig=fig.to_dict()
+	return fig
 
 Figure.axis=axis
 Figure.trace_dict=trace_dict

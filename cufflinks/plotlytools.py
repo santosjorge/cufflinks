@@ -1115,9 +1115,9 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					elif len(df.columns)>1:
 						if 'data_header' not in kw:
 							raise CufflinksError('data_header must be the column name with the desired numeric data for the violin plot.')
-				fig=ff.create_violin(df,**kw)
-				data=fig.data
-				layout=tools.merge_dict(layout,fig.layout)
+				fig=ff.create_violin(df,**kw).to_dict()
+				data=fig['data']
+				layout=tools.merge_dict(layout,fig['layout'])
 
 				
 
@@ -1186,7 +1186,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 	validate = False if 'shapes' in layout else validate
 
 	if asFigure:
-		return figure
+		return Figure(figure)
 	else:
 		return iplot(figure,validate=validate,sharing=sharing,filename=filename,
 			 online=online,asImage=asImage,asUrl=asUrl,asPlot=asPlot,
@@ -1375,9 +1375,9 @@ def iplot(figure,validate=True,sharing=None,filename='',
 
 	## Filename Handling
 	if not filename:
-		if not figure.get('layout', None):
-			figure['layout'] = {}
-		if figure['layout'].get('title', ''):
+		# if not figure.get('layout', None):
+		# 	figure['layout'] = {}
+		if figure['layout']['title']:
 			filename=figure['layout']['title']
 		else:
 			filename='Plotly Playground {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
