@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.offline as py_offline
 import plotly.plotly as py
 from plotly.graph_objs import Figure, ErrorX, ErrorY, Scatter, Line
-from plotly.graph_objs.layout import XAxis, YAxis
+# from plotly.graph_objs.layout import XAxis, YAxis
 
 from . import auth, ta
 from .colors import normalize, to_rgba
@@ -35,8 +35,16 @@ __LAYOUT_AXIS=['autorange','autotick','backgroundcolor','categoryarray','categor
 			   'ticksuffix','ticktext','ticktextsrc','tickvals','tickvalssrc','tickwidth','titlefont',
 			   'zeroline','zerolinecolor','zerolinewidth']
 
-__LAYOUT_AXIS_X=['xaxis_'+_ for _ in XAxis().__dir__()]
-__LAYOUT_AXIS_Y=['yaxis_'+_ for _ in YAxis().__dir__()]
+X_Y = ['anchor', 'automargin', 'autorange', 'calendar', 'categoryarray', 'categoryarraysrc', 'categoryorder', 'color', 
+	   'constrain', 'constraintoward', 'domain', 'dtick', 'exponentformat', 'fixedrange', 'gridcolor', 'gridwidth', 'hoverformat', 
+	   'layer', 'linecolor', 'linewidth', 'mirror', 'nticks', 'overlaying', 'position', 'range', 'rangemode', 'scaleanchor', 'scaleratio', 
+	   'separatethousands', 'showexponent', 'showgrid', 'showline', 'showspikes', 'showticklabels', 'showtickprefix', 'showticksuffix', 'side', 
+	   'spikecolor', 'spikedash', 'spikemode', 'spikesnap', 'spikethickness', 'tick0', 'tickangle', 'tickcolor', 'tickfont', 'tickformat', 
+	   'tickformatstops', 'ticklen', 'tickmode', 'tickprefix', 'ticks', 'ticksuffix', 'ticktext', 'ticktextsrc', 'tickvals', 'tickvalssrc', 
+	   'tickwidth', 'title', 'titlefont', 'type', 'visible', 'zeroline', 'zerolinecolor', 'zerolinewidth']
+
+__LAYOUT_AXIS_X=['xaxis_'+_ for _ in X_Y]
+__LAYOUT_AXIS_Y=['yaxis_'+_ for _ in X_Y]
 
 __LAYOUT_KWARGS = []
 [__LAYOUT_KWARGS.extend(_) for _ in [__LAYOUT_VALID_KWARGS,__SHAPES_KWARGS,__GEO_KWARGS,__ANN_KWARGS,__LAYOUT_AXIS,
@@ -1126,7 +1134,7 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 			try:
 				new_axis=fig.axis['dom']['y'][domain][side]
 			except KeyError:
-				axis=YAxis(fig.axis['def'][curr_y].copy())
+				axis=fig.axis['def'][curr_y].copy()
 				### check overlaying values
 				axis.update(title=title,overlaying=curr_y,side=side,anchor=curr_x)
 				axis_idx=str(fig.axis['len']['y']+1)
