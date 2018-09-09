@@ -1003,6 +1003,7 @@ def trace_dict(self):
 
 def get_ref(figure):
 	d={}
+	figure=fig_to_dict(figure)
 	for trace in figure['data']:
 		name = '{0}_'.format(trace['name']) if trace['name'] in d else trace['name']
 		x = trace['xaxis'] if 'xaxis' in trace else 'x1'
@@ -1012,6 +1013,7 @@ def get_ref(figure):
 
 def get_def(figure):
 	d={}
+	figure=fig_to_dict(figure)
 	items=list(figure['layout']['scene'].items()) if 'scene' in figure['layout'] else list(figure['layout'].items())
 	for k,v in items:
 		if 'axis' in k:
@@ -1020,6 +1022,7 @@ def get_def(figure):
 
 def get_len(figure):
 	d={}
+	figure=fig_to_dict(figure)
 	keys=list(figure['layout']['scene'].keys()) if 'scene' in figure['layout'] else list(figure['layout'].keys())
 	for k in keys:
 		if 'axis' in k:
@@ -1028,6 +1031,7 @@ def get_len(figure):
 
 def get_which(figure):
 	d={}
+	figure=fig_to_dict(figure)
 	keys=list(figure['layout']['scene'].keys()) if 'scene' in figure['layout'] else list(figure['layout'].keys())
 	for k in keys:
 		if 'axis' in k:
@@ -1039,6 +1043,7 @@ def get_which(figure):
 
 def get_ref_axis(figure):
 	d={}
+	figure=fig_to_dict(figure)
 	for k,v in list(get_ref(figure).items()):
 		for i in v:
 			if i not in d:
@@ -1096,9 +1101,11 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 			Applies only to new axis
 	"""
 	fig={}
-	fig_cpy=self.copy()
+	# fig_origin=fig_to_dict(self)
+	fig_cpy=fig_to_dict(self).copy()
 	fig['data']=fig_cpy['data']
 	fig['layout']=fig_cpy['layout']
+	fig=Figure(fig)
 	if not isinstance(traces,list):
 		traces=[traces]
 
