@@ -630,7 +630,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				see help(cf.tools.get_range_selector) for more information
 				Example:
 					{'steps':['1y','2 months','5 weeks','ytd','2mtd'],
-					 'axis':'xaxis1', 'bgcolor' : ('blue',.3),
+					 'axis':'xaxis', 'bgcolor' : ('blue',.3),
 					 'x': 0.2 , 'y' : 0.9}
 
 		Range Slider
@@ -736,7 +736,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					if 'linecolor' in tools.getTheme(theme=theme):
 						linecolor=normalize(tools.getTheme(theme=theme)['linecolor'])
 					else: 
-						linecolor=tools.getLayout(theme=theme)['xaxis1']['titlefont']['color']
+						linecolor=tools.getLayout(theme=theme)['xaxis']['titlefont']['color']
 				dict_modifiers['line']['color']=linecolor			
 			dict_modifiers['line']=tools.updateColors(dict_modifiers['line'])
 			marker['line']=deep_update(marker['line'],dict_modifiers['line'])
@@ -793,15 +793,15 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 						_size=size
 					_data=Scatter3d(x=_x,y=_y,mode=mode,name=_,
 								marker=dict(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
+												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis']['titlefont'])
 					if '3d' in kind:
 						_data=Scatter3d(x=_x,y=_y,z=_z,mode=mode,name=_,
 								marker=dict(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
+												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis']['titlefont'])
 					else:
 						_data=Scatter(x=_x,y=_y,mode=mode,name=_,
 								marker=dict(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
-												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis1']['titlefont'])
+												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis']['titlefont'])
 					if text:
 						_data.update(text=_text)
 					data.append(_data)
@@ -841,9 +841,9 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 						data.append(trace[0])
 						if kind=='spread':
 							data.append(trace[1])
-						layout['yaxis1'].update({'domain':[.3,1]})
-						layout['yaxis2']=copy.deepcopy(layout['yaxis1'])
-						layout['xaxis2']=copy.deepcopy(layout['xaxis1'])
+						layout['yaxis'].update({'domain':[.3,1]})
+						layout['yaxis2']=copy.deepcopy(layout['yaxis'])
+						layout['xaxis2']=copy.deepcopy(layout['xaxis'])
 						layout['yaxis2'].update(domain=[0,.25],title=kind.capitalize())
 						layout['xaxis2'].update(anchor='y2',showticklabels=False)
 						layout['hovermode']='x'
@@ -992,8 +992,8 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				kw['textfont']={'color':kw.pop('textcolor',None)}
 				pie.update(kw)
 				data=[]
-				del layout['xaxis1']
-				del layout['yaxis1']
+				del layout['xaxis']
+				del layout['yaxis']
 				data.append(pie)
 				validate=False
 
@@ -1097,7 +1097,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				kw['colors']=colors
 				if categories:
 					for _ in range(2,df[categories].value_counts().size+1):
-						layout['xaxis{0}'.format(_)]=layout['xaxis1'].copy()
+						layout['xaxis{0}'.format(_)]=layout['xaxis'].copy()
 					if categories not in df:
 						raise CufflinksError('Column "{0}" not found in DataFrame'.format(categories))
 					elif len(df.columns)==1:
@@ -1377,9 +1377,9 @@ def iplot(figure,validate=True,sharing=None,filename='',
 	if not filename:
 		# if not figure.get('layout', None):
 		# 	figure['layout'] = {}
-		if figure['layout']['title']:
+		try:
 			filename=figure['layout']['title']
-		else:
+		except:
 			filename='Plotly Playground {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
 
 	## Dimensions
@@ -1554,7 +1554,7 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str='{name}({period}
 		layout=tools.get_base_layout(figures)
 		subplots=tools.subplots(figures,shape=shape,shared_xaxes=True,base_layout=layout)
 		if len(figures)==2:
-			subplots['layout']['yaxis1']['domain']=[.27,1.0]
+			subplots['layout']['yaxis']['domain']=[.27,1.0]
 			subplots['layout']['yaxis2']['domain']=[0,.25]
 		return subplots
 
