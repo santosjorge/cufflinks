@@ -763,7 +763,7 @@
                 "description" : ["Defines a range selector object.",
                                  "See 'help(cufflinks.tools.get_range_selector)' for more information.",
                                  "Example:",
-                                 "\t{'steps':['1y','2 months','5 weeks','ytd','2mtd'],",
+                                 "\t{'steps':['1y','2 months','ytd','2mtd'],",
                                  "\t'axis':'xaxis1', 'bgcolor' : ('blue',.3),",
                                  "\t'x': 0.2 , 'y' : 0.9}"
                                 ],
