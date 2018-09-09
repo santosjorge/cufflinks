@@ -953,14 +953,12 @@
                                  "\tlist : applies to each trace in the order specified",
                                  "\tdict : {column:value} for each column in the dataframe",
                                  "values",
-                                 "\tdot",
+                                 "\tcircle",
                                  "\tcross",
                                  "\tdiamond",
                                  "\tsquare",
                                  "\ttriangle-down",
-                                 "\ttriangle-left",
-                                 "\ttriangle-right",
-                                 "\ttriangle-up"
+                                 "\tSee all possible values in 'help(cufflinks.scatter.Marker())'"
                                 ],
                 "exceptions" : [],
                 "type" : "string, list or dict"
