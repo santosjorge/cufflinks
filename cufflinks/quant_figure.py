@@ -1178,7 +1178,10 @@ class QuantFig(object):
 		shape_kwargs=utils.check_kwargs(kwargs,get_shapes_kwargs(),{},clean_origin=True)
 		for k,v in list(shape_kwargs.items()):
 			if k in shapes:
-				shapes[k].append(v)
+				if isinstance(v,list):
+					shapes[k].extend(v)
+				else:
+					shapes[k].append(v)
 			else:
 				shapes[k]=[v]
 		for _ in [data,layout, self._d,

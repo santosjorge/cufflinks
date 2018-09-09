@@ -1101,7 +1101,6 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 			Applies only to new axis
 	"""
 	fig={}
-	# fig_origin=fig_to_dict(self)
 	fig_cpy=fig_to_dict(self).copy()
 	fig['data']=fig_cpy['data']
 	fig['layout']=fig_cpy['layout']
