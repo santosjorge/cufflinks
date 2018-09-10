@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import plotly.offline as py_offline
 import plotly.plotly as py
-from plotly.graph_objs import Figure, ErrorX, ErrorY, Scatter, Line
+from plotly.graph_objs import Figure, Scatter, Line
 # from plotly.graph_objs.layout import XAxis, YAxis
 
 from . import auth, ta
@@ -1438,7 +1438,8 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,
 
 def get_error_bar(axis='y',type='data',values=None,values_minus=None,color=None,thickness=1,width=5,
 				 opacity=1):
-	error=ErrorY() if axis=='y' else ErrorX()
+	# error=ErrorY() if axis=='y' else ErrorX()
+	error={}
 	if type=='data':
 		if isinstance(values,list) or isinstance(values,np.ndarray):
 			if values_minus:
@@ -1460,20 +1461,21 @@ def get_error_bar(axis='y',type='data',values=None,values_minus=None,color=None,
 		pass
 	else:
 		raise Exception('Invalid type: {0}'.format(type))
-	error.update(type=type,thickness=thickness,width=width,visible=True,opacity=opacity)
+	error.update(type=type,thickness=thickness,width=width,visible=True)
 	if color:
-		error.update(color=normalize(color))
+		error.update(color=to_rgba(color,opacity))
 	return error
 
 def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=None,color=None,thickness=1,width=None,
 				 opacity=None,**kwargs):
-	figure=copy.deepcopy(figure)
+	figure=fig_to_dict(figure)
 	if 'value' in kwargs:
 		values=kwargs['value']
 	data=figure['data']
 	if 'continuous' not in type:
 		width=width if width else 5
 		opacity=opacity if opacity else 1
+		color=to_rgba(color,opacity) if color else None
 		error=get_error_bar(axis=axis,type=type,values=values,values_minus=values_minus,
 							color=color,thickness=thickness,width=width,opacity=opacity)
 		if trace:
@@ -1511,6 +1513,7 @@ def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=N
 					color=trace['line']['color']
 				else:
 					color='charcoal'
+			color=to_rgba(color,opacity) if color else None
 			upper['line']['color']=color
 			lower=upper.copy()
 			name=trace['name']+'_' if 'name' in trace else ''

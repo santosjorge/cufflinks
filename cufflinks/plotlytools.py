@@ -986,7 +986,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				values=self[values].values.tolist()
 				marker=dict(colors=get_colors(colors,colorscale,labels,asList=True))
 				marker.update(line=dict(color=kwargs.pop('linecolor',None),width=kwargs.pop('linewidth',width)))
-				pie=Pie(values=values,labels=labels,name='',marker=marker)
+				pie=dict(values=values,labels=labels,name='',marker=marker)
 				
 				kw=check_kwargs(kwargs,PIE_KWARGS)
 				kw['textfont']={'color':kw.pop('textcolor',None)}
@@ -994,7 +994,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				data=[]
 				del layout['xaxis']
 				del layout['yaxis']
-				data.append(pie)
+				data.append(Pie(pie))
 				validate=False
 
 			elif kind in ('old_candle','old_ohlc'):
