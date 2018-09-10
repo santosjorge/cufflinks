@@ -122,6 +122,14 @@
                 "cf.datagen.lines(2).iplot(kind='spread')"
             ]
         },
+        "surface" : {
+            "description" : "Surface",
+            "aka" : [],
+            "examples" : [
+                "cf.datagen.surface().iplot(kind='surface')",
+                "cf.datagen.sinwave(10,.25).iplot(kind='surface',theme='solar',colorscale='brbg',margin=(0,0,0,0))"
+            ]
+        },
         "ratio" : {
             "description" : ["Ratio Chart",
                 "Ratio between two traces"],
