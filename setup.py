@@ -1,4 +1,9 @@
 from setuptools import setup
+from os import path
+
+here = path.abspath(path.dirname(__file__))
+with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
+    requires = f.read().split()
 
 setup(name='cufflinks',
       version='0.14.1',
@@ -11,5 +16,5 @@ setup(name='cufflinks',
       packages=['cufflinks'],
       package_data={'cufflinks': ['../helper/*.json']},
       include_package_data=True,
-      install_requires = ['pandas','plotly>=2.0.0','colorlover>=0.2'],
+      install_requires=requires,
 	  zip_safe=False)
