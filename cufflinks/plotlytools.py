@@ -750,7 +750,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 		l_kwargs=dict([(k,kwargs[k]) for k in tools.__LAYOUT_KWARGS if k in kwargs])
 		if annotations:
 			ann_kwargs=check_kwargs(kwargs,tools.__ANN_KWARGS,clean_origin=True)
-			annotations=tools.getAnnotations(self.copy(),annotations,kind=kind,theme=theme,**ann_kwargs)
+			annotations=tools.get_annotations(self.copy(),annotations,kind=kind,theme=theme,**ann_kwargs)
 
 
 		layout=tools.getLayout(kind=kind,theme=theme,xTitle=xTitle,yTitle=yTitle,zTitle=zTitle,title=title,barmode=barmode,
