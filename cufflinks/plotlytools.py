@@ -1148,7 +1148,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 
 ## Check secondary axis
 	if secondary_y:
-		figure=figure.set_axis(secondary_y,side='right')
+		figure=tools._set_axis(figure,secondary_y,side='right')
 		if secondary_y_title:
 			figure.layout.yaxis2.title=secondary_y_title
 
