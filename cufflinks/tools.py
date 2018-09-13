@@ -11,7 +11,7 @@ from . import auth, ta
 from .colors import normalize, to_rgba
 from .themes import THEMES
 from .utils import (check_kwargs, deep_update, dict_replace_keyword,
-                    kwargs_from_keyword, merge_dict, is_list)
+                    kwargs_from_keyword, merge_dict, is_list,make_list)
 
 __LAYOUT_VALID_KWARGS = ['legend','logx','logy','logz','layout_update','title',
 					'xrange','yrange','zrange','rangeselector','rangeslider','showlegend','fontfamily']
@@ -453,7 +453,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	return layout
 
 
-def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
+def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 	"""
 	Generates an annotations object
 
@@ -484,12 +484,7 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 
 	def check_ann(annotation):
 		local_list=[]
-		# try:
-		# _annotation=dict_replace_keyword({},'font',annotation,False)
-		# _annotation=dict_replace_keyword(_annotation,'font',kwargs,False)
-		# local_list.append(Annotation(_annotation))
 
-		# except:
 		if 'title' in annotation:
 			local_list.append(
 					dict(
@@ -502,40 +497,62 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 							font={'size':24 if not 'fontsize' in kwargs else kwargs['fontsize']}
 						)
 				)
-			del annotation['title']
 
-		for k,v in list(annotation.items()):
-			if kind in ('candlestick','ohlc','candle'):
-				d=ta._ohlc_dict(df)
-				maxv=df[d['high']].ix[k]
-				yref='y2'
-			else:
-				maxv=df.ix[k].sum() if k in df.index else 0
-				yref='y1'
-			ann=dict(
-							x=k,
-							y=maxv,
-							xref='x',
-							yref=yref,
-							text=v,
-							showarrow=True,
-							arrowhead=7,
-							ax=0,
-							ay=-100,
-							textangle=-90
-							)
+			del annotation['title']	
 			local_list.append(ann)
 
-		_l=[]
-		for i in local_list:
-			_l.append(dict_replace_keyword(i,'font',kwargs,True))
+		elif 'x' in annotation:
+			ann=dict(
+								x=annotation['x'],
+								y=annotation.get('y',.5),
+								xref=annotation.get('xref','x'),
+								yref=annotation.get('yref',kwargs.get('yref','y1')),
+								text=annotation.get('text'),
+								showarrow=annotation.get('showarrow',True),
+								arrowhead=annotation.get('arrowhead',7),
+								arrowcolor=annotation.get('arrowcolor',kwargs.get('arrowcolor')),
+								ax=annotation.get('ax',0),
+								ay=annotation.get('ay',-100),
+								textangle=annotation.get('textangle',-90),
+								font = dict(
+									color = annotation.get('fontcolor',annotation.get('color',kwargs.get('fontcolor'))),
+									size = annotation.get('fontsize',annotation.get('size',kwargs.get('fontsize')))
+								)
+								)
+			local_list.append(ann)
 
-		local_list=_l
+		else:
+			for k,v in list(annotation.items()):
+				if kind in ('candlestick','ohlc','candle'):
+					d=ta._ohlc_dict(df)
+					maxv=df[d['high']].ix[k]
+					yref='y2'
+				else:
+					maxv=df.ix[k].sum() if k in df.index else 0
+					yref='y1'
+				ann=dict(
+								x=k,
+								y=maxv,
+								xref='x',
+								yref=yref,
+								text=v,
+								showarrow=kwargs.get('showarrow',True),
+								arrowhead=kwargs.get('arrowhead',7),
+								arrowcolor = kwargs['arrowcolor'],
+								ax=kwargs.get('ax',0),
+								ay=kwargs.get('ay',-100),
+								textangle=kwargs.get('textangle',-90),
+								font = dict(
+									color = kwargs['fontcolor'],
+									size=kwargs['fontsize']
+								)
+								)
+				local_list.append(ann)
+
 
 		return local_list
 
-	if not isinstance(annotations,list):
-		annotations=[annotations]
+	annotations = make_list(annotations)
 	_list_ann=[]
 	for ann in annotations:
 		_list_ann.extend(check_ann(ann))
