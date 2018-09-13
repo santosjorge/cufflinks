@@ -519,7 +519,7 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 								)
 								)
 			local_list.append(ann)
-			
+
 		else:
 			for k,v in list(annotation.items()):
 				if kind in ('candlestick','ohlc','candle'):
@@ -548,12 +548,6 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 								)
 				local_list.append(ann)
 
-		# print(local_list)
-		# _l=[]
-		# for i in local_list:
-		# 	_l.append(dict_replace_keyword(i,'font',kwargs,True))
-		
-		# local_list=_l
 
 		return local_list
 
