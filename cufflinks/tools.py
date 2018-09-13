@@ -35,12 +35,12 @@ __LAYOUT_AXIS=['autorange','autotick','backgroundcolor','categoryarray','categor
 			   'ticksuffix','ticktext','ticktextsrc','tickvals','tickvalssrc','tickwidth','titlefont',
 			   'zeroline','zerolinecolor','zerolinewidth']
 
-X_Y = ['anchor', 'automargin', 'autorange', 'calendar', 'categoryarray', 'categoryarraysrc', 'categoryorder', 'color', 
-	   'constrain', 'constraintoward', 'domain', 'dtick', 'exponentformat', 'fixedrange', 'gridcolor', 'gridwidth', 'hoverformat', 
-	   'layer', 'linecolor', 'linewidth', 'mirror', 'nticks', 'overlaying', 'position', 'range', 'rangemode', 'scaleanchor', 'scaleratio', 
-	   'separatethousands', 'showexponent', 'showgrid', 'showline', 'showspikes', 'showticklabels', 'showtickprefix', 'showticksuffix', 'side', 
-	   'spikecolor', 'spikedash', 'spikemode', 'spikesnap', 'spikethickness', 'tick0', 'tickangle', 'tickcolor', 'tickfont', 'tickformat', 
-	   'tickformatstops', 'ticklen', 'tickmode', 'tickprefix', 'ticks', 'ticksuffix', 'ticktext', 'ticktextsrc', 'tickvals', 'tickvalssrc', 
+X_Y = ['anchor', 'automargin', 'autorange', 'calendar', 'categoryarray', 'categoryarraysrc', 'categoryorder', 'color',
+	   'constrain', 'constraintoward', 'domain', 'dtick', 'exponentformat', 'fixedrange', 'gridcolor', 'gridwidth', 'hoverformat',
+	   'layer', 'linecolor', 'linewidth', 'mirror', 'nticks', 'overlaying', 'position', 'range', 'rangemode', 'scaleanchor', 'scaleratio',
+	   'separatethousands', 'showexponent', 'showgrid', 'showline', 'showspikes', 'showticklabels', 'showtickprefix', 'showticksuffix', 'side',
+	   'spikecolor', 'spikedash', 'spikemode', 'spikesnap', 'spikethickness', 'tick0', 'tickangle', 'tickcolor', 'tickfont', 'tickformat',
+	   'tickformatstops', 'ticklen', 'tickmode', 'tickprefix', 'ticks', 'ticksuffix', 'ticktext', 'ticktextsrc', 'tickvals', 'tickvalssrc',
 	   'tickwidth', 'title', 'titlefont', 'type', 'visible', 'zeroline', 'zerolinecolor', 'zerolinewidth']
 
 __LAYOUT_AXIS_X=['xaxis_'+_ for _ in X_Y]
@@ -197,7 +197,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		Range Slider
 			rangeslider : bool or dict
 				Defines if a rangeslider is displayed
-				If bool: 
+				If bool:
 					True : Makes it visible
 				if dict:
 					Rangeslider object
@@ -210,8 +210,8 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 			fontsize : int
 				Text size for annotations
 			textangle : int
-				Textt angle 
-			See https://plot.ly/python/reference/#layout-annotations 
+				Textt angle
+			See https://plot.ly/python/reference/#layout-annotations
 			for a complete list of valid parameters.
 	"""
 
@@ -258,7 +258,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	axis_kwargs=check_kwargs(kwargs,__LAYOUT_AXIS,{},True)
 	xaxis_kwargs=kwargs_from_keyword(kwargs,{},'xaxis',True)
 	yaxis_kwargs=kwargs_from_keyword(kwargs,{},'yaxis',True)
-	
+
 	for _x,_vals in (('xy',axis_kwargs),('x',xaxis_kwargs),('y',yaxis_kwargs)):
 		layout=update_axis(layout,_x,**_vals)
 
@@ -295,7 +295,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 			else:
 				layout['{0}axis'.format(r)].update(range=kwargs['{0}range'.format(r)])
 
-	# Need to update this for an add_axis approach. 
+	# Need to update this for an add_axis approach.
 	if kind in ('candlestick','ohlc','candle'):
 		layout['yaxis2']=layout['yaxis'].copy()
 		layout['yaxis'].update(showticklabels=False)
@@ -321,7 +321,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	# Logarithmic Axis
 	for _ in ['x','y','z']:
 		if 'log{0}'.format(_) in kwargs:
-			if is3d:			
+			if is3d:
 				if kwargs['log{0}'.format(_)]:
 					layout['scene']['{0}axis'.format(_)]['type']='log'
 			else:
@@ -467,10 +467,10 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 			or
 			List of Plotly annotations
 	"""
-	
 
 
-	
+
+
 
 	for key in list(kwargs.keys()):
 		if key not in __ANN_KWARGS:
@@ -488,11 +488,11 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 		# _annotation=dict_replace_keyword({},'font',annotation,False)
 		# _annotation=dict_replace_keyword(_annotation,'font',kwargs,False)
 		# local_list.append(Annotation(_annotation))
-		
+
 		# except:
 		if 'title' in annotation:
 			local_list.append(
-					dict(	
+					dict(
 							text=annotation['title'],
 							showarrow=False,
 							x=0,
@@ -503,7 +503,7 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 						)
 				)
 			del annotation['title']
-	
+
 		for k,v in list(annotation.items()):
 			if kind in ('candlestick','ohlc','candle'):
 				d=ta._ohlc_dict(df)
@@ -529,13 +529,13 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 		_l=[]
 		for i in local_list:
 			_l.append(dict_replace_keyword(i,'font',kwargs,True))
-		
+
 		local_list=_l
 
 		return local_list
 
 	if not isinstance(annotations,list):
-		annotations=[annotations]	
+		annotations=[annotations]
 	_list_ann=[]
 	for ann in annotations:
 		_list_ann.extend(check_ann(ann))
@@ -608,7 +608,7 @@ def merge_figures(figures):
 	Parameters:
 	-----------
 		figures : list(Figures)
-			List of figures to be merged. 
+			List of figures to be merged.
 	"""
 	figure={}
 	data=[]
@@ -886,7 +886,7 @@ def get_subplots(rows=1,cols=1,
 
 	update_axis(sp,layout)
 	# 124 - zeroline on the first figure
-	
+
 	# if 'subplot_titles' in kwargs:
 	# 	if 'annotations' in layout:
 	# 		annotation=sp['layout']['annotations'][0]
@@ -1044,10 +1044,11 @@ def get_which(figure):
 	keys=list(figure['layout']['scene'].keys()) if 'scene' in figure['layout'] else list(figure['layout'].keys())
 	for k in keys:
 		if 'axis' in k:
+			x = '{0}{1}'.format(k[0],'1' if k[-1]=='s' else k[-1])
 			if k[0] in d:
-				d[k[0]].append('{0}{1}'.format(k[0],k[-1]))
+				d[k[0]].append(x)
 			else:
-				d[k[0]]=['{0}{1}'.format(k[0],'1' if k[-1]=='s' else k[-1])]
+				d[k[0]]=[x]
 	return d
 
 def get_ref_axis(figure):
@@ -1351,7 +1352,7 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,
 	"""
 	Returns a range selector
 	Reference: https://plot.ly/python/reference/#layout-xaxis-rangeselector
-	
+
 	Parameters:
 	-----------
 		steps : string or list(string)
@@ -1371,7 +1372,7 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,
 			Domain (0,1)
 		y : float
 			Position along the y axis
-			Domain (0,1)	
+			Domain (0,1)
 	"""
 	import string
 
@@ -1388,7 +1389,7 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,
 		if _s[-2:]=='td':
 			_s=_s[:-2]
 			stepmode='todate'
-			if _s[0] not in string.digits:				
+			if _s[0] not in string.digits:
 				_s='1'+_s
 		if _s[0] not in string.digits:
 			raise Exception('Invalid step format: {0}'.format(s))
@@ -1398,7 +1399,7 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,
 		term.reverse()
 		term=''.join(term)
 		cnt=int(_s)
-		term=term[:-1] if (term[-1]=='s' and len(term)>1) else term		
+		term=term[:-1] if (term[-1]=='s' and len(term)>1) else term
 		if term in ['y','year','yr']:
 					steps='year'
 		elif term in ['w','week','wk']:
@@ -1537,7 +1538,7 @@ def _nodata(self):
 	# _=copy.deepcopy(self)
 	for _ in self:
 		d.append(copy.deepcopy(_))
-	for _ in d:	
+	for _ in d:
 		for k in list(_.keys()):
 			if k in ('x','y','open','close','high','low','index','volume','line','marker'):
 				try:

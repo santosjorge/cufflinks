@@ -1,8 +1,9 @@
 from setuptools import setup
 from os import path
+import io
 
 here = path.abspath(path.dirname(__file__))
-with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
+with io.open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
     requires = f.read().split()
 
 setup(name='cufflinks',
