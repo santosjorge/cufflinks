@@ -1021,9 +1021,11 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 							open=self[d['open']].values.tolist(),
 							high=self[d['high']].values.tolist(),
 							low=self[d['low']].values.tolist(),
-							close=self[d['close']].values.tolist(),
-							x=self.index
-												)
+							close=self[d['close']].values.tolist())
+				if isinstance(self.index,pd.core.indexes.datetimes.DatetimeIndex):
+					_d['x']=self.index.astype('str')
+				else:
+					_d['x']=self.index
 				if 'name' in kw:
 					_d['name']=kw['name']
 				
