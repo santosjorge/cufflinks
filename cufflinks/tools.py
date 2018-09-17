@@ -1132,8 +1132,7 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 	fig['data']=fig_cpy['data']
 	fig['layout']=fig_cpy['layout']
 	fig=Figure(fig)
-	if not isinstance(traces,list):
-		traces=[traces]
+	traces=make_list(traces)
 
 	def update_data(trace,y):
 		anchor=fig.axis['def'][y]['anchor'] if 'anchor' in fig.axis['def'][y] else 'x1'
