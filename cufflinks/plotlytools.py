@@ -812,7 +812,12 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					df=pd.DataFrame({df.name:df})
 				if x:
 					df=df.set_index(x)
-				if y:
+				if y and secondary_y:
+					if isinstance(secondary_y, str):
+						df=df[[y, secondary_y]]
+					else:
+						df=df[[y] + secondary_y]
+				elif y:
 					df=df[y]
 				if kind=='area':
 					df=df.transpose().fillna(0).cumsum().transpose()
