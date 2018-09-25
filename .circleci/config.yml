@@ -12,19 +12,17 @@ jobs:
       - run: 
           name: setup
           command: 
-            pwd
-            ls -la
             bash .circleci/setup.sh
       - run:
           name: nose coverage
           command: pip install nose coverage
-      - run: bash setup.sh
+      # - run: bash setup.sh
       - run: cd ~ && python -c "import plotly"
       # _ save_cache:
         # - paths : ~/.pyenv/versions
       - run:
           name: running tests
-          command: bash test.sh
+          command: bash .circleci/test.sh
 # dependencies:
 #   override: 
 
