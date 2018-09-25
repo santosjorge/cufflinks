@@ -12,6 +12,7 @@ jobs:
       - run: 
           name: setup
           command: 
+            cd .circleci
             bash setup.sh
       - run:
           name: nose coverage
