@@ -13,6 +13,7 @@ jobs:
           name: setup
           command: 
             pwd
+            ls -la
             bash .circleci/setup.sh
       - run:
           name: nose coverage
