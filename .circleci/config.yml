@@ -14,7 +14,8 @@ jobs:
           name: setup
           command: 
             # cd .circleci
-            bash .circleci/setup.sh
+            ls -la
+            # bash .circleci/setup.sh
       - run:
           name: nose coverage
           command: pip install nose coverage
