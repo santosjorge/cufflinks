@@ -12,7 +12,7 @@ jobs:
       - run: 
           name: setup
           command: 
-            bash .circleci/setup.sh
+            bash setup.sh
       - run:
           name: nose coverage
           command: pip install nose coverage
