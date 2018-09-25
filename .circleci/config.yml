@@ -14,7 +14,7 @@ jobs:
           name: setup
           command: 
             # cd .circleci
-            cd ~/project && ls -la
+            cd ~/project && pwd && ls -la
             # bash .circleci/setup.sh
       - run:
           name: nose coverage
