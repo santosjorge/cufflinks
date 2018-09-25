@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     machine : true
-    working_directory: ~/cufflinks
+    # working_directory: ~/cufflinks
     environment:
       PACKAGE_ROOT: /home/ubuntu/cufflinks
       PLOTLY_CONFIG_DIR: ${HOME}/.plotly
@@ -14,7 +14,7 @@ jobs:
           name: setup
           command: 
             # cd .circleci
-            cd circleci | ls -la
+            ls -la
             # bash .circleci/setup.sh
       - run:
           name: nose coverage
