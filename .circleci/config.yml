@@ -4,14 +4,14 @@ jobs:
     docker:
       - image: circleci/python:3.4-stretch-node-browsers
 
-  steps:
-    - checkout
-    - run:
-        name: Install nose
-        command: 'pip install nose coverage'
-    - run:
-        name: Run tests
-        command: 'nosetests -xv tests.py --with-coverage --cover-package=cufflinks'
+    steps:
+      - checkout
+      - run:
+          name: Install nose
+          command: 'pip install nose coverage'
+      - run:
+          name: Run tests
+          command: 'nosetests -xv tests.py --with-coverage --cover-package=cufflinks'
 
 workflows:
   version: 2
