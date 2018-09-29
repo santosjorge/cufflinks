@@ -13,8 +13,8 @@ jobs:
           name: Run tests
           command: 'nosetests -xv tests.py --with-coverage --cover-package=cufflinks'
 
-          workflows:
-version: 2
+workflows:
+  version: 2
   build:
     jobs:
       - python-3.4-core
