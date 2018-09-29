@@ -8,7 +8,7 @@ jobs:
       - checkout
       - run:
           name: Install core requirements
-          command: 'sudo pip install -r project/requirements.txt'
+          command: 'sudo pip install -r ~/project/requirements.txt'
       - run:
           name: Install nose
           command: 'sudo pip install nose coverage'
