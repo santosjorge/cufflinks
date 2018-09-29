@@ -7,6 +7,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install core requirements
+          command: 'sudo pip install -r cufflinks/requirements.txt'
+      - run:
           name: Install nose
           command: 'sudo pip install nose coverage'
       - run:
