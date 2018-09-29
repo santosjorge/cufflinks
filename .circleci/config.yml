@@ -3,7 +3,7 @@ jobs:
   python-3.4-core:
       docker:
         - image: circleci/python:3.4-stretch-node-browsers
-          environment:
+
  steps:
       - checkout
       - run:
