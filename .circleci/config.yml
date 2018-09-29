@@ -8,7 +8,7 @@ jobs:
       - checkout
       - run:
           name: Install nose
-          command: 'pip install nose coverage'
+          command: 'sudo pip install nose coverage'
       - run:
           name: Run tests
           command: 'nosetests -xv tests.py --with-coverage --cover-package=cufflinks'
