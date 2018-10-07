@@ -1,0 +1,44 @@
+version: 2
+jobs:
+  python-2.7-core:
+    docker:
+      - image: circleci/python:2.7-stretch-node-browsers
+        environment:
+          PLOTLY_TOX_PYTHON_34: python2.7
+
+    steps:
+      - checkout
+      - run:
+          name: Install core requirements
+          command: 'sudo pip install -r ~/project/requirements.txt'
+      - run:
+          name: Install nose
+          command: 'sudo pip install nose coverage'
+      - run:
+          name: Run tests
+          command: 'nosetests -xv tests.py --with-coverage --cover-package=cufflinks'
+
+  python-3.4-core:
+    docker:
+      - image: circleci/python:3.4-stretch-node-browsers
+        environment:
+          PLOTLY_TOX_PYTHON_34: python3.4
+
+    steps:
+      - checkout
+      - run:
+          name: Install core requirements
+          command: 'sudo pip install -r ~/project/requirements.txt'
+      - run:
+          name: Install nose
+          command: 'sudo pip install nose coverage'
+      - run:
+          name: Run tests
+          command: 'nosetests -xv tests.py --with-coverage --cover-package=cufflinks'
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - python-2.7-core
+      - python-3.4-core

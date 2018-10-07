@@ -11,12 +11,15 @@ from __future__ import absolute_import
 from . import date_tools
 from . import utils
 from . import datagen
+from . import helper
 from . import tools
 from . import colors
 from . import pandastools
 from . import ta
 
+from .helper import _printer as help
 from .plotlytools import *
+from plotly.graph_objs import *
 from plotly.plotly import plot
 from .colors import cnames, get_colorscale
 from .utils import pp

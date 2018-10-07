@@ -1,16 +1,19 @@
-import plotly.plotly as py
-import plotly.offline as py_offline
-import pandas as pd
-from plotly.graph_objs import *
-from .colors import normalize,to_rgba
-from .themes import THEMES
-from . import auth
-from . import ta
-from .utils import merge_dict,deep_update, check_kwargs,kwargs_from_keyword,dict_replace_keyword
-import numpy as np
 import copy
 
-__LAYOUT_VALID_KWARGS = ['legend','logx','logy','layout_update','title',
+import numpy as np
+import pandas as pd
+import plotly.offline as py_offline
+import plotly.plotly as py
+from plotly.graph_objs import Figure, Scatter, Line
+# from plotly.graph_objs.layout import XAxis, YAxis
+
+from . import auth, ta
+from .colors import normalize, to_rgba
+from .themes import THEMES
+from .utils import (check_kwargs, deep_update, dict_replace_keyword,
+                    kwargs_from_keyword, merge_dict, is_list,make_list)
+
+__LAYOUT_VALID_KWARGS = ['legend','logx','logy','logz','layout_update','title',
 					'xrange','yrange','zrange','rangeselector','rangeslider','showlegend','fontfamily']
 
 __SHAPES_KWARGS = ['vline','hline','shapes','hspan','vspan']
@@ -32,8 +35,16 @@ __LAYOUT_AXIS=['autorange','autotick','backgroundcolor','categoryarray','categor
 			   'ticksuffix','ticktext','ticktextsrc','tickvals','tickvalssrc','tickwidth','titlefont',
 			   'zeroline','zerolinecolor','zerolinewidth']
 
-__LAYOUT_AXIS_X=['xaxis_'+_ for _ in XAxis().__dir__()]
-__LAYOUT_AXIS_Y=['yaxis_'+_ for _ in YAxis().__dir__()]
+X_Y = ['anchor', 'automargin', 'autorange', 'calendar', 'categoryarray', 'categoryarraysrc', 'categoryorder', 'color',
+	   'constrain', 'constraintoward', 'domain', 'dtick', 'exponentformat', 'fixedrange', 'gridcolor', 'gridwidth', 'hoverformat',
+	   'layer', 'linecolor', 'linewidth', 'mirror', 'nticks', 'overlaying', 'position', 'range', 'rangemode', 'scaleanchor', 'scaleratio',
+	   'separatethousands', 'showexponent', 'showgrid', 'showline', 'showspikes', 'showticklabels', 'showtickprefix', 'showticksuffix', 'side',
+	   'spikecolor', 'spikedash', 'spikemode', 'spikesnap', 'spikethickness', 'tick0', 'tickangle', 'tickcolor', 'tickfont', 'tickformat',
+	   'tickformatstops', 'ticklen', 'tickmode', 'tickprefix', 'ticks', 'ticksuffix', 'ticktext', 'ticktextsrc', 'tickvals', 'tickvalssrc',
+	   'tickwidth', 'title', 'titlefont', 'type', 'visible', 'zeroline', 'zerolinecolor', 'zerolinewidth']
+
+__LAYOUT_AXIS_X=['xaxis_'+_ for _ in X_Y]
+__LAYOUT_AXIS_Y=['yaxis_'+_ for _ in X_Y]
 
 __LAYOUT_KWARGS = []
 [__LAYOUT_KWARGS.extend(_) for _ in [__LAYOUT_VALID_KWARGS,__SHAPES_KWARGS,__GEO_KWARGS,__ANN_KWARGS,__LAYOUT_AXIS,
@@ -50,7 +61,7 @@ def getTheme(theme=None):
 		theme = auth.get_config_file()['theme']
 
 	if theme in THEMES:
-		return copy.deepcopy(THEMES[theme])
+		return updateColors(copy.deepcopy(THEMES[theme]))
 	else:
 		raise Exception("Invalid Theme: {0}".format(theme))
 
@@ -59,6 +70,23 @@ def getThemes():
 	Returns the list of available themes
 	"""
 	return list(THEMES.keys())
+
+def updateColors(layout):
+	for k,v in list(layout.items()):
+		if isinstance(v,dict):
+			updateColors(v)
+		else:
+			if isinstance(v,list):
+				for _ in v:
+					if isinstance(_,dict):
+						updateColors(_)
+			if 'colorscale' in k.lower():
+				continue
+			if 'color' in k.lower():
+				if 'rgba' not in v:
+					layout[k]=normalize(v)
+	return layout
+
 
 def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmode='',bargap=None,bargroupgap=None,
 			  margin=None, dimensions=None, width=None, height=None,
@@ -163,13 +191,13 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 				see help(cf.tools.get_range_selector) for more information
 				Example:
 					{'steps':['1y','2 months','5 weeks','ytd','2mtd'],
-					 'axis':'xaxis1', 'bgcolor' : ('blue',.3),
+					 'axis':'xaxis', 'bgcolor' : ('blue',.3),
 					 'x': 0.2 , 'y' : 0.9}
 
 		Range Slider
 			rangeslider : bool or dict
 				Defines if a rangeslider is displayed
-				If bool: 
+				If bool:
 					True : Makes it visible
 				if dict:
 					Rangeslider object
@@ -182,8 +210,8 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 			fontsize : int
 				Text size for annotations
 			textangle : int
-				Textt angle 
-			See https://plot.ly/python/reference/#layout-annotations 
+				Textt angle
+			See https://plot.ly/python/reference/#layout-annotations
 			for a complete list of valid parameters.
 	"""
 
@@ -196,9 +224,9 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		theme = auth.get_config_file()['theme']
 
 	theme_data = getTheme(theme)
-	layout=Layout(theme_data['layout'])
-	layout['xaxis1'].update({'title':xTitle})
-	layout['yaxis1'].update({'title':yTitle})
+	layout=theme_data['layout']
+	layout['xaxis'].update({'title':xTitle})
+	layout['yaxis'].update({'title':yTitle})
 
 	fontfamily=kwargs.pop('fontfamily',None)
 	if fontfamily:
@@ -230,7 +258,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	axis_kwargs=check_kwargs(kwargs,__LAYOUT_AXIS,{},True)
 	xaxis_kwargs=kwargs_from_keyword(kwargs,{},'xaxis',True)
 	yaxis_kwargs=kwargs_from_keyword(kwargs,{},'yaxis',True)
-	
+
 	for _x,_vals in (('xy',axis_kwargs),('x',xaxis_kwargs),('y',yaxis_kwargs)):
 		layout=update_axis(layout,_x,**_vals)
 
@@ -252,12 +280,12 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	if is3d:
 		if '3d' in theme_data:
 			layout=deep_update(layout,theme_data['3d'])
-		zaxis=layout['xaxis1'].copy()
+		zaxis=layout['xaxis'].copy()
 		zaxis.update(title=zTitle)
-		scene=Scene(xaxis=layout['xaxis1'].copy(),yaxis=layout['yaxis1'].copy(),zaxis=zaxis)
+		scene=dict(xaxis=layout['xaxis'].copy(),yaxis=layout['yaxis'].copy(),zaxis=zaxis)
 		layout.update(scene=scene)
-		del layout['xaxis1']
-		del layout['yaxis1']
+		del layout['xaxis']
+		del layout['yaxis']
 
 	## Axis Range
 	for r in ['x','y','z']:
@@ -265,12 +293,12 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 			if is3d:
 				layout['scene']['{0}axis'.format(r)].update(range=kwargs['{0}range'.format(r)])
 			else:
-				layout['{0}axis1'.format(r)].update(range=kwargs['{0}range'.format(r)])
+				layout['{0}axis'.format(r)].update(range=kwargs['{0}range'.format(r)])
 
-	# Need to update this for an add_axis approach. 
+	# Need to update this for an add_axis approach.
 	if kind in ('candlestick','ohlc','candle'):
-		layout['yaxis2']=layout['yaxis1'].copy()
-		layout['yaxis1'].update(showticklabels=False)
+		layout['yaxis2']=layout['yaxis'].copy()
+		layout['yaxis'].update(showticklabels=False)
 
 	## Kwargs
 
@@ -290,13 +318,15 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	if 'showlegend' in kwargs:
 		layout['showlegend']=kwargs['showlegend']
 
-	if 'logy' in kwargs:
-		if kwargs['logy']:
-			layout['yaxis1']['type']='log'
-
-	if 'logx' in kwargs:
-		if kwargs['logx']:
-			layout['xaxis1']['type']='log'
+	# Logarithmic Axis
+	for _ in ['x','y','z']:
+		if 'log{0}'.format(_) in kwargs:
+			if is3d:
+				if kwargs['log{0}'.format(_)]:
+					layout['scene']['{0}axis'.format(_)]['type']='log'
+			else:
+				if kwargs['log{0}'.format(_)]:
+					layout['{0}axis'.format(_)]['type']='log'
 
 	# Shapes
 
@@ -383,8 +413,8 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		kw_=kwargs_from_keyword(kw,{},'projection')
 		deep_update(kw,kw_)
 		layout['geo']=kw
-		del layout['xaxis1']
-		del layout['yaxis1']
+		del layout['xaxis']
+		del layout['yaxis']
 		if not margin:
 			layout['margin']={'autoexpand':True}
 
@@ -395,22 +425,22 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 			axis=rs['axis']
 			del rs['axis']
 		else:
-			axis='xaxis1'
+			axis='xaxis'
 		layout[axis]['rangeselector']=get_range_selector(**rs)
 
 	# Range Slider
 	if 'rangeslider' in kwargs:
 		if type(kwargs['rangeslider'])==bool:
 			if kwargs['rangeslider']:
-				layout['xaxis1']['rangeslider']=dict(visible=kwargs['rangeslider'])
+				layout['xaxis']['rangeslider']=dict(visible=kwargs['rangeslider'])
 			else:
-				layout['xaxis1']['rangeslider']=dict(visible=False)
+				layout['xaxis']['rangeslider']=dict(visible=False)
 				# layout['yaxis1'].update(domain=(0,0))
 		else:
-			layout['xaxis1']['rangeslider']=kwargs['rangeslider']
+			layout['xaxis']['rangeslider']=kwargs['rangeslider']
 	else:
 		if kind in ('ohlc','candle','candlestick'):
-			layout['xaxis1']['rangeslider']=dict(visible=False)
+			layout['xaxis']['rangeslider']=dict(visible=False)
 			# layout['yaxis1'].update(domain=(0,0))
 
 
@@ -420,25 +450,10 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	if 'layout_update' in kwargs:
 		layout=deep_update(layout,kwargs['layout_update'])
 
-	def updateColors(layout):
-		for k,v in list(layout.items()):
-			if isinstance(v,dict):
-				updateColors(v)
-			else:
-				if isinstance(v,list):
-					for _ in v:
-						if isinstance(_,dict):
-							updateColors(_)
-				if 'color' in k.lower():
-					if 'rgba' not in v:
-						layout[k]=normalize(v)
-		return layout
+	return layout
 
 
-	return updateColors(layout)
-
-
-def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
+def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 	"""
 	Generates an annotations object
 
@@ -452,16 +467,15 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 			or
 			List of Plotly annotations
 	"""
-	
 
 
-	
+
+
 
 	for key in list(kwargs.keys()):
 		if key not in __ANN_KWARGS:
 			raise Exception("Invalid keyword : '{0}'".format(key))
 
-	l=[]
 	theme_data = getTheme(theme)
 
 	kwargs['fontcolor']=kwargs.pop('fontcolor',theme_data['annotations']['fontcolor'])
@@ -470,26 +484,44 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 
 	def check_ann(annotation):
 		local_list=[]
-		try:
-			_annotation=dict_replace_keyword({},'font',annotation,False)
-			_annotation=dict_replace_keyword(_annotation,'font',kwargs,False)
-			local_list.append(Annotation(_annotation))
-			
-		except:
-			if 'title' in annotation:
-				local_list.append(
-						Annotation(	
-								text=annotation['title'],
-								showarrow=False,
-								x=0,
-								y=1,
-								xref='paper',
-								yref='paper',
-								font={'size':24 if not 'fontsize' in kwargs else kwargs['fontsize']}
-							)
-					)
-				del annotation['title']
-		
+
+		if 'title' in annotation:
+			local_list.append(
+					dict(
+							text=annotation['title'],
+							showarrow=False,
+							x=0,
+							y=1,
+							xref='paper',
+							yref='paper',
+							font={'size':24 if not 'fontsize' in kwargs else kwargs['fontsize']}
+						)
+				)
+
+			del annotation['title']	
+			local_list.append(ann)
+
+		elif 'x' in annotation:
+			ann=dict(
+								x=annotation['x'],
+								y=annotation.get('y',.5),
+								xref=annotation.get('xref','x'),
+								yref=annotation.get('yref',kwargs.get('yref','y1')),
+								text=annotation.get('text'),
+								showarrow=annotation.get('showarrow',True),
+								arrowhead=annotation.get('arrowhead',7),
+								arrowcolor=annotation.get('arrowcolor',kwargs.get('arrowcolor')),
+								ax=annotation.get('ax',0),
+								ay=annotation.get('ay',-100),
+								textangle=annotation.get('textangle',-90),
+								font = dict(
+									color = annotation.get('fontcolor',annotation.get('color',kwargs.get('fontcolor'))),
+									size = annotation.get('fontsize',annotation.get('size',kwargs.get('fontsize')))
+								)
+								)
+			local_list.append(ann)
+
+		else:
 			for k,v in list(annotation.items()):
 				if kind in ('candlestick','ohlc','candle'):
 					d=ta._ohlc_dict(df)
@@ -498,34 +530,33 @@ def getAnnotations(df,annotations,kind='lines',theme=None,**kwargs):
 				else:
 					maxv=df.ix[k].sum() if k in df.index else 0
 					yref='y1'
-				ann=Annotation(
+				ann=dict(
 								x=k,
 								y=maxv,
 								xref='x',
 								yref=yref,
 								text=v,
-								showarrow=True,
-								arrowhead=7,
-								ax=0,
-								ay=-100,
-								textangle=-90
+								showarrow=kwargs.get('showarrow',True),
+								arrowhead=kwargs.get('arrowhead',7),
+								arrowcolor = kwargs['arrowcolor'],
+								ax=kwargs.get('ax',0),
+								ay=kwargs.get('ay',-100),
+								textangle=kwargs.get('textangle',-90),
+								font = dict(
+									color = kwargs['fontcolor'],
+									size=kwargs['fontsize']
+								)
 								)
 				local_list.append(ann)
 
-			_l=[]
-			for i in local_list:
-				_l.append(dict_replace_keyword(i,'font',kwargs,True))
-			
-			local_list=_l
 
 		return local_list
 
-	if not isinstance(annotations,list):
-		annotations=[annotations]	
+	annotations = make_list(annotations)
 	_list_ann=[]
 	for ann in annotations:
 		_list_ann.extend(check_ann(ann))
-	return Annotations(_list_ann)
+	return _list_ann
 
 
 def strip_figures(figure):
@@ -539,7 +570,7 @@ def strip_figures(figure):
 	"""
 	fig=[]
 	for trace in figure['data']:
-		fig.append(Figure(data=[trace],layout=figure['layout']))
+		fig.append(dict(data=[trace],layout=figure['layout']))
 	return fig
 
 
@@ -555,6 +586,8 @@ def get_base_layout(figs):
 	"""
 	layout={}
 	for fig in figs:
+		if not isinstance(fig,dict):
+			fig=fig.to_dict()
 		for k,v in list(fig['layout'].items()):
 			layout[k]=v
 	return layout
@@ -592,10 +625,10 @@ def merge_figures(figures):
 	Parameters:
 	-----------
 		figures : list(Figures)
-			List of figures to be merged. 
+			List of figures to be merged.
 	"""
-	figure=Figure()
-	data=Data()
+	figure={}
+	data=[]
 	for fig in figures:
 		for trace in fig['data']:
 			data.append(trace)
@@ -719,11 +752,11 @@ def subplots(figures,shape=None,
 		else:
 			cols=2
 			rows=len(figures)//2+len(figures)%2
-	sp=get_subplots(rows=rows,cols=cols,
-				  shared_xaxes=shared_xaxes, shared_yaxes=shared_yaxes,
-				  start_cell=start_cell, theme=theme,base_layout=base_layout,
-				  **kwargs)
-	list_ref=(col for row in sp._grid_ref for col in row)
+	sp,grid_ref=get_subplots(rows=rows,cols=cols,
+				             shared_xaxes=shared_xaxes, shared_yaxes=shared_yaxes,
+				             start_cell=start_cell, theme=theme,base_layout=base_layout,
+				             **kwargs)
+	list_ref=(col for row in grid_ref for col in row)
 	for i in range(len(figures)):
 		while True:
 			lr=next(list_ref)
@@ -850,13 +883,26 @@ def get_subplots(rows=1,cols=1,
 	if not theme:
 		theme = auth.get_config_file()['theme']
 
-	layout= base_layout if base_layout else getLayout(theme)
+	layout= base_layout if base_layout else getLayout(theme,**check_kwargs(kwargs,__LAYOUT_AXIS))
 	sp=py.plotly.tools.make_subplots(rows=rows,cols=cols,shared_xaxes=shared_xaxes,
 										   shared_yaxes=shared_yaxes,print_grid=False,
 											start_cell=start_cell,**kwargs)
+	sp, grid_ref = sp.to_dict(), sp._grid_ref
+
 	for k,v in list(layout.items()):
-		if not isinstance(v,XAxis) and not isinstance(v,YAxis):
+		if 'xaxis' not in k and 'yaxis' not in k:
 			sp['layout'].update({k:v})
+
+	def update_axis(fig,layout):
+		for axis, n in list(Figure(fig).axis['len'].items()):
+			for _ in range(1,n+1):
+				for k,v in list(layout['{0}axis'.format(axis)].items()):
+					_='' if _==1 else _
+					if k not in fig['layout']['{0}axis{1}'.format(axis,_)]:
+						fig['layout']['{0}axis{1}'.format(axis,_)][k]=v
+
+	update_axis(sp,layout)
+	# 124 - zeroline on the first figure
 
 	# if 'subplot_titles' in kwargs:
 	# 	if 'annotations' in layout:
@@ -866,17 +912,20 @@ def get_subplots(rows=1,cols=1,
 	# 	for ann in sp['layout']['annotations']:
 	# 		ann.update(font=dict(color=annotation['font']['color']))
 
-	def update_items(sp_item,layout,axis):
-		for k,v in list(layout[axis].items()):
-			sp_item.update({k:v})
+	# def update_items(sp_item,layout,axis):
+	# 	for k,v in list(layout[axis].items()):
+	# 		sp_item.update({k:v})
 
-	for k,v in list(sp['layout'].items()):
-		if isinstance(v,XAxis):
-			update_items(v,layout,'xaxis1')
-		elif isinstance(v,YAxis):
-			update_items(v,layout,'xaxis1')
+	# for k,v in list(sp['layout'].items()):
+	# 	if isinstance(v,go.XAxis):
+	# 		update_items(v,layout,'xaxis1')
+	# 	elif isinstance(v,go.YAxis):
+	# 		update_items(v,layout,'xaxis1')
 
-	return sp
+
+
+
+	return sp, grid_ref
 
 # Candlesticks and OHLC
 
@@ -890,7 +939,7 @@ def get_ohlc(df,up_color=None,down_color=None,theme=None,layout=None,**kwargs):
 	args=[df[c_dir[_]] for _ in ohlc]
 	args.append(df.index)
 	fig=py.plotly.tools.FigureFactory.create_ohlc(*args,**kwargs)
-	ohlc_bars=Figure()
+	ohlc_bars={}
 	ohlc_bars['data']=fig['data']
 	ohlc_bars['layout']=fig['layout']
 	data=ohlc_bars['data']
@@ -911,7 +960,7 @@ def get_candle(df,up_color=None,down_color=None,theme=None,layout=None,**kwargs)
 	args=[df[c_dir[_]] for _ in ohlc]
 	args.append(df.index)
 	fig=py.plotly.tools.FigureFactory.create_candlestick(*args,**kwargs)
-	candle=Figure()
+	candle={}
 	candle['data']=fig['data']
 	candle['layout']=layout
 	data=candle['data']
@@ -957,8 +1006,8 @@ def scatter_matrix(df,theme=None,bins=10,color='grey',size=2):
 			else:
 				figs.append(df.iplot(kind='scatter',mode='markers',x=j,y=i,asFigure=True,size=size,colors=[color]))
 	layout=getLayout(theme)
-	layout['xaxis1'].update(showgrid=False)
-	layout['yaxis1'].update(showgrid=False)
+	layout['xaxis'].update(showgrid=False)
+	layout['yaxis'].update(showgrid=False)
 	sm=subplots(figs,shape=(len(df.columns),len(df.columns)),shared_xaxes=False,shared_yaxes=False,
 					  horizontal_spacing=.05,vertical_spacing=.07,base_layout=layout)
 	sm['layout'].update(bargap=.02,showlegend=False)
@@ -980,6 +1029,7 @@ def trace_dict(self):
 
 def get_ref(figure):
 	d={}
+	figure=fig_to_dict(figure)
 	for trace in figure['data']:
 		name = '{0}_'.format(trace['name']) if trace['name'] in d else trace['name']
 		x = trace['xaxis'] if 'xaxis' in trace else 'x1'
@@ -989,6 +1039,7 @@ def get_ref(figure):
 
 def get_def(figure):
 	d={}
+	figure=fig_to_dict(figure)
 	items=list(figure['layout']['scene'].items()) if 'scene' in figure['layout'] else list(figure['layout'].items())
 	for k,v in items:
 		if 'axis' in k:
@@ -997,6 +1048,7 @@ def get_def(figure):
 
 def get_len(figure):
 	d={}
+	figure=fig_to_dict(figure)
 	keys=list(figure['layout']['scene'].keys()) if 'scene' in figure['layout'] else list(figure['layout'].keys())
 	for k in keys:
 		if 'axis' in k:
@@ -1005,17 +1057,20 @@ def get_len(figure):
 
 def get_which(figure):
 	d={}
+	figure=fig_to_dict(figure)
 	keys=list(figure['layout']['scene'].keys()) if 'scene' in figure['layout'] else list(figure['layout'].keys())
 	for k in keys:
 		if 'axis' in k:
+			x = '{0}{1}'.format(k[0],'1' if k[-1]=='s' else k[-1])
 			if k[0] in d:
-				d[k[0]].append('{0}{1}'.format(k[0],k[-1]))
+				d[k[0]].append(x)
 			else:
-				d[k[0]]=['{0}{1}'.format(k[0],'1' if k[-1]=='s' else k[-1])]
+				d[k[0]]=[x]
 	return d
 
 def get_ref_axis(figure):
 	d={}
+	figure=fig_to_dict(figure)
 	for k,v in list(get_ref(figure).items()):
 		for i in v:
 			if i not in d:
@@ -1072,12 +1127,12 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 			Sets the title of the axis
 			Applies only to new axis
 	"""
-	fig=Figure()
-	fig_cpy=self.copy()
+	fig={}
+	fig_cpy=fig_to_dict(self).copy()
 	fig['data']=fig_cpy['data']
 	fig['layout']=fig_cpy['layout']
-	if not isinstance(traces,list):
-		traces=[traces]
+	fig=Figure(fig)
+	traces=make_list(traces)
 
 	def update_data(trace,y):
 		anchor=fig.axis['def'][y]['anchor'] if 'anchor' in fig.axis['def'][y] else 'x1'
@@ -1096,7 +1151,7 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 			try:
 				new_axis=fig.axis['dom']['y'][domain][side]
 			except KeyError:
-				axis=YAxis(fig.axis['def'][curr_y].copy())
+				axis=fig.axis['def'][curr_y].copy()
 				### check overlaying values
 				axis.update(title=title,overlaying=curr_y,side=side,anchor=curr_x)
 				axis_idx=str(fig.axis['len']['y']+1)
@@ -1313,7 +1368,7 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,
 	"""
 	Returns a range selector
 	Reference: https://plot.ly/python/reference/#layout-xaxis-rangeselector
-	
+
 	Parameters:
 	-----------
 		steps : string or list(string)
@@ -1333,7 +1388,7 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,
 			Domain (0,1)
 		y : float
 			Position along the y axis
-			Domain (0,1)	
+			Domain (0,1)
 	"""
 	import string
 
@@ -1350,7 +1405,7 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,
 		if _s[-2:]=='td':
 			_s=_s[:-2]
 			stepmode='todate'
-			if _s[0] not in string.digits:				
+			if _s[0] not in string.digits:
 				_s='1'+_s
 		if _s[0] not in string.digits:
 			raise Exception('Invalid step format: {0}'.format(s))
@@ -1360,7 +1415,7 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,
 		term.reverse()
 		term=''.join(term)
 		cnt=int(_s)
-		term=term[:-1] if (term[-1]=='s' and len(term)>1) else term		
+		term=term[:-1] if (term[-1]=='s' and len(term)>1) else term
 		if term in ['y','year','yr']:
 					steps='year'
 		elif term in ['w','week','wk']:
@@ -1400,7 +1455,8 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,
 
 def get_error_bar(axis='y',type='data',values=None,values_minus=None,color=None,thickness=1,width=5,
 				 opacity=1):
-	error=ErrorY() if axis=='y' else ErrorX()
+	# error=ErrorY() if axis=='y' else ErrorX()
+	error={}
 	if type=='data':
 		if isinstance(values,list) or isinstance(values,np.ndarray):
 			if values_minus:
@@ -1410,7 +1466,7 @@ def get_error_bar(axis='y',type='data',values=None,values_minus=None,color=None,
 			error.update(array=values)
 		else:
 			if values_minus:
-				if isinstance(values_minus,list) or isinstance(a,np.ndarray):
+				if isinstance(values_minus,list) or isinstance(values_minus,np.ndarray):
 					raise Exception('Values should be of same type (int, float)')
 				error.udpate(symmetric=False,valueminus=values_minus)
 			error.update(value=values)
@@ -1422,20 +1478,21 @@ def get_error_bar(axis='y',type='data',values=None,values_minus=None,color=None,
 		pass
 	else:
 		raise Exception('Invalid type: {0}'.format(type))
-	error.update(type=type,thickness=thickness,width=width,visible=True,opacity=opacity)
+	error.update(type=type,thickness=thickness,width=width,visible=True)
 	if color:
-		error.update(color=normalize(color))
+		error.update(color=to_rgba(color,opacity))
 	return error
 
 def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=None,color=None,thickness=1,width=None,
 				 opacity=None,**kwargs):
-	figure=Figure(copy.deepcopy(figure))
+	figure=fig_to_dict(figure)
 	if 'value' in kwargs:
 		values=kwargs['value']
 	data=figure['data']
 	if 'continuous' not in type:
 		width=width if width else 5
 		opacity=opacity if opacity else 1
+		color=to_rgba(color,opacity) if color else None
 		error=get_error_bar(axis=axis,type=type,values=values,values_minus=values_minus,
 							color=color,thickness=thickness,width=width,opacity=opacity)
 		if trace:
@@ -1447,13 +1504,21 @@ def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=N
 		width=width if width else .5
 		opacity=opacity if opacity else .3
 		def get_traces(trace,value,type,color=None,width=.2,opacity=.3):
-			if 'percent' in type:
-				y_up=trace['y']*(1+value/100.00)
-				y_down=trace['y']*(1-value/100.00)
+			if not is_list(value):
+				value=[value]*len(trace['y'])
+			if values_minus:
+				if is_list(values_minus):
+					min_value=values_minus
+				else:
+					min_value=[values_minus]*len(trace['y'])
 			else:
-				y_up=trace['y']+value
-				y_down=trace['y']-value
-			y=trace['y']
+				min_value=value
+			if 'percent' in type:
+				y_up=[trace['y'][_]*(1+value[_]/100.00) for _ in range(len(value))]
+				y_down=[trace['y'][_]*(1-min_value[_]/100.00) for _ in range(len(min_value))]
+			else:
+				y_up=[trace['y'][_]+value[_] for _ in range(len(value))]
+				y_down=[trace['y'][_]-min_value[_] for _ in range(len(min_value))]
 			upper=Scatter(y=y_up,mode='lines',showlegend=False,
 							 line=Line(width=width),x=trace['x'])
 			if 'yaxis' in trace:
@@ -1465,6 +1530,7 @@ def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=N
 					color=trace['line']['color']
 				else:
 					color='charcoal'
+			color=to_rgba(color,opacity) if color else None
 			upper['line']['color']=color
 			lower=upper.copy()
 			name=trace['name']+'_' if 'name' in trace else ''
@@ -1483,31 +1549,13 @@ def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=N
 	return figure
 
 
-def updateColors(d):
-	for k,v in list(d.items()):
-		if isinstance(v,dict):
-			updateColors(v)
-		else:
-			if isinstance(v,list):
-				if 'color' in k:
-					d[k]=[normalize(_) for _ in v]
-				else:
-					for _ in v:
-						if isinstance(_,dict):
-							updateColors(_)
-			else:
-				if 'color' in k.lower():
-					if 'rgba' not in v:
-						d[k]=normalize(v)
-	return d
-
 def _nodata(self):
 	d=[]
 	# _=copy.deepcopy(self)
 	for _ in self:
 		d.append(copy.deepcopy(_))
-	for _ in d:	
-		for k,v in list(_.items()):
+	for _ in d:
+		for k in list(_.keys()):
 			if k in ('x','y','open','close','high','low','index','volume','line','marker'):
 				try:
 					_[k]=[]
@@ -1519,23 +1567,25 @@ def _figure_no_data(self):
 	return {'data':self.data.nodata(),
 	'layout':self.layout}
 
-def _update_traces(self,**kwargs):
-	for _ in self.data:
+def _update_traces(d, **kwargs):
+	for _ in d['data']:
 		_.update(**kwargs)
 
-def _move_axis(self,xaxis=None,yaxis=None):
-	def update_axis(self,axis):
-		_axis=axis[0]
-		from_axis=self.data[0].pop('{0}axis'.format(_axis),'{0}1'.format(_axis))
-		from_axis=_axis+'axis'+from_axis[1:]
-		to_axis=_axis+'axis'+axis[1:]
-		self.layout[to_axis]=self.layout.pop(from_axis)
-		self.update_traces(**{'{0}axis'.format(_axis):axis})
-	
+def _update_axis(d, axis):
+	_axis=axis[0]
+	if not isinstance(d,dict):
+		d=d.to_dict()
+	from_axis=d['data'][0].pop('{0}axis'.format(_axis),'{0}1'.format(_axis))
+	from_axis=_axis+'axis'+from_axis[1:]
+	to_axis=_axis+'axis'+axis[1:]
+	d['layout'][to_axis]=d['layout'].pop(from_axis)
+	_update_traces(d, **{'{0}axis'.format(_axis):axis})
+
+def _move_axis(d, xaxis=None, yaxis=None):
 	if xaxis:
-		update_axis(self,xaxis)
+		_update_axis(d, xaxis)
 	if yaxis:
-		update_axis(self,yaxis)
+		_update_axis(d, yaxis)
 
 ### Offline
 
@@ -1549,12 +1599,14 @@ def go_offline(connected = False, offline=True):
 def is_offline():
 	return py_offline.__PLOTLY_OFFLINE_INITIALIZED
 
+### Plotly 3
 
+def fig_to_dict(fig):
+	if not isinstance(fig,dict):
+		fig=fig.to_dict()
+	return fig
 
 Figure.axis=axis
 Figure.trace_dict=trace_dict
 Figure.set_axis=_set_axis
-Figure.update_traces=_update_traces
-Figure.move_axis=_move_axis
 Figure.nodata=_figure_no_data
-Data.nodata=_nodata

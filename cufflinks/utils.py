@@ -25,7 +25,7 @@ def merge_dict(d1,d2):
 	"""
 		d1 <-- d2
 	"""
-	d=d2.copy()
+	d=copy.deepcopy(d2)
 	for k,v in list(d1.items()):
 		if k not in d:
 			d[k]=v

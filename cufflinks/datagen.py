@@ -1,11 +1,11 @@
+import os
+import string
+
 import numpy as np
 import pandas as pd
-import string
-from .auth import get_config_file
-import os
 
-class CufflinksError(Exception):
-		pass
+from .auth import get_config_file
+from .exceptions import CufflinksError
 
 
 def scattergeo():
@@ -283,10 +283,10 @@ def box(n_traces=5,n=100,mode=None):
 		columns=getName(n_traces,mode=mode))
 	return df       
 
-def histogram(n_traces=1,n=500,mode=None):
+def histogram(n_traces=1,n=500,dispersion=2,mode=None):
 	"""
 	Returns a DataFrame with the required format for 
-	a box plot
+	a histogram plot
 
 	Parameters:
 	-----------
@@ -299,8 +299,46 @@ def histogram(n_traces=1,n=500,mode=None):
 				'abc' for alphabet columns
 				'stocks' for random stock names
 	"""	
-	df=pd.DataFrame(np.random.randn(n,n_traces)+np.random.randint(-1,2),
+	df=pd.DataFrame(np.transpose([np.random.randn(n)+np.random.randint(-1*dispersion,dispersion) for _ in range(n_traces)]),
 		columns=getName(n_traces,mode=mode))                     
+	return df
+
+def distplot(n_traces=1,n=500,dispersion=3,mode=None):
+	"""
+	Returns a DataFrame with the required format for 
+	a distribution plot (distplot)
+
+	Parameters:
+	-----------
+		n_traces : int
+			Number of traces 
+		n : int
+			Number of points for each trace
+		mode : string
+			Format for each item
+				'abc' for alphabet columns
+				'stocks' for random stock names
+	"""	
+	return histogram(n_traces,n,dispersion,mode)
+
+def violin(n=500,dispersion=3,categories=True,n_categories=5):
+	"""
+	Returns a DataFrame with the required format for 
+	a distribution plot (distplot)
+
+	Parameters:
+	-----------
+		n : int
+			Number of points 
+		categories : bool or int
+			If True, then a column with categories is added
+		n_categories : int
+			Number of categories
+	"""	
+	df = histogram(1,n,dispersion,'abc')
+	df=df.rename(columns={'a':'data'})
+	if categories:
+		df['categories']=['category_{0}'.format(np.random.randint(n_categories)) for _ in range(n)]
 	return df
 
 def surface(n_x=20,n_y=20):
@@ -359,7 +397,3 @@ def getName(n=1,name=3,exchange=2,columns=None,mode='abc'):
 		else:
 			raise CufflinksError("Unknown mode: {0}".format(mode))
 	return columns
-
-
-
-

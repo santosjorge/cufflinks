@@ -18,6 +18,23 @@ This tutorial assumes that the plotly user credentials have already been configu
 ![3D Charts](img/ukswaps.gif)
 
 ### Release Notes
+
+### v0.14.0
+Support for Plotly 3.0
+
+### v0.13.0
+New `iplot` helper. 
+To see a comprehensive list of parameters 
+**cf.help()**
+
+```python
+# For a list of supported figures
+cf.help()
+# Or to see the parameters supported that apply to a given figure try
+cf.help('scatter')
+cf.help('candle') #etc
+```
+
 ### v0.12.0
 
 Removed dependecies on ta-lib. 
@@ -25,10 +42,6 @@ This library is no longer required.
 All studies have be rewritten in Python. 
 
 ### v0.11.0
-
-** Note: ** This version requires ta-lib to be installed separately. 
-
-	brew install ta-lib
 
 * `QuantFigure` is a new class that will generate a graph object with persistence. 
 Parameters can be added/modified at any given point. 

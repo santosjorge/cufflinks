@@ -12,7 +12,6 @@ from collections import deque
 from six import string_types
 from IPython.display import HTML, display
 
-from . import themes
 from .utils import inverseDict
 from .auth import get_config_file
 
@@ -297,21 +296,24 @@ def colorgen(colors=None, n=None, scale=None, theme=None):
             colorgen(['blue','red','pink'])
             colorgen(['#f03','rgb(23,25,25)'])
     """
+    from .themes import THEMES
     step = .1
     if not colors:
         if not scale:
             if not theme:
                 scale = get_config_file()['colorscale']
             else:
-                scale = themes.THEMES[theme]['colorscale']
+                scale = THEMES[theme]['colorscale']
         colors = get_scales(scale)
     dq = deque(colors)
+    if len(dq) == 0:
+        dq = deque(get_scales('ggplot'))
     if n:
         step = len(dq) * 0.8 / n if len(dq) * 8 < n else .1
     for i in np.arange(.2, 1, step):
         for y in dq:
             yield to_rgba(y, 1 - i + .2)
-        dq.rotate()
+        dq.rotate(1)
 
 # NEW STUFF
 
@@ -551,9 +553,13 @@ cnames = {'aliceblue': '#F0F8FF',
 
 _custom_scales = {
     'qual': {
+        # dflt only exists to keep backward compatibility after issue 91
         'dflt': ['orange', 'blue', 'grassgreen', 'purple', 'red', 'teal', 'yellow', 'olive', 'salmon', 'lightblue2'],
+        'original': ['orange', 'blue', 'grassgreen', 'purple', 'red', 'teal', 'yellow', 'olive', 'salmon', 'lightblue2'],
         'ggplot': ['brick', 'smurf', 'lightviolet', 'mediumgray', 'mustard', 'lime2', 'pinksalmon'],
-        'polar': ['polarblue', 'polarorange', 'polargreen', 'polarpurple', 'polarred', 'polarcyan', 'polarbluelight']
+        'polar': ['polarblue', 'polarorange', 'polargreen', 'polarpurple', 'polarred', 'polarcyan', 'polarbluelight'],
+        'plotly' : ['rgb(31, 119, 180)', 'rgb(255, 127, 14)', 'rgb(44, 160, 44)', 'rgb(214, 39, 40)',
+                    'rgb(148, 103, 189)', 'rgb(140, 86, 75)', 'rgb(227, 119, 194)', 'rgb(127, 127, 127)', 'rgb(188, 189, 34)', 'rgb(23, 190, 207)']
     },
     'div': {
 
@@ -686,12 +692,14 @@ def get_scales(scale=None, n=None):
             is_reverse = True
         d = copy.deepcopy(_scales_names[scale.lower()])
         keys = list(map(int, list(d.keys())))
+        cs = None
         if n:
             if n in keys:
                 cs = d[str(n)]
             elif n < min(keys):
                 cs = d[str(min(keys))]
-        cs = d[str(max(keys))]
+        if cs is None:
+            cs = d[str(max(keys))]
         if is_reverse:
             cs.reverse()
         return cs

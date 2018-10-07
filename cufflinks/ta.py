@@ -36,7 +36,7 @@ def _ohlc_dict(df_or_figure,open='',high='',low='',close='',volume='',
 	ohlcv=['open','high','low','close','volume']
 	if type(df_or_figure)==pd.DataFrame:
 		cnames=df_or_figure.columns
-	elif type(df_or_figure)==Figure:
+	elif type(df_or_figure)==Figure or type(df_or_figure) == dict:
 		cnames=df_or_figure.axis['ref'].keys()
 	elif type(df_or_figure)==pd.Series:
 		cnames=[df_or_figure.name]
@@ -60,7 +60,7 @@ def _ohlc_dict(df_or_figure,open='',high='',low='',close='',volume='',
 	if volume:
 		c_dir['volume']=volume
 		
-	for k,v in c_dir.items():
+	for v in list(c_dir.values()):
 		if v not in cnames:
 			raise StudyError('{0} is not a valid column name'.format(v))
 
@@ -278,7 +278,7 @@ def atr(df,periods=14,high='high',low='low',close='close',include=True,str='{nam
 def ptps(df,periods=14,initial='long',af=.02,high='high',low='low',include=True,str='{name}({period})',**kwargs):
 	def _ptps(df,periods,high,low,include,str,detail):
 		study='PTPS'
-		_df=x=pd.DataFrame(columns=['SAR','LorS','EP','EP+-SAR','AF','AF_Diff','T_SAR','Reversal','LONG','SHORT'],
+		_df=pd.DataFrame(columns=['SAR','LorS','EP','EP+-SAR','AF','AF_Diff','T_SAR','Reversal','LONG','SHORT'],
               index=df.index)
 		_df=_df.reset_index()
 
