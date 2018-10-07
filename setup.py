@@ -18,4 +18,4 @@ setup(name='cufflinks',
       package_data={'cufflinks': ['../helper/*.json']},
       include_package_data=True,
       install_requires=requires,
-	  zip_safe=False)
+      zip_safe=False)
