@@ -716,8 +716,8 @@
             "margin" : {
                 "applies" : ["all"],
                 "description" : ["Sets the margin dimensions",
-                                "\t{'l':low,'r':right,'b':bottom,'t':top}",
-                                "\t(low,right,bottom,top)"],
+                                "\t{'l':left,'r':right,'b':bottom,'t':top}",
+                                "\t(left,right,bottom,top)"],
                 "exceptions" : [],
                 "group" : "layout",
                 "type" : "dict or tuple"
