@@ -1404,6 +1404,7 @@ def iplot(figure,validate=True,sharing=None,filename='',
 	## Offline Links
 	show_link = auth.get_config_file()['offline_show_link']
 	link_text = auth.get_config_file()['offline_link_text']
+	config = auth.get_config_file()['offline_config']
 
 	## Remove validation if shapes are present
 	if 'layout' in figure:
@@ -1419,7 +1420,7 @@ def iplot(figure,validate=True,sharing=None,filename='',
 	if asImage:
 		if offline.is_offline() and not online:
 			return offline.py_offline.iplot(figure,validate=validate, filename=filename, show_link=show_link,link_text=link_text,
-				image='png',image_width=dimensions[0],image_height=dimensions[1])
+				image='png', image_width=dimensions[0], image_height=dimensions[1], config=config)
 		else:
 			try:
 				py.image.save_as(figure,filename='img/'+filename,format='png',
@@ -1440,14 +1441,14 @@ def iplot(figure,validate=True,sharing=None,filename='',
 		filename+='.html'
 		if offline.is_offline() and not online:
 			return offline.py_offline.plot(figure, filename=filename, validate=validate,
-								show_link=show_link,link_text=link_text,auto_open=auto_open)
+								show_link=show_link, link_text=link_text, auto_open=auto_open, config=config)
 		else:
 			return py.plot(figure, sharing=sharing, filename=filename, validate=validate,
 							auto_open=auto_open)
 
 	## iplot
 	if offline.is_offline() and not online:	
-		return offline.py_offline.iplot(figure,validate=validate, filename=filename, show_link=show_link,link_text=link_text)
+		return offline.py_offline.iplot(figure, validate=validate, filename=filename, show_link=show_link, link_text=link_text, config=config)
 	else:		
 		return py.iplot(figure,validate=validate,sharing=sharing,
 						filename=filename)
