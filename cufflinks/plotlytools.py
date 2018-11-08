@@ -35,7 +35,7 @@ def dict_to_iplot(d):
 
 
 def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',interpolation='linear',symbol='dot',size='12',fill=False,
-		width=3,dash='solid',sortbars=False,keys=False,bestfit=False,bestfit_colors=None,
+		width=3,dash='solid',sortbars=False,keys=False,bestfit=False,bestfit_colors=None,opacity=0.6,
 		mean=False,mean_colors=None,asDates=False,asTimestamp=False,text=None,**kwargs):
 	"""
 	Generates a plotly Data object 
@@ -147,7 +147,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 		if text is not None:
 			lines[key]["text"]=text
 		if 'bar' in kind:
-			lines[key]["marker"]={'color':to_rgba(colors[key],.6),'line':{'color':colors[key],'width':1}}
+			lines[key]["marker"]={'color':to_rgba(colors[key],opacity),'line':{'color':colors[key],'width':1}}
 		else:
 			lines[key]["line"]={'color':colors[key],'width':width[key],'dash':dash[key], 'shape':interpolation[key]}
 			lines[key]["mode"]=mode[key]
@@ -764,7 +764,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 			if 'bar' in kind:
 				df=self.copy()
 				df=df.set_index(categories)
-				fig=df.figure(kind=kind,colors=colors,colorscale=colorscale,fill=fill,width=width,sortbars=sortbars,
+				fig=df.figure(kind=kind,colors=colors,colorscale=colorscale,fill=fill,width=width,sortbars=sortbars,opacity=opacity,
 						asDates=asDates,mode=mode,symbol=symbol,size=size,text=text,barmode=barmode,orientation=orientation)
 				data=fig['data']			
 			else:
