@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 import plotly.offline as py_offline
 import plotly.plotly as py
+import plotly.graph_objs as go
+import plotly.colors as colors
 from plotly.graph_objs import Figure, Scatter, Line
 # from plotly.graph_objs.layout import XAxis, YAxis
 
@@ -1605,6 +1607,36 @@ def fig_to_dict(fig):
 	if not isinstance(fig,dict):
 		fig=fig.to_dict()
 	return fig
+
+
+def divide_histograms(s1, s2, bins=None, rho=0):
+    """
+    Divide s1/s2 bin-wise taking into account the correlation between the bin
+    contents, rho.
+
+    Returns
+    -------
+    (h1, h2, ratio, errors, edges, centers)
+    """
+
+    h1, edges = np.histogram(s1, bins=bins)
+    bin_errors_1 = np.sqrt(h1)
+
+    h2, edges = np.histogram(s2, bins=edges)
+    bin_errors_2 = np.sqrt(h2)
+
+    h1 = h1.astype(np.float32)
+    h2 = h2.astype(np.float32)
+    ratio = np.divide(h1, h2, out=np.zeros_like(h1), where=h2!=0)
+
+    rel_errors_1 = np.divide(bin_errors_1, h1, out=np.ones_like(h1), where=h1!=0)
+    rel_errors_2 = np.divide(bin_errors_2, h2, out=np.ones_like(h2), where=h2!=0)
+
+    centers = (edges[:-1] + edges[1:]) / 2
+    errors = ratio * np.sqrt(rel_errors_1**2 + rel_errors_2**2 - 2*rho*rel_errors_1*rel_errors_2)
+
+    return h1, h2, ratio, errors, edges, centers
+
 
 Figure.axis=axis
 Figure.trace_dict=trace_dict
