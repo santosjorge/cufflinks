@@ -1638,6 +1638,30 @@ def divide_histograms(s1, s2, bins=None, rho=0):
     return h1, h2, ratio, errors, edges, centers
 
 
+def compare_1d_histograms(s1, s2, bins=None, show_err=False):
+
+    h1, h2, ratio, errors, edges, centers = divide_histograms(s1, s2, bins)
+
+    # Make overlay plot
+    bin_width = edges[1] - edges[0]
+
+    common_args = dict(hoverinfo='none', marker=dict(opacity=0.5))
+
+    error_y = dict(type='sqrt', color=colors.DEFAULT_PLOTLY_COLORS[0], thickness=4) if show_err else None
+    trace1 = go.Bar(x=centers, width=bin_width, y=h1, error_y=error_y, **common_args)
+
+    error_y = dict(type='sqrt', color=colors.DEFAULT_PLOTLY_COLORS[1], thickness=2) if show_err else None
+    trace2 = go.Bar(x=centers, width=bin_width, y=h2, error_y=error_y, **common_args)
+
+    # Make ratio plot
+    error_x = {'type': 'constant', 'value': 0.5*bin_width, 'color': colors.DEFAULT_PLOTLY_COLORS[2]}
+    error_y = {'array': errors, 'color': colors.DEFAULT_PLOTLY_COLORS[2]}
+
+    trace_ratio = go.Scatter(x=centers, y=ratio, mode='markers', error_x=error_x, error_y=error_y, marker=dict(color=colors.DEFAULT_PLOTLY_COLORS[2]))
+
+    return trace1, trace2, trace_ratio, edges[0], edges[-1]
+
+
 Figure.axis=axis
 Figure.trace_dict=trace_dict
 Figure.set_axis=_set_axis
