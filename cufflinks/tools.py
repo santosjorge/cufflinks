@@ -1645,13 +1645,13 @@ def compare_1d_histograms(s1, s2, bins=None, show_err=False):
     # Make overlay plot
     bin_width = edges[1] - edges[0]
 
-    common_args = dict(hoverinfo='none', marker=dict(opacity=0.5))
+    common_kwargs = dict(hoverinfo='none', marker=dict(opacity=0.5), offset=0)
 
     error_y = dict(type='sqrt') if show_err else None
-    trace1 = go.Bar(x=centers, width=bin_width, y=h1, error_y=error_y, **common_args)
+    trace1 = go.Bar(x=centers, width=bin_width, y=h1, error_y=error_y, **common_kwargs)
 
     error_y = dict(type='sqrt') if show_err else None
-    trace2 = go.Bar(x=centers, width=bin_width, y=h2, error_y=error_y, **common_args)
+    trace2 = go.Bar(x=centers, width=bin_width, y=h2, error_y=error_y, **common_kwargs)
 
     # Make ratio plot
     error_x = {'type': 'constant', 'value': 0.5*bin_width}
