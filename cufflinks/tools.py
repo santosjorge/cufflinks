@@ -1647,17 +1647,17 @@ def compare_1d_histograms(s1, s2, bins=None, show_err=False):
 
     common_args = dict(hoverinfo='none', marker=dict(opacity=0.5))
 
-    error_y = dict(type='sqrt', color=colors.DEFAULT_PLOTLY_COLORS[0], thickness=4) if show_err else None
+    error_y = dict(type='sqrt') if show_err else None
     trace1 = go.Bar(x=centers, width=bin_width, y=h1, error_y=error_y, **common_args)
 
-    error_y = dict(type='sqrt', color=colors.DEFAULT_PLOTLY_COLORS[1], thickness=2) if show_err else None
+    error_y = dict(type='sqrt') if show_err else None
     trace2 = go.Bar(x=centers, width=bin_width, y=h2, error_y=error_y, **common_args)
 
     # Make ratio plot
-    error_x = {'type': 'constant', 'value': 0.5*bin_width, 'color': colors.DEFAULT_PLOTLY_COLORS[2]}
-    error_y = {'array': errors, 'color': colors.DEFAULT_PLOTLY_COLORS[2]}
+    error_x = {'type': 'constant', 'value': 0.5*bin_width}
+    error_y = {'array': errors}
 
-    trace_ratio = go.Scatter(x=centers, y=ratio, mode='markers', error_x=error_x, error_y=error_y, marker=dict(color=colors.DEFAULT_PLOTLY_COLORS[2]))
+    trace_ratio = go.Scatter(x=centers, y=ratio, mode='markers', error_x=error_x, error_y=error_y)
 
     return trace1, trace2, trace_ratio, edges[0], edges[-1]
 
