@@ -1258,5 +1258,4 @@ class QuantFig(object):
 	def __repr__(self):
 		_d=self.__dict__.copy()
 		del _d['df']
-		print(json.dumps(_d,sort_keys=True, indent=4))
-		return ''
+		return json.dumps(_d,sort_keys=True, indent=4)
