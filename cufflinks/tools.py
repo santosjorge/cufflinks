@@ -1164,7 +1164,9 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 		id='{0}axis{1}'.format(k[0],k[-1:])
 		if k not in fig.axis['ref_axis']:
 			try:
-				del fig['layout'][id]
+				tmp = fig.to_plotly_json()
+				del tmp['layout'][id]
+				fig = Figure(tmp)
 			except KeyError:
 				pass
 
