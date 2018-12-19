@@ -3,7 +3,7 @@ import plotly.plotly as py
 import time
 import copy
 # from plotly.graph_objs import *
-from plotly.graph_objs import Figure, Bar, Box, Scatter, FigureWidget, Scatter3d, Histogram, Heatmap, Surface, Pie
+from plotly.graph_objs import Figure, Layout, Bar, Box, Scatter, FigureWidget, Scatter3d, Histogram, Heatmap, Surface, Pie
 import plotly.figure_factory as ff
 from collections import defaultdict
 from IPython.display import display,Image
@@ -757,7 +757,9 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 								bargap=bargap,bargroupgap=bargroupgap,annotations=annotations,gridcolor=gridcolor,
 							   dimensions=dimensions,
 								zerolinecolor=zerolinecolor,margin=margin,is3d='3d' in kind,**l_kwargs)
-	
+	elif isinstance(layout, Layout):
+		layout = layout.to_plotly_json()
+
 	if not data:
 		if categories and kind not in ('violin'):
 			data=[]
