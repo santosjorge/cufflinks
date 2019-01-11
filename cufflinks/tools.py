@@ -334,6 +334,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		shapes=[]
 
 		def get_shapes(xline):
+
 			orientation=xline[0]
 			xline=kwargs[xline]
 			if isinstance(xline,list):
@@ -1298,9 +1299,9 @@ def get_shape(kind='line',x=None,y=None,x0=None,y0=None,x1=None,y1=None,span=0,c
 				'paper'
 				'y2' etc
 	"""
-	if not x1:
-		if not x0:
-			if not x:
+	if x1 is None:
+		if x0 is None:
+			if x is None:
 				xref='paper'
 				x0=0
 				x1=1
@@ -1308,9 +1309,11 @@ def get_shape(kind='line',x=None,y=None,x0=None,y0=None,x1=None,y1=None,span=0,c
 				x0=x1=x
 		else:
 			x1=x0
-	if not y1:
-		if not y0:
-			if not y:
+	else:
+		x
+	if y1 is None:
+		if y0 is None:
+			if y is None:
 				yref='paper'
 				y0=0
 				y1=1
