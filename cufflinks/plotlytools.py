@@ -948,8 +948,8 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				scale=get_scales('rdbu') if not colorscale else get_scales(colorscale)
 				colorscale=[[float(_)/(len(scale)-1),scale[_]] for _ in range(len(scale))]
 				center_scale = kwargs.get('center_scale',None)
-				zmin=z.min()
-				zmax=z.max()
+				zmin=min(z)
+				zmax=max(z)
 				if center_scale is not None:
 					if center_scale<=zmin+(zmax-zmin)/2:
 						zmin=center_scale*2-zmax
