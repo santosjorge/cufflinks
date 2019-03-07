@@ -750,6 +750,12 @@ def subplots(figures,shape=None,
 		if len(figures)==1:
 			cols=1
 			rows=1
+		elif shared_xaxes:
+			cols=1
+			rows=2
+		elif shared_yaxes:
+			cols=2
+			rows=1
 		else:
 			cols=2
 			rows=len(figures)//2+len(figures)%2
