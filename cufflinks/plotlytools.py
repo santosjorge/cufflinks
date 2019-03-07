@@ -9,7 +9,7 @@ from collections import defaultdict
 from IPython.display import display,Image
 from .exceptions import CufflinksError
 from .colors import normalize,get_scales,colorgen,to_rgba,get_colorscale
-from .utils import check_kwargs, deep_update, kwargs_from_keyword
+from .utils import check_kwargs, deep_update, kwargs_from_keyword, is_list
 from . import tools 
 from . import offline
 from . import auth
@@ -948,8 +948,14 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				scale=get_scales('rdbu') if not colorscale else get_scales(colorscale)
 				colorscale=[[float(_)/(len(scale)-1),scale[_]] for _ in range(len(scale))]
 				center_scale = kwargs.get('center_scale',None)
-				zmin=min(z)
-				zmax=max(z)
+				
+				if is_list(z):				
+					zmin=min(z)
+					zmax=max(z)
+				else:
+					zmin=z.min()
+					zmax=z.max()
+					
 				if center_scale is not None:
 					if center_scale<=zmin+(zmax-zmin)/2:
 						zmin=center_scale*2-zmax
