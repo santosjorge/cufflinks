@@ -109,6 +109,10 @@ def set_config_file(sharing=None,theme=None,colorscale=None,offline=None,
 	offline_link_text : string
 			Text to display as link at the bottom 
 			right of the chart 
+	offline_config : dict
+			Additional configuration options
+			For the complete list of config options check out: 
+			https://github.com/plotly/plotly.js/blob/master/src/plot_api/plot_config.js
 	datagen_mode : string
 			Mode in which the data is generated
 			by the datagen module
