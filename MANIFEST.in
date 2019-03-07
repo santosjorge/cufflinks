@@ -1,3 +1,5 @@
 include helper/*.json
 include license.txt
 include requirements.txt
+include tests.py
+graft data
