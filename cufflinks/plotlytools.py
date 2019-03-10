@@ -198,7 +198,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 	return lines_plotly
 
 def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,title='',xTitle='',yTitle='',zTitle='',theme=None,colors=None,colorscale=None,fill=False,width=None,
-			dash='solid',mode='lines',interpolation='linear',symbol='circle',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
+			dash='solid',mode='',interpolation='linear',symbol='circle',size=12,barmode='',sortbars=False,bargap=None,bargroupgap=None,bins=None,histnorm='',
 			histfunc='count',orientation='v',boxpoints=False,annotations=None,keys=False,bestfit=False,
 			bestfit_colors=None,mean=False,mean_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,
 			zerolinecolor=None,margin=None,labels=None,values=None,secondary_y='',secondary_y_title='',subplots=False,shape=None,error_x=None,
@@ -772,7 +772,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 			else:
 				_keys=pd.unique(self[categories])
 				colors=get_colors(colors,colorscale,_keys)	
-				mode='markers' if 'markers' not in mode else mode 
+				mode='markers' if not mode else mode
 				for _ in _keys:
 					__=self[self[categories]==_].copy()
 					if text:
@@ -831,6 +831,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					df=df[y]
 				if kind=='area':
 					df=df.transpose().fillna(0).cumsum().transpose()
+				mode='lines' if not mode else mode
 				if text:
 					if not isinstance(text,list):
 						text=self[text].values
