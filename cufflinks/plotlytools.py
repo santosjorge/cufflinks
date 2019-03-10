@@ -801,6 +801,14 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 								marker=dict(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
 												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis']['titlefont'])
 					else:
+						#see error 168
+						if type(_x)==pd.np.ndarray:
+							if '[ns]' in _x.dtype.str:
+								_x=_x.astype(str)
+						if type(_y)==pd.np.ndarray:
+							if '[ns]' in _y.dtype.str:
+								_y=_y.astype(str)
+						
 						_data=Scatter(x=_x,y=_y,mode=mode,name=_,
 								marker=dict(color=colors[_],symbol=symbol,size=_size,opacity=opacity,
 												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis']['titlefont'])
