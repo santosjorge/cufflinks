@@ -391,7 +391,24 @@ def getName(n=1,name=3,exchange=2,columns=None,mode='abc'):
 		if mode is None:
 			mode=get_config_file()['datagen_mode']
 		if mode=='abc':
-			columns=list(string.ascii_letters[:n])
+			def get_abc(n):
+				def _w(n,base=2):
+					_n=1
+					st=[]
+					while base**_n<=n:
+						_n+=1
+					for _ in range(_n-1,0,-1):
+						n_st=n//(base**_)
+						st.append(n_st)
+						n=n-n_st*(base**_)
+					st.append(n+1)
+					return st
+				st=_w(n,len(string.ascii_lowercase))
+				_st=''
+				for _ in st:
+					_st+=string.ascii_lowercase[_-1]
+				return _st
+			columns=[get_abc(_) for _ in range(n)]
 		elif mode=='stocks':
 			columns=[''.join(np.random.choice(list(string.ascii_uppercase),name)) + '.' + ''.join(np.random.choice(list(string.ascii_uppercase),exchange)) for _ in range(n)]
 		else:
