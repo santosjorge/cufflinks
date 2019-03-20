@@ -93,7 +93,7 @@ class QuantFig(object):
 		
 		# self.theme initial values
 		self.theme['theme']=kwargs.pop('theme',auth.get_config_file()['theme'])
-		self.theme['up_color']=kwargs.pop('up_color','#17BECF')  # java
+		self.theme['up_color']=kwargs.pop('up_color','java')  # java
 		self.theme['down_color']=kwargs.pop('down_color','grey')
 		
 		# self.panels initial values
@@ -585,8 +585,11 @@ class QuantFig(object):
 
 		Parameters:
 			colorchange : bool
-				If true then each volume bar will have a fill color 
+				If True then each volume bar will have a fill color 
 				depending on if 'base' had a positive or negative
+				change compared to the previous value
+				If False then each volume bar will have a fill color 
+				depending on if the volume data itself had a positive or negative
 				change compared to the previous value
 			column :string
 				Defines the data column name that contains the volume data. 
@@ -618,7 +621,7 @@ class QuantFig(object):
 		down_color=kwargs.pop('down_color',self.theme['down_color'])
 		study={'kind':'volume',
 			   'name':name,
-			   'params':{'changecolor':True,'base':'close','column':column,
+			   'params':{'colorchange':colorchange,'base':'close','column':column,
 						 'str':None},
 			  'display':utils.merge_dict({'up_color':up_color,'down_color':down_color},kwargs)}
 		self._add_study(study)
@@ -1040,10 +1043,13 @@ class QuantFig(object):
 		if kind=='volume':
 			bar_colors=[]
 			local_kwargs,params=get_params([],params,display,False)
-			base=df[self._d[params['base']]]
+			#Fix for 152
+			base_column=params['base'] if params['colorchange'] else 'volume'
+			base=df[self._d[base_column]]
 			up_color=colors.normalize(display['up_color']) if 'rgba' not in display['up_color'] else display['up_color']
 			down_color=colors.normalize(display['down_color']) if 'rgba' not in display['down_color'] else display['down_color']
 			study_kwargs=utils.kwargs_from_keyword(kwargs,{},'study')
+			
 
 			for i in range(len(base)):
 				if i != 0:
