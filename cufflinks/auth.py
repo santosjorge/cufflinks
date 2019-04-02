@@ -27,6 +27,7 @@ _FILE_CONTENT = {
 				 		"theme" : "pearl",
 				 		"colorscale" : "dflt",
 				 		"offline" : False,
+				 		"offline_connected" : True,
 				 		"offline_url":'',
 				 		"offline_show_link" : True,
 				 		"offline_link_text" : 'Export to plot.ly',
@@ -82,7 +83,7 @@ def ensure_local_files():
 					  "your 'home' ('~') directory")
 
 
-def set_config_file(sharing=None,theme=None,colorscale=None,offline=None,
+def set_config_file(sharing=None,theme=None,colorscale=None,offline=None,offline_connected=None,
 					offline_url=None,offline_show_link=None,offline_link_text=None,
 					offline_config=None,
 					datagen_mode=None,**kwargs):
@@ -103,6 +104,10 @@ def set_config_file(sharing=None,theme=None,colorscale=None,offline=None,
 	offline : bool
 			If true then the charts are rendered
 			locally. 
+	offline_connected : bool
+			If True, the plotly.js library will be loaded
+			from an online CDN. If False, the plotly.js library will be loaded locally
+			from the plotly python package
 	offline_show_link : bool
 			If true then the chart will show a link to 
 			plot.ly at the bottom right of the chart 
@@ -146,6 +151,8 @@ def set_config_file(sharing=None,theme=None,colorscale=None,offline=None,
 		config['theme']=theme
 	if colorscale:
 		config['colorscale']=colorscale
+	if offline_connected:
+		config['offline_connected']=offline_connected
 	if offline is not None:
 		config['offline']=offline
 		if offline:

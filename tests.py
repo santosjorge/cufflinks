@@ -1,3 +1,8 @@
+###
+# Tests require nose 1.3.x
+###
+
+
 import cufflinks as cf
 import pandas as pd
 import unittest

@@ -10,7 +10,19 @@ def run_from_ipython():
         return False
 
 
-def go_offline(connected=False):
+def go_offline(connected=None):
+    """
+    connected : bool
+        If True, the plotly.js library will be loaded
+        from an online CDN. If False, the plotly.js library will be loaded locally
+        from the plotly python package
+    """
+    from .auth import get_config_file
+    if connected is None:
+        try:
+            connected=True if get_config_file()['offline_connected'] is None else get_config_file()['offline_connected']
+        except:
+            connected=True
     if run_from_ipython():
         try:
             py_offline.init_notebook_mode(connected)
