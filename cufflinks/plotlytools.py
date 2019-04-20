@@ -504,6 +504,10 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 			connectgaps : bool
 				If True, empty values are connected 
 		Pie charts
+			direction: string
+				Specifies the direction at which succeeding sectors follow one another.
+					clockwise
+					counterclockwise
 			sort : bool
 				If True it sorts the labels by value
 			pull : float [0-1]
@@ -667,7 +671,8 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 	BUBBLE_KWARGS = ['abs_size']
 	TRACE_KWARGS = ['hoverinfo','connectgaps']
 	HEATMAP_SURFACE_KWARGS = ['center_scale','zmin','zmax']
-	PIE_KWARGS=['sort','pull','hole','textposition','textinfo','linecolor','linewidth','textcolor']
+	PIE_KWARGS = ['direction', 'sort', 'pull', 'hole', 'textposition',
+               'textinfo', 'linecolor', 'linewidth', 'textcolor']
 	OHLC_KWARGS=['up_color','down_color','open','high','low','close','volume','name','decreasing','increasing']
 	SUBPLOT_KWARGS=['horizontal_spacing', 'vertical_spacing',
 					'specs', 'insets','start_cell','shared_xaxes','shared_yaxes','subplot_titles','shared_xaxis','shared_yaxis']
