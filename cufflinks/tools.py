@@ -5,6 +5,7 @@ import pandas as pd
 import plotly.offline as py_offline
 import plotly.plotly as py
 from plotly.graph_objs import Figure, Scatter, Line
+from plotly.tools import make_subplots
 # from plotly.graph_objs.layout import XAxis, YAxis
 
 from . import auth, ta
@@ -891,7 +892,7 @@ def get_subplots(rows=1,cols=1,
 		theme = auth.get_config_file()['theme']
 
 	layout= base_layout if base_layout else getLayout(theme,**check_kwargs(kwargs,__LAYOUT_AXIS))
-	sp=py.plotly.tools.make_subplots(rows=rows,cols=cols,shared_xaxes=shared_xaxes,
+	sp=make_subplots(rows=rows,cols=cols,shared_xaxes=shared_xaxes,
 										   shared_yaxes=shared_yaxes,print_grid=False,
 											start_cell=start_cell,**kwargs)
 	sp, grid_ref = sp.to_dict(), sp._grid_ref
