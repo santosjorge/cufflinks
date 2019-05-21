@@ -165,6 +165,9 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 			trace.update(name=str(trace['name']))
 
 	if bestfit:
+		if isinstance(df.index,pd.MultiIndex):
+			raise TypeError('x cannot be empty for MultiIndex dataframes')
+
 		if type(bestfit)==list:
 			keys=bestfit
 		d={}
