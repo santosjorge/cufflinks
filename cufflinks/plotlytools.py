@@ -826,10 +826,9 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				if x:
 					df=df.set_index(x)
 				if y and secondary_y:
-					if isinstance(secondary_y, str):
-						df=df[[y, secondary_y]]
-					else:
-						df=df[[y] + secondary_y]
+					_y = [y] if not isinstance(y, list) else y
+					_secondary_y = [secondary_y] if not isinstance(secondary_y, list) else secondary_y
+					df=df[_y + _secondary_y]
 				elif y:
 					df=df[y]
 				if kind=='area':

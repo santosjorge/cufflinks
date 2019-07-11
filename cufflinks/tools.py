@@ -61,6 +61,7 @@ def getTheme(theme=None):
 	if not theme:
 		theme = auth.get_config_file()['theme']
 
+	theme = theme.lower()
 	if theme in THEMES:
 		return updateColors(copy.deepcopy(THEMES[theme]))
 	else:
