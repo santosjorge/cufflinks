@@ -3,7 +3,7 @@ import copy
 import numpy as np
 import pandas as pd
 import plotly.offline as py_offline
-import plotly.plotly as py
+import chart_studio.plotly as py
 from plotly.graph_objs import Figure, Scatter, Line
 from plotly.tools import make_subplots
 # from plotly.graph_objs.layout import XAxis, YAxis
