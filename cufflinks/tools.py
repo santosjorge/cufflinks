@@ -773,7 +773,7 @@ def subplots(figures,shape=None,
 				break
 		for _ in figures[i]['data']:
 			for axe in lr:
-				_.update({'{0}axis'.format(axe[0]):axe})
+				_.update(axe.trace_kwargs)
 			sp['data'].append(_)
 	# Remove extra plots
 	for k in list(sp['layout'].keys()):
