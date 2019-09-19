@@ -3,7 +3,7 @@ import copy
 import numpy as np
 import pandas as pd
 import plotly.offline as py_offline
-import plotly.plotly as py
+import chart_studio.plotly as py
 from plotly.graph_objs import Figure, Scatter, Line
 from plotly.tools import make_subplots
 # from plotly.graph_objs.layout import XAxis, YAxis
@@ -773,7 +773,7 @@ def subplots(figures,shape=None,
 				break
 		for _ in figures[i]['data']:
 			for axe in lr:
-				_.update({'{0}axis'.format(axe[0]):axe})
+				_.update(axe.trace_kwargs)
 			sp['data'].append(_)
 	# Remove extra plots
 	for k in list(sp['layout'].keys()):
