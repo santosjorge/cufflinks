@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.offline as py_offline
 from plotly.tools import FigureFactory as FF
 from plotly.graph_objs import Figure, Scatter, Line
-from plotly.tools import make_subplots
+from plotly.subplots import make_subplots
 # from plotly.graph_objs.layout import XAxis, YAxis
 
 from . import auth, ta
