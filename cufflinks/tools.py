@@ -646,7 +646,7 @@ def subplots(figures,shape=None,
 				  **kwargs):
 	"""
 	Generates a subplot view for a set of figures
-	This is a wrapper for plotly.tools.make_subplots
+	This is a wrapper for plotly.subplots.make_subplots
 
 	Parameters:
 	-----------
