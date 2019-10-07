@@ -1403,7 +1403,9 @@ def iplot(figure,validate=True,sharing=None,filename='',
 		# if not figure.get('layout', None):
 		# 	figure['layout'] = {}
 		try:
-			filename=figure['layout']['title']
+			filename=figure['layout']['title']['text']
+			if filename is None:
+				filename='Plotly Playground {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
 		except:
 			filename='Plotly Playground {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
 
