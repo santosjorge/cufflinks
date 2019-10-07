@@ -20,7 +20,9 @@ from . import ta
 from .helper import _printer as help
 from .plotlytools import *
 from plotly.graph_objs import *
-from chart_studio.plotly import plot
+# Used to be from plotly.plotly import plot, but this is deprecated in
+# chart_studio doesn't seem to have offline mode
+#from chart_studio.plotly import plot
 from .colors import cnames, get_colorscale
 from .utils import pp
 from .tools import subplots,scatter_matrix,figures,getLayout,getThemes,getTheme
