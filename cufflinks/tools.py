@@ -772,9 +772,11 @@ def subplots(figures,shape=None,
 			if lr is not None:
 				break
 		for _ in figures[i]['data']:
-			for axe in lr:
-				_.update({'{0}axis'.format(axe[0]):axe})
 			sp['data'].append(_)
+		# this makes the plots match the xaxis in sp['layout']
+		# x1 is for 'xaxis', x2 is for 'xaxis2', etc
+		sp['data'][i]['xaxis'] = 'x' + str(i + 1)
+		sp['data'][i]['yaxis'] = 'y' + str(i + 1)
 	# Remove extra plots
 	for k in list(sp['layout'].keys()):
 		try:
