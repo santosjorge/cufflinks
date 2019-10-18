@@ -842,11 +842,36 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					trace.update(**trace_kw)		
 						
 				if kind in ('spread','ratio'):
-						if kind=='spread':
-							trace=self.apply(lambda x:x[0]-x[1],axis=1)
-							positive=trace.apply(lambda x:x if x>=0 else pd.np.nan)
-							negative=trace.apply(lambda x:x if x<0 else pd.np.nan)
-							trace=pd.DataFrame({'positive':positive,'negative':negative})
+						if kind == 'spread':
+							index=[]
+							positive=[]
+							negative=[]
+							previous_x=0
+							previous_y=0
+							isFirst=True
+							diff=self.apply(lambda s: s[0]-s[1], axis=1)
+							for (x,y) in diff.iteritems():
+								if isFirst:
+									isFirst = False
+								elif y*previous_y<0:
+									# add the x-axis intersect where the spread changes from positive to negative
+									slope=(y-previous_y)/(x-previous_x)
+									intersect=y-(slope*x)
+									root=-intersect/slope
+									index.append(root)
+									positive.append(0)
+									negative.append(0)
+								index.append(x)
+								if y>0:
+									positive.append(y)
+									negative.append(0)
+								elif y<0:
+									positive.append(0)
+									negative.append(y)
+								if previous_y is not None:
+									previous_x=x
+									previous_y=y
+							trace=pd.DataFrame({'positive': positive,'negative': negative},index=index)
 							trace=trace.to_iplot(colors={'positive':'green','negative':'red'},width=0.5)
 						else:
 							trace=self.apply(lambda x:x[0]*1.0/x[1],axis=1).to_iplot(colors=['green'],width=1)
