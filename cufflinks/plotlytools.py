@@ -842,7 +842,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					trace.update(**trace_kw)		
 						
 				if kind in ('spread','ratio'):
-						if kind == 'spread':
+						if kind=='spread':
 							index=[]
 							positive=[]
 							negative=[]
@@ -868,9 +868,8 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 								elif y<0:
 									positive.append(0)
 									negative.append(y)
-								if previous_y is not None:
-									previous_x=x
-									previous_y=y
+								previous_x=x
+								previous_y=y
 							trace=pd.DataFrame({'positive': positive,'negative': negative},index=index)
 							trace=trace.to_iplot(colors={'positive':'green','negative':'red'},width=0.5)
 						else:
