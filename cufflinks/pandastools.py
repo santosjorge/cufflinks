@@ -63,7 +63,7 @@ def bestfit(self):
 						"please run " \
 						"pip install statsmodels" )
 
-	x=pd.Series(list(range(1,len(self)+1)),index=self.index)
+	x=self.index.values
 	x=sm.add_constant(x)
 	model=sm.OLS(self,x)
 	fit=model.fit()
@@ -72,7 +72,7 @@ def bestfit(self):
 	# the below methods have been deprecated in Pandas
 	# model=pd.ols(x=x,y=self,intercept=True)
 	# best_fit=model.y_fitted
-	best_fit.formula='%.2f*x+%.2f' % (vals[0],vals[1])
+	best_fit.formula='%.2f*x+%.2f' % (vals[1],vals[0])
 	return best_fit
 
 def normalize(self,asOf=None,multiplier=100):

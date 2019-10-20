@@ -5,6 +5,7 @@
 
 import cufflinks as cf
 import pandas as pd
+import numpy as np
 import unittest
 from nose.tools import assert_equals
 
@@ -221,6 +222,24 @@ def quant_figure_tests():
 	qf.add_bollinger_bands()
 	return qf.figure()
 
+def bestfit():
+
+	df = cf.datagen.scatter()
+	df['x'] = np.random.randint(1, 20, df.shape[0])
+	df['y'] = df['x']
+	df = df[['x', 'y']]
+
+	options = {
+		'kind': ['scatter'],
+		'bestfit': [True],
+	}
+
+	def bestfit(self, **kwargs):
+		self._iplot(df, **kwargs)
+
+	_generate_tests(TestIPlot, bestfit, 'bestfit', options)
+
+
 # test generators
 
 
@@ -269,6 +288,7 @@ test_irregular_subplots()
 color_normalize_tests()
 quant_figure_tests()
 # ta_tests()
+bestfit()
 
 
 if __name__ == '__main__':
