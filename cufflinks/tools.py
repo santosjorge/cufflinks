@@ -517,6 +517,7 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 								ax=annotation.get('ax',0),
 								ay=annotation.get('ay',-100),
 								textangle=annotation.get('textangle',-90),
+								hovertext=annotation.get('hovertext',''),
 								font = dict(
 									color = annotation.get('fontcolor',annotation.get('color',kwargs.get('fontcolor'))),
 									size = annotation.get('fontsize',annotation.get('size',kwargs.get('fontsize')))
@@ -545,6 +546,7 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 								ax=kwargs.get('ax',0),
 								ay=kwargs.get('ay',-100),
 								textangle=kwargs.get('textangle',-90),
+								hovertext=kwargs.get('hovertext', ''),
 								font = dict(
 									color = kwargs['fontcolor'],
 									size=kwargs['fontsize']
