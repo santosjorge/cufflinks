@@ -93,7 +93,7 @@ class QuantFig(object):
 		
 		# self.theme initial values
 		self.theme['theme']=kwargs.pop('theme',auth.get_config_file()['theme'])
-		self.theme['up_color']=kwargs.pop('up_color','java')  # java
+		self.theme['up_color']=kwargs.pop('up_color','#17BECF')  # java
 		self.theme['down_color']=kwargs.pop('down_color','grey')
 		
 		# self.panels initial values

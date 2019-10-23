@@ -1,5 +1,5 @@
 import pandas as pd
-import plotly.plotly as py
+import chart_studio.plotly as py
 import time
 import copy
 # from plotly.graph_objs import *
@@ -1404,10 +1404,9 @@ def iplot(figure,validate=True,sharing=None,filename='',
 		# if not figure.get('layout', None):
 		# 	figure['layout'] = {}
 		try:
-			filename=figure['layout']['title']
+			filename=figure.layout['title']['text']
 		except:
 			filename='Plotly Playground {0}'.format(time.strftime("%Y-%m-%d %H:%M:%S"))
-
 	## Dimensions
 	if not dimensions:
 		dimensions=(800,500) if not auth.get_config_file()['dimensions'] else auth.get_config_file()['dimensions']
