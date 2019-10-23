@@ -18,11 +18,11 @@ jobs:
           name: Run tests
           command: 'nosetests -xv tests.py --with-coverage --cover-package=cufflinks'
 
-  python-3.4-core:
+  python-3.5-core:
     docker:
-      - image: circleci/python:3.4-stretch-node-browsers
+      - image: circleci/python:3.5-stretch-node-browsers
         environment:
-          PLOTLY_TOX_PYTHON_34: python3.4
+          PLOTLY_TOX_PYTHON_34: python3.5
 
     steps:
       - checkout
@@ -41,4 +41,4 @@ workflows:
   build:
     jobs:
       - python-2.7-core
-      - python-3.4-core
+      - python-3.5-core
