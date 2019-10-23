@@ -3,9 +3,9 @@ import copy
 import numpy as np
 import pandas as pd
 import plotly.offline as py_offline
-import chart_studio.plotly as py
+import plotly.figure_factory as ff
 from plotly.graph_objs import Figure, Scatter, Line
-from plotly.tools import make_subplots
+from plotly.subplots import make_subplots
 # from plotly.graph_objs.layout import XAxis, YAxis
 
 from . import auth, ta
@@ -501,7 +501,7 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 						)
 				)
 
-			del annotation['title']	
+			del annotation['title']
 			local_list.append(ann)
 
 		elif 'x' in annotation:
@@ -650,7 +650,7 @@ def subplots(figures,shape=None,
 				  **kwargs):
 	"""
 	Generates a subplot view for a set of figures
-	This is a wrapper for plotly.tools.make_subplots
+	This is a wrapper for plotly.subplots.make_subplots
 
 	Parameters:
 	-----------
@@ -951,7 +951,7 @@ def get_ohlc(df,up_color=None,down_color=None,theme=None,layout=None,**kwargs):
 	c_dir=ta._ohlc_dict(df)
 	args=[df[c_dir[_]] for _ in ohlc]
 	args.append(df.index)
-	fig=py.plotly.tools.FigureFactory.create_ohlc(*args,**kwargs)
+	fig=ff.create_ohlc(*args,**kwargs)
 	ohlc_bars={}
 	ohlc_bars['data']=fig['data']
 	ohlc_bars['layout']=fig['layout']
@@ -972,7 +972,7 @@ def get_candle(df,up_color=None,down_color=None,theme=None,layout=None,**kwargs)
 	c_dir=ta._ohlc_dict(df)
 	args=[df[c_dir[_]] for _ in ohlc]
 	args.append(df.index)
-	fig=py.plotly.tools.FigureFactory.create_candlestick(*args,**kwargs)
+	fig=ff.create_candlestick(*args,**kwargs)
 	candle={}
 	candle['data']=fig['data']
 	candle['layout']=layout
