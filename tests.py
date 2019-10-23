@@ -288,7 +288,7 @@ test_irregular_subplots()
 color_normalize_tests()
 quant_figure_tests()
 # ta_tests()
-bestfit()
+# bestfit()
 
 
 if __name__ == '__main__':
