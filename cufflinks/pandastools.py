@@ -63,7 +63,11 @@ def bestfit(self):
 						"please run " \
 						"pip install statsmodels" )
 
-	x=self.index.values
+	if isinstance(self.index, pd.DatetimeIndex):
+		x=pd.Series(list(range(1,len(self)+1)),index=self.index)
+	else:
+		x=self.index.values
+		
 	x=sm.add_constant(x)
 	model=sm.OLS(self,x)
 	fit=model.fit()
