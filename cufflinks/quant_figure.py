@@ -123,17 +123,17 @@ class QuantFig(object):
 		d['layout'].update(**layout_kwargs)
 		return d
 
-	def _get_sliced(self,slice,df=None):
+	def _get_sliced(self,slice,df=None,to_strfmt='%Y-%m-%d',from_strfmt='%d%b%y'):
 		"""
 		Returns a sliced DataFrame
 
 		Parameters
 		----------
 			slice : tuple(from,to)
-				from : str
-				to : str
+				from : str - ie ('01Jan2019')
+				to : str - ie ('01Jan2020')
 					States the 'from' and 'to' values which 
-					will get rendered as df.ix[from:to]
+					will get rendered as df.loc[from:to]
 			df : DataFrame
 				If omitted then the QuantFigure.DataFrame is resampled.
 		"""
@@ -146,7 +146,12 @@ class QuantFig(object):
 		a,b=slice
 		a=None if a in ('',None) else utils.make_string(a)
 		b=None if b in ('',None) else utils.make_string(b)
-		return df.ix[a:b]
+		if a:
+			a=date_tools.stringToString(a,from_strfmt,to_strfmt) if '-' not in a else a
+		if b:
+			b=date_tools.stringToString(b,from_strfmt,to_strfmt) if '-' not in b else b
+
+		return df.loc[a:b]
 
 	def _get_resampled(self,rule,how={'ohlc':'last','volume':'sum'},df=None,**kwargs):
 		"""
@@ -303,8 +308,8 @@ class QuantFig(object):
 			date1=date_tools.stringToString(date1,from_strfmt,to_strfmt) if '-' not in date1 else date1
 			on='close' if not on else on
 			df=pd.DataFrame(self.df[self._d[on]])
-			y0=kwargs.get('y0',df.ix[date0].values[0])
-			y1=kwargs.get('y1',df.ix[date1].values[0])
+			y0=kwargs.get('y0',df.loc[date0].values[0])
+			y1=kwargs.get('y1',df.loc[date1].values[0])
 			
 		
 		if kind in ('support','resistance'):
@@ -312,7 +317,7 @@ class QuantFig(object):
 			if not on:
 				on='low' if kind=='support' else 'high'
 			df=pd.DataFrame(self.df[self._d[on]])
-			y0=kwargs.get('y0',df.ix[date0].values[0])
+			y0=kwargs.get('y0',df.loc[date0].values[0])
 			y1=kwargs.get('y1',y0)
 			if mode=='starttoend':
 				date0=df.index[0]

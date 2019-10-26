@@ -20,7 +20,7 @@ This tutorial assumes that the plotly user credentials have already been configu
 ### Release Notes
 
 ### v0.17.0
-Support for Plotly 4.x
+Support for Plotly 4.x  
 Cufflinks is no longer compatible with Plotly 3.x
 
 ### v0.14.0
