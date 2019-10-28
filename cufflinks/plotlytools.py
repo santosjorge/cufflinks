@@ -1430,7 +1430,7 @@ def iplot(figure,validate=True,sharing=None,filename='',
 		try:
 			import chart_studio.plotly as py
 		except:
-			raise Exception("chart_studio is required: " \
+			raise Exception("chart_studio is required outside of offline mode: " \
 					"please run " \
 					"pip install chart_studio" )
 
