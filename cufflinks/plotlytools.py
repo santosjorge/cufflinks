@@ -1,5 +1,4 @@
 import pandas as pd
-import chart_studio.plotly as py
 import time
 import copy
 # from plotly.graph_objs import *
@@ -1427,6 +1426,14 @@ def iplot(figure,validate=True,sharing=None,filename='',
 		auto_open=False
 
 	## Exports
+	if not offline.is_offline() or online:
+		try:
+			import chart_studio.plotly as py
+		except:
+			raise Exception("chart_studio is required outside of offline mode: " \
+					"please run " \
+					"pip install chart_studio" )
+
 	if asImage:
 		if offline.is_offline() and not online:
 			return offline.py_offline.iplot(figure,validate=validate, filename=filename, show_link=show_link,link_text=link_text,
