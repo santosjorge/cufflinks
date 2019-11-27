@@ -1547,7 +1547,7 @@ def set_errors(figure,trace=None,axis='y',type='data',values=None,values_minus=N
 					color='charcoal'
 			color=to_rgba(color,opacity) if color else None
 			upper['line']['color']=color
-			lower=upper.copy()
+			lower=copy.deepcopy(upper)
 			name=trace['name']+'_' if 'name' in trace else ''
 			upper.update(name=name+'upper')
 			color=to_rgba(normalize(color),opacity)
