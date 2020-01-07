@@ -29,7 +29,7 @@ def to_rgba(color, alpha):
             color : string
                     Color representation on hex or rgb
             alpha : float
-                    Value from 0 to 1.0 that represents the 
+                    Value from 0 to 1.0 that represents the
                     alpha value.
 
     Example:
@@ -197,7 +197,7 @@ def color_range(color, N=20):
 
 def color_table(color, N=1, sort=False, sort_values=False, inline=False, as_html=False):
     """
-    Generates a colour table 
+    Generates a colour table
 
     Parameters:
     -----------
@@ -207,11 +207,11 @@ def color_table(color, N=1, sort=False, sort_values=False, inline=False, as_html
                     are displayed in a table
             N   : int
                     number of colours to generate
-                    When color is not a list then it generaes 
+                    When color is not a list then it generaes
                     a range of N colors
-            sort : bool 
+            sort : bool
                     if True then items are sorted
-            sort_values : bool 
+            sort_values : bool
                     if True then items are sorted by color values.
                     Only applies if color is a dictionary
             inline : bool
@@ -272,7 +272,7 @@ def color_table(color, N=1, sort=False, sort_values=False, inline=False, as_html
                 c)
         else:
             color, shadow, border = _color(c)
-            s += """<li style="text-align:center;""" + border + """line-height:30px;background-color:""" + c + """;"> 
+            s += """<li style="text-align:center;""" + border + """line-height:30px;background-color:""" + c + """;">
             <span style=" text-shadow:""" + shadow + """; color:""" + color + """;">""" + k + c.upper() + """</span>
             </li>"""
     s += '</ul>' if not inline else ''
@@ -559,7 +559,10 @@ _custom_scales = {
         'ggplot': ['brick', 'smurf', 'lightviolet', 'mediumgray', 'mustard', 'lime2', 'pinksalmon'],
         'polar': ['polarblue', 'polarorange', 'polargreen', 'polarpurple', 'polarred', 'polarcyan', 'polarbluelight'],
         'plotly' : ['rgb(31, 119, 180)', 'rgb(255, 127, 14)', 'rgb(44, 160, 44)', 'rgb(214, 39, 40)',
-                    'rgb(148, 103, 189)', 'rgb(140, 86, 75)', 'rgb(227, 119, 194)', 'rgb(127, 127, 127)', 'rgb(188, 189, 34)', 'rgb(23, 190, 207)']
+                    'rgb(148, 103, 189)', 'rgb(140, 86, 75)', 'rgb(227, 119, 194)', 'rgb(127, 127, 127)', 'rgb(188, 189, 34)', 'rgb(23, 190, 207)'],
+        'henanigans': ['henanigans_cyan2', 'henanigans_red2', 'henanigans_green2', 'henanigans_blue2', 'henanigans_orange2',
+                       'henanigans_purple2', 'henanigans_yellow2', 'henanigans_light2', 'henanigans_cyan1', 'henanigans_red1',
+                       'henanigans_green1', 'henanigans_blue1']
     },
     'div': {
 
@@ -601,7 +604,7 @@ def scales(scale=None):
                     Color scale name
                     If no scale name is provided then all scales are returned
                             (max number for each scale)
-                    If scale='all' then all scale combinations available 
+                    If scale='all' then all scale combinations available
                             will be returned
 
     Example:
@@ -666,20 +669,20 @@ def reset_scales():
 
 def get_scales(scale=None, n=None):
     """
-    Returns a color scale 
+    Returns a color scale
 
     Parameters:
     -----------
             scale : str
                     Color scale name
-                    If the color name is preceded by a minus (-) 
+                    If the color name is preceded by a minus (-)
                     then the scale is inversed
             n : int
-                    Number of colors 
-                    If n < number of colors available for a given scale then 
-                            the minimum number will be returned 
+                    Number of colors
+                    If n < number of colors available for a given scale then
+                            the minimum number will be returned
                     If n > number of colors available for a given scale then
-                            the maximum number will be returned 
+                            the maximum number will be returned
 
     Example:
             get_scales('accent',8)
@@ -722,7 +725,7 @@ def get_colorscale(scale):
     -----------
             scale : str or list
                     Color scale name
-                    If the color name is preceded by a minus (-) 
+                    If the color name is preceded by a minus (-)
                     then the scale is inversed.
                     Also accepts a list of colors (rgb,rgba,hex)
 
