@@ -8,7 +8,7 @@ with io.open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
 
 setup(
     name='cufflinks',
-    version='0.17.1',
+    version='0.17.2',
     description='Productivity Tools for Plotly + Pandas',
     author='Jorge Santos',
     author_email='santos.jorge@gmail.com',
