@@ -8,6 +8,7 @@ THEMES = {
 				'legend' : {'bgcolor':'white','font':{'color':'grey10'}},
 				'paper_bgcolor' : 'white',
 				'plot_bgcolor' : 'grey14',
+				'hovermode' :'x',
 				'yaxis' : {
 					'tickfont' : {'color':'grey10'},
 					'gridcolor' : 'lightivory',
@@ -28,7 +29,6 @@ THEMES = {
 				'fontcolor' : 'grey10',
 				'arrowcolor' : 'grey10'
 			}
-
 		},
 		'pearl' : {
 			'colorscale':'original',
@@ -38,6 +38,7 @@ THEMES = {
 				'legend' : {'bgcolor':'pearl02','font':{'color':'pearl06'}},
 				'paper_bgcolor' : 'pearl02',
 				'plot_bgcolor' : 'pearl02',
+				'hovermode' :'x',
 				'yaxis' : {
 					'tickfont' : {'color':'pearl06'},
 					'gridcolor' : 'pearl03',
@@ -77,6 +78,7 @@ THEMES = {
 				'legend' : {'bgcolor':'charcoal','font':{'color':'pearl'}},
 				'paper_bgcolor' : 'charcoal',
 				'plot_bgcolor' : 'charcoal',
+				'hovermode' :'x',
 				'yaxis' : {
 					'tickfont' : {'color':'grey12'},
 					'gridcolor' : 'grey08',
@@ -106,6 +108,7 @@ THEMES = {
 				'legend' : {'bgcolor':'grey03','font':{'color':'pearl'}},
 				'paper_bgcolor' : 'grey03',
 				'plot_bgcolor' : 'grey03',
+				'hovermode' :'x',
 				'yaxis' : {
 					'tickfont' : {'color':'grey12'},
 					'gridcolor' : 'grey08',
@@ -135,6 +138,7 @@ THEMES = {
 				'legend' : {'bgcolor':'white','font':{'color':'pearl06'}},
 				'paper_bgcolor' : 'white',
 				'plot_bgcolor' : 'white',
+				'hovermode' :'x',
 				'yaxis' : {
 					'tickfont' : {'color':'pearl06'},
 					'gridcolor' : 'pearl03',
@@ -174,6 +178,7 @@ THEMES = {
 				'legend' : {'bgcolor':'polardust','font':{'color':'polargrey'}},
 				'paper_bgcolor' : 'polardust',
 				'plot_bgcolor' : 'polardust',
+				'hovermode' :'x',
 				'yaxis' : {
 					'tickfont' : {'color':'polargrey'},
 					'gridcolor' : 'pearl03',
@@ -213,6 +218,7 @@ THEMES = {
 				'legend' : {'bgcolor':'henanigans_bg','font':{'color':'henanigans_light2'}},
 				'paper_bgcolor' : 'henanigans_bg',
 				'plot_bgcolor' : 'henanigans_bg',
+				'hovermode' :'x',
 				'yaxis' : {
 					'tickfont' : {'color':'henanigans_light1'},
 					'gridcolor' : 'henanigans_grey1',
@@ -245,6 +251,3 @@ THEMES = {
 			}
 		}
 	}
-
-
-
