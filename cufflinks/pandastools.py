@@ -97,9 +97,9 @@ def normalize(self,asOf=None,multiplier=100):
 			Factor by which the results will be adjusted
 	"""
 	if not asOf:
-		x0=self.ix[0]
+		x0=self.iloc[0]
 	else:
-		x0=self.ix[asOf]
+		x0=self.loc[asOf]
 	return self/x0*multiplier
 
 def read_google(url,**kwargs):
