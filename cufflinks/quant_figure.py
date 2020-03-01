@@ -1225,6 +1225,8 @@ class QuantFig(object):
 		which.sort()
 		max_panel=int(which[-1][1:])
 		figures=[]
+		
+
 		if showstudies:
 			kwargs=utils.check_kwargs(kwargs,['theme','up_color','down_color'],{},False)
 			kwargs.update(**study_kwargs)
@@ -1245,14 +1247,18 @@ class QuantFig(object):
 				figures.append(study_fig)
 			figures.append(fig)
 			fig=tools.merge_figures(figures)
+			
 			try:
 				fig['layout']['xaxis1']['anchor']='y2'
 			except:
 				fig['layout']['xaxis']['anchor']='y2'
 				
-
 		domains=self._panel_domains(**panel_data)
-		fig['layout'].update(**domains)
+		try:
+			for k,v in list(domains.items()):
+				fig['layout'][k].update(v)
+		except:
+			fig['layout'].update(**domains)
 		if not d.get('rangeslider',False):
 			try:
 				del fig['layout']['yaxis1']
