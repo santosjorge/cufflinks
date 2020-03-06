@@ -8,9 +8,9 @@ from plotly.graph_objs import Figure, Scatter, Line
 from plotly.subplots import make_subplots
 # from plotly.graph_objs.layout import XAxis, YAxis
 
+from . import themes
 from . import auth, ta
 from .colors import normalize, to_rgba
-from .themes import THEMES
 from .utils import (check_kwargs, deep_update, dict_replace_keyword,
                     kwargs_from_keyword, merge_dict, is_list,make_list)
 
@@ -62,8 +62,8 @@ def getTheme(theme=None):
 		theme = auth.get_config_file()['theme']
 
 	theme = theme.lower()
-	if theme in THEMES:
-		return updateColors(copy.deepcopy(THEMES[theme]))
+	if theme in themes.THEMES:
+		return updateColors(copy.deepcopy(themes.THEMES[theme]))
 	else:
 		raise Exception("Invalid Theme: {0}".format(theme))
 
@@ -71,7 +71,7 @@ def getThemes():
 	"""
 	Returns the list of available themes
 	"""
-	return list(THEMES.keys())
+	return list(themes.THEMES.keys())
 
 def updateColors(layout):
 	for k,v in list(layout.items()):
@@ -227,8 +227,12 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 
 	theme_data = getTheme(theme)
 	layout=theme_data['layout']
-	layout['xaxis'].update({'title':xTitle})
-	layout['yaxis'].update({'title':yTitle})
+	try:
+		layout['xaxis']['title'].update({'text':xTitle})
+		layout['yaxis']['title'].update({'text':yTitle})
+	except:
+		layout['xaxis'].update({'title':xTitle})
+		layout['yaxis'].update({'title':yTitle})
 
 	fontfamily=kwargs.pop('fontfamily',None)
 	if fontfamily:
@@ -242,7 +246,10 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	if bargap:
 		layout.update(bargap=bargap)
 	if title:
-		layout.update({'title':title})
+		try:
+			layout['title'].update({'text':title})
+		except:
+			layout.update({'title':title})
 	if annotations:
 		layout.update({'annotations':annotations})
 
@@ -533,7 +540,7 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 					maxv=df[d['high']].ix[k]
 					yref='y2'
 				else:
-					maxv=df.ix[k].sum() if k in df.index else 0
+					maxv=df.loc[k].sum() if k in df.index else 0
 					yref='y1'
 				ann=dict(
 								x=k,

@@ -956,6 +956,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				y=self[y].values.tolist() if y else self.columns.values.tolist()
 				z=self[z].values.tolist() if z else self.values.transpose()
 				scale=get_scales('rdbu') if not colorscale else get_scales(colorscale)
+				scale=[normalize(_) for _ in scale]
 				colorscale=[[float(_)/(len(scale)-1),scale[_]] for _ in range(len(scale))]
 				center_scale = kwargs.get('center_scale',None)
 				
@@ -1107,9 +1108,9 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				if histnorm:
 					kw['histnorm']=histnorm
 				fig=ff.create_distplot(hist_data=hist_data,group_labels=group_labels,
-										 colors=colors,**kw)
-				data=fig.data
-				layout=tools.merge_dict(layout,fig.layout)
+										 colors=colors,**kw).to_dict()
+				data=fig['data']
+				layout=tools.merge_dict(layout,fig['layout'])
 			elif kind in ('violin'):
 				df=pd.DataFrame(self) if type(self)==pd.core.series.Series else self.copy()
 				kw=check_kwargs(kwargs,FF_VIOLIN)

@@ -16,6 +16,7 @@ from . import tools
 from . import colors
 from . import pandastools
 from . import ta
+from . import themes
 
 from .helper import _printer as help
 from .plotlytools import *
@@ -34,5 +35,14 @@ try:
 		go_offline()
 	else:
 		go_online()
+except:
+	pass
+
+# User Defined Colors
+
+try: 
+	colors.cnames = utils.merge_dict(colors.cnames,auth.get_user_colors())
+	colors._scales_names = utils.merge_dict(colors._scales_names,auth.get_user_scales())
+	themes.THEMES = utils.merge_dict(themes.THEMES,auth.get_user_themes())
 except:
 	pass

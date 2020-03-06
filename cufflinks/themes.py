@@ -8,6 +8,7 @@ THEMES = {
 				'legend' : {'bgcolor':'white','font':{'color':'grey10'}},
 				'paper_bgcolor' : 'white',
 				'plot_bgcolor' : 'grey14',
+				"title" : {"font":{"color":"charcoal"},"x":0.5},
 				'yaxis' : {
 					'tickfont' : {'color':'grey10'},
 					'gridcolor' : 'lightivory',
@@ -38,6 +39,7 @@ THEMES = {
 				'legend' : {'bgcolor':'pearl02','font':{'color':'pearl06'}},
 				'paper_bgcolor' : 'pearl02',
 				'plot_bgcolor' : 'pearl02',
+				"title" : {"font":{"color":"pearl06"},"x":0.5},
 				'yaxis' : {
 					'tickfont' : {'color':'pearl06'},
 					'gridcolor' : 'pearl03',
@@ -75,6 +77,7 @@ THEMES = {
 			'bargap' : .01,
 			'layout' : {
 				'legend' : {'bgcolor':'charcoal','font':{'color':'pearl'}},
+				"title" : {"font":{"color":"white"},"x":0.5},
 				'paper_bgcolor' : 'charcoal',
 				'plot_bgcolor' : 'charcoal',
 				'yaxis' : {
@@ -106,6 +109,7 @@ THEMES = {
 				'legend' : {'bgcolor':'grey03','font':{'color':'pearl'}},
 				'paper_bgcolor' : 'grey03',
 				'plot_bgcolor' : 'grey03',
+				"title" : {"font":{"color":"pearl"},"x":0.5},
 				'yaxis' : {
 					'tickfont' : {'color':'grey12'},
 					'gridcolor' : 'grey08',
@@ -135,6 +139,7 @@ THEMES = {
 				'legend' : {'bgcolor':'white','font':{'color':'pearl06'}},
 				'paper_bgcolor' : 'white',
 				'plot_bgcolor' : 'white',
+				"title" : {"font":{"color":"pearl06"},"x":0.5},
 				'yaxis' : {
 					'tickfont' : {'color':'pearl06'},
 					'gridcolor' : 'pearl03',
@@ -174,6 +179,7 @@ THEMES = {
 				'legend' : {'bgcolor':'polardust','font':{'color':'polargrey'}},
 				'paper_bgcolor' : 'polardust',
 				'plot_bgcolor' : 'polardust',
+				"title" : {"font":{"color":"polardark"},"x":0.5},
 				'yaxis' : {
 					'tickfont' : {'color':'polargrey'},
 					'gridcolor' : 'pearl03',
@@ -213,6 +219,7 @@ THEMES = {
 				'legend' : {'bgcolor':'henanigans_bg','font':{'color':'henanigans_light2'}},
 				'paper_bgcolor' : 'henanigans_bg',
 				'plot_bgcolor' : 'henanigans_bg',
+				"title" : {"font":{"color":"henanigans_light2"},"x":0.5},
 				'yaxis' : {
 					'tickfont' : {'color':'henanigans_light1'},
 					'gridcolor' : 'henanigans_grey1',

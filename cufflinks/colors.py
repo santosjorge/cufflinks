@@ -322,9 +322,9 @@ def colorgen(colors=None, n=None, scale=None, theme=None):
 # ---------------------------------
 
 
-cnames = {'aliceblue': '#F0F8FF',
-          'antiquewhite':	 '#FAEBD7',
-          'aqua':			 '#00FFFF',
+    cnames = {'aliceblue': '#F0F8FF',
+            'antiquewhite':	 '#FAEBD7',
+            'aqua':			 '#00FFFF',
           'aquamarine':		 '#7FFFD4',
           'azure':			 '#F0FFFF',
           'beige':			 '#F5F5DC',

@@ -20,6 +20,9 @@ CONFIG_FILE = os.path.join(AUTH_DIR, ".config")
 TEST_DIR = os.path.join(os.path.expanduser("~"), ".test")
 PICKLE_FILE=os.path.join(AUTH_DIR,".pickle")
 TEST_FILE = os.path.join(AUTH_DIR, ".permission_test")
+COLORS_FILE = os.path.join(AUTH_DIR, "colors.json")
+SCALES_FILE = os.path.join(AUTH_DIR, "scales.json")
+THEMES_FILE = os.path.join(AUTH_DIR, "themes.json")
 
 _FILE_CONTENT = {
 				 CONFIG_FILE: {
@@ -151,7 +154,7 @@ def set_config_file(sharing=None,theme=None,colorscale=None,offline=None,offline
 		config['theme']=theme
 	if colorscale:
 		config['colorscale']=colorscale
-	if offline_connected:
+	if offline_connected is not None:
 		config['offline_connected']=offline_connected
 	if offline is not None:
 		config['offline']=offline
@@ -189,6 +192,50 @@ def get_config_file(*args):
     else:
         return _FILE_CONTENT[CONFIG_FILE]
 
+def get_user_colors(*args):
+    """
+    Return specified args from `~/.colors`. as dict.
+    Returns all if no arguments are specified.
+
+    Example:
+        get_colors_file('blue')
+
+    """
+    if _file_permissions:
+        ensure_local_files()  
+        return load_json_dict(COLORS_FILE, *args)
+    else:
+        return _FILE_CONTENT[COLORS_FILE]
+
+def get_user_scales(*args):
+    """
+    Return specified args from `~/.scales`. as dict.
+    Returns all if no arguments are specified.
+
+    Example:
+        get_scales_file('blues')
+
+    """
+    if _file_permissions:
+        ensure_local_files()  
+        return load_json_dict(SCALES_FILE, *args)
+    else:
+        return _FILE_CONTENT[SCALES_FILE]
+
+def get_user_themes(*args):
+    """
+    Return specified args from `~/.themes`. as dict.
+    Returns all if no arguments are specified.
+
+    Example:
+        get_themes_file('solar')
+
+    """
+    if _file_permissions:
+        ensure_local_files()  
+        return load_json_dict(THEMES_FILE, *args)
+    else:
+        return _FILE_CONTENT[THEMES_FILE]
 
 def load_json_dict(filename, *args):
 	"""Checks if file exists. Returns {} if something fails."""
@@ -213,4 +260,4 @@ def save_json_dict(filename, json_dict):
 		with open(filename, "w") as f:
 			f.write(json.dumps(json_dict, indent=4))
 	else:
-		raise TypeError("json_dict was not a dictionay. couldn't save.")
+		raise TypeError("json_dict was not a dictionary. couldn't save.")
