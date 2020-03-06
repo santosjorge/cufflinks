@@ -176,7 +176,7 @@ def set_config_file(sharing=None,theme=None,colorscale=None,offline=None,offline
 
 def get_config_file(*args):
     """
-    Return specified args from `~/.confg`. as dict.
+    Return specified args from `~/.config`. as dict.
     Returns all if no arguments are specified.
 
     Example:
