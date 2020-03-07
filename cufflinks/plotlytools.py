@@ -94,7 +94,7 @@ def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',inter
 			* Only valid when kind='bar'
 		keys : list of columns
 			List of columns to chart.
-			Also can be usded for custom sorting.
+			Also can be used for custom sorting.
 		bestfit : boolean or list
 			If True then a best fit line will be generated for 
 			all columns. 
