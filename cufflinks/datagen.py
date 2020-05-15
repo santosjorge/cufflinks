@@ -259,7 +259,7 @@ def ohlcv(n=100):
 			Number of ohlc points
 		
 	"""	
-	df=ohlc()
+	df=ohlc(n=n)
 	df['volume']=[np.random.randint(1000,10000) for _ in range(len(df))]
 	return df
 
