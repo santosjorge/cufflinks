@@ -1290,7 +1290,7 @@ def _figure(self,**kwargs):
 
 	Parameters:
 	-----------
-			All properties avaialbe can be seen with
+			All properties available can be seen with
 			help(cufflinks.pd.DataFrame.iplot)
 	"""
 	kwargs['asFigure']=True
@@ -1302,7 +1302,7 @@ def _layout(self,**kwargs):
 
 	Parameters:
 	-----------
-			All properties avaialbe can be seen with
+			All properties available can be seen with
 			help(cufflinks.pd.DataFrame.iplot)
 	"""
 	kwargs['asFigure']=True
@@ -1479,7 +1479,7 @@ def _ta_figure(self,**kwargs):
 
 	Parameters:
 	-----------
-			All properties avaialbe can be seen with
+			All properties available can be seen with
 			help(cufflinks.pd.DataFrame.iplot)
 	"""
 	kwargs['asFigure']=True
@@ -1608,7 +1608,7 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str='{name}({period}
 		kind=iplot_kwargs['kind'] if 'kind' in iplot_kwargs else ''
 		iplot_study_kwargs['kind']='scatter'
 		iplot_study_kwargs['colors']=iplot_study_kwargs.get('colors',['blue','green','red'] if study=='dmi' else 'blue')
-		fig_1=df_ta.figure(theme=theme,**iplot_study_kwargs)
+		fig_1=df_ta.figure(theme=theme,**iplot_study_kwargs, **iplot_kwargs)
 		if kind in ['candle','ohlc']:
 				for i in fig_1['data']:
 					i['x']=[pd.Timestamp(_) for _ in i['x']]
