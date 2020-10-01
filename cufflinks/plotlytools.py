@@ -1,6 +1,7 @@
 import pandas as pd
 import time
 import copy
+import numpy as np
 # from plotly.graph_objs import *
 from plotly.graph_objs import Figure, Layout, Bar, Box, Scatter, FigureWidget, Scatter3d, Histogram, Heatmap, Surface, Pie
 import plotly.figure_factory as ff
