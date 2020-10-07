@@ -537,7 +537,7 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 			for k,v in list(annotation.items()):
 				if kind in ('candlestick','ohlc','candle'):
 					d=ta._ohlc_dict(df)
-					maxv=df[d['high']].ix[k]
+					maxv=df[d['high']].loc[k]
 					yref='y2'
 				else:
 					maxv=df.loc[k].sum() if k in df.index else 0
@@ -1378,8 +1378,8 @@ def get_trendline(df,date0,date1,column='close',**kwargs):
 	df=pd.DataFrame(df[column])
 	d={'x0':date0,
 	   'x1':date1,
-	   'y0':df.ix[date0].values[0],
-	   'y1':df.ix[date1].values[0]}
+	   'y0':df.loc[date0].values[0],
+	   'y1':df.loc[date1].values[0]}
 	d.update(**kwargs)
 	return d
 
