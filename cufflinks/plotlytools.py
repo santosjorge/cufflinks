@@ -1,6 +1,7 @@
 import pandas as pd
 import time
 import copy
+import numpy as np
 # from plotly.graph_objs import *
 from plotly.graph_objs import Figure, Layout, Bar, Box, Scatter, FigureWidget, Scatter3d, Histogram, Heatmap, Surface, Pie
 import plotly.figure_factory as ff
@@ -804,10 +805,10 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 												line=dict(width=width)),textfont=tools.getLayout(theme=theme)['xaxis']['titlefont'])
 					else:
 						#see error 168
-						if type(_x)==pd.np.ndarray:
+						if type(_x)==np.ndarray:
 							if '[ns]' in _x.dtype.str:
 								_x=_x.astype(str)
-						if type(_y)==pd.np.ndarray:
+						if type(_y)==np.ndarray:
 							if '[ns]' in _y.dtype.str:
 								_y=_y.astype(str)
 						
@@ -846,8 +847,8 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				if kind in ('spread','ratio'):
 						if kind=='spread':
 							trace=self.apply(lambda x:x[0]-x[1],axis=1)
-							positive=trace.apply(lambda x:x if x>=0 else pd.np.nan)
-							negative=trace.apply(lambda x:x if x<0 else pd.np.nan)
+							positive=trace.apply(lambda x:x if x>=0 else np.nan)
+							negative=trace.apply(lambda x:x if x<0 else np.nan)
 							trace=pd.DataFrame({'positive':positive,'negative':negative})
 							trace=trace.to_iplot(colors={'positive':'green','negative':'red'},width=0.5)
 						else:
