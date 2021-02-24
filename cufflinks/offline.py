@@ -29,7 +29,7 @@ def go_offline(connected=None):
         except TypeError:
             #For older versions of plotly
             py_offline.init_notebook_mode()
-        py_offline.__PLOTLY_OFFLINE_INITIALIZED=True
+    py_offline.__PLOTLY_OFFLINE_INITIALIZED=True
 
 def go_online():
 	py_offline.__PLOTLY_OFFLINE_INITIALIZED=False
