@@ -1184,7 +1184,7 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 		id='{0}axis{1}'.format(k[0],k[-1:])
 		if k not in fig.axis['ref_axis']:
 			try:
-				del fig['layout'][id]
+				del fig['layout']._props[id]
 			except KeyError:
 				pass
 
