@@ -27,7 +27,7 @@ def _ohlc_dict(df_or_figure,open='',high='',low='',close='',volume='',
 	volume : string
 		Column name to be used for VOLUME values
 	validate : string
-		Validates that the stated column exists
+		Validates that the stated column existsa
 		Example:
 			validate='ohv' | Will ensure Open, High
 							 and close values exist. 
@@ -562,3 +562,5 @@ def macd(df,fast_period=12,slow_period=26,signal_period=9,column=None,include=Tr
 		return pd.concat([df,__df],axis=1)
 	else:
 		return __df
+
+
