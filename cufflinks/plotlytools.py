@@ -668,7 +668,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 	# Valid Kwargs
 	valid_kwargs = ['color','opacity','column','columns','labels','text','world_readable','colorbar','hoverinfo','hovertext']
 	BUBBLE_KWARGS = ['abs_size']
-	TRACE_KWARGS = ['hoverinfo','connectgaps','hovertext','textangle']
+	TRACE_KWARGS = ['hoverinfo','connectgaps','hovertext']
 	HEATMAP_SURFACE_KWARGS = ['center_scale','zmin','zmax']
 	PIE_KWARGS=['sort','pull','hole','textposition','textinfo','linecolor','linewidth','textcolor']
 	OHLC_KWARGS=['up_color','down_color','open','high','low','close','volume','name','decreasing','increasing']
@@ -758,7 +758,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 
 		layout=tools.getLayout(kind=kind,theme=theme,xTitle=xTitle,yTitle=yTitle,zTitle=zTitle,title=title,barmode=barmode,
 								bargap=bargap,bargroupgap=bargroupgap,annotations=annotations,gridcolor=gridcolor,
-							   dimensions=dimensions,textangle=textangle,
+							   dimensions=dimensions,
 								zerolinecolor=zerolinecolor,margin=margin,is3d='3d' in kind,**l_kwargs)
 	elif isinstance(layout, Layout):
 		layout = layout.to_plotly_json()
@@ -1740,3 +1740,5 @@ pd.Series.figure=_figure
 pd.Series.to_iplot=_to_iplot
 pd.Series.iplot=_iplot
 Figure.iplot=_fig_iplot
+
+
