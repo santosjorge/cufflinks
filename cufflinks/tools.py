@@ -25,7 +25,7 @@ __GEO_KWARGS=['projection','showframe','showlakes','coastlinecolor','countrywidt
 			 'framecolor','coastlinewidth','landcolor','showcoastlines','framewidth','resolution','projection_type']
 
 __ANN_KWARGS=['xref','yref','text','showarrow',
-				 'arrowhead','ax','ay','textangle','arrowsize',
+				 'arrowhead','ax','ay','anntextangle','arrowsize',
 				 'arrowwidth','arrowcolor','fontcolor','fontsize','xanchor','yanchor','align']
 
 __LAYOUT_AXIS=['autorange','autotick','backgroundcolor','categoryarray','categoryarraysrc','categoryorder',
@@ -202,7 +202,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 				Text color for annotations
 			fontsize : int
 				Text size for annotations
-			textangle : int
+			anntextangle : int
 				Textt angle
 			See https://plot.ly/python/reference/#layout-annotations
 			for a complete list of valid parameters.
@@ -513,7 +513,7 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 								arrowcolor=annotation.get('arrowcolor',kwargs.get('arrowcolor')),
 								ax=annotation.get('ax',0),
 								ay=annotation.get('ay',-100),
-								textangle=annotation.get('textangle',-90),
+								textangle=annotation.get('anntextangle',-90),
 								hovertext=annotation.get('hovertext',''),
 								opacity=annotation.get('opacity',1),
 								font = dict(
@@ -543,7 +543,7 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 								arrowcolor = kwargs['arrowcolor'],
 								ax=kwargs.get('ax',0),
 								ay=kwargs.get('ay',-100),
-								textangle=kwargs.get('textangle',-90),
+								textangle=kwargs.get('anntextangle',-90),
 								hovertext=kwargs.get('hovertext', ''),
 								opacity=kwargs.get('opacity',1),
 								font = dict(
