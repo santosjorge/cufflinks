@@ -1,10 +1,10 @@
 ## TECHNICHAL ANALYSIS
 import pandas as pd
 import numpy as np
-# import talib
+import talib #Saran
 from plotly.graph_objs import Figure
 from .utils import make_list
-
+import ta #Saran
 
 class StudyError(Exception):
 	pass
@@ -27,7 +27,7 @@ def _ohlc_dict(df_or_figure,open='',high='',low='',close='',volume='',
 	volume : string
 		Column name to be used for VOLUME values
 	validate : string
-		Validates that the stated column exists
+		Validates that the stated column existsa
 		Example:
 			validate='ohv' | Will ensure Open, High
 							 and close values exist. 
@@ -176,6 +176,27 @@ def sma(df,periods=21,column=None,include=True,str='{name}({column},{period})',d
 		return pd.concat([df,__df],axis=1)
 	else:
 		return __df
+	
+def line(df,column=None,include=True,str='{name}({column})',detail=False):
+	def _line(df,column,include,str,detail=False):
+		study=f'{df}'
+		df,_df,column=validate(df,column)
+
+		## === talib ==== 
+		# _df['SMA']=pd.Series(talib.MA(df[column].values,periods),index=df.index)
+		## === /talib ==== 
+
+		## === pure python ==== 
+		_df[f'{df}']=df[column]
+		## === /pure python ==== 
+
+		return rename(df,_df,study,column,include,str,detail)
+	column=make_list(column)
+	__df=pd.concat([_sma(df,column=x,include=False,str=str) for y in periods],axis=1)
+	if include:
+		return pd.concat([df,__df],axis=1)
+	else:
+		return __df
 
 def ema(df,periods=21,column=None,include=True,str='{name}({column},{period})',detail=False):
 	def _ema(df,periods,column,include,str,detail=False):
@@ -198,6 +219,43 @@ def ema(df,periods=21,column=None,include=True,str='{name}({column},{period})',d
 		return pd.concat([df,__df],axis=1)
 	else:
 		return __df
+	
+# def ama(df,periods=9,fast_period=6,slow_period=12,column=None,include=True,str='{name}({column},{period})',detail=False):
+	
+def ama(df,periods=9,column=None,include=True,str='{name}({column},{period})',detail=False): #fast_period=6,slow_period=12,
+	def _ama(df,periods,column,include,str,detail=False):
+		fast_period=6
+		slow_period=12
+		study=f"AMA({fast_period},{slow_period})"
+		df,_df,column=validate(df,column)
+
+		## === talib ==== 
+		#_df['AMA']=pd.Series(talib.MA(df[column].values,periods),index=df.index)
+		#_df['AMA']=pd.Series(talib.KAMA(df[column].values,periods),index=df.index)
+		## === /talib ==== 
+
+		## === ta ==== 
+		window = periods
+
+		_df[f"AMA({fast_period},{slow_period})"]=ta.momentum.KAMAIndicator(df[column],window=window,pow1=6,pow2=12, fillna=False).kama()
+		#_df=pd.DataFrame({'AMA':ama,},index=df.index)
+		#_df= _df.reindex(df.index)
+		#ama.to_json(orient='real')
+		#_df=pd.DataFrame({'AMA':ama},index=df.index)
+		## === /ta ==== 
+
+		# macd,signal,hist=talib.MACD(df[column].values,fast_period,slow_period,signal_period)
+		# _df=pd.DataFrame({'MACD':macd,'SIGNAL':signal},index=df.index)
+		
+		return rename(df,_df,study,periods,column,include,str,detail)
+	column=make_list(column)
+	periods=make_list(periods)
+	__df=pd.concat([_ama(df,column=x,periods=y,include=False,str=str) for y in periods for x in column],axis=1)
+	if include:
+		return pd.concat([df,__df],axis=1)
+	else:
+		return __df
+	
 
 def dmi(df,periods=14,high='high',low='low',close='close',include=True,str='{name}({period})',**kwargs):
 	return adx(df,periods=periods,high=high,low=low,close=close,di=True,include=include,str=str,**kwargs)
@@ -435,7 +493,7 @@ def correl(df,periods=21,columns=None,include=True,str=None,detail=False,how='va
 	else:
 		return __df
 
-def boll(df,periods=20,boll_std=2,column=None,include=True,str='{name}({column},{period})',detail=False,**boll_kwargs):
+def boll(df,periods=20,boll_std=2,column=None,include=True,str='{name}({column},{period})',detail=True,**boll_kwargs):
 	def _boll(df,periods,column):
 		study='BOLL'
 		df,_df,column=validate(df,column)
