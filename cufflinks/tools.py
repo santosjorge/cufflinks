@@ -454,7 +454,7 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	return layout
 
 
-def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
+def get_annotations(df,annotations,kind='lines',theme=None, annot_col=None,**kwargs):
 	"""
 	Generates an annotations object
 	Parameters:
@@ -513,7 +513,7 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 								arrowcolor=annotation.get('arrowcolor',kwargs.get('arrowcolor')),
 								ax=annotation.get('ax',0),
 								ay=annotation.get('ay',-100),
-								textangle=annotation.get('anntextangle',-90),
+								textangle=annotation.get('anntextangle',0),
 								hovertext=annotation.get('hovertext',''),
 								opacity=annotation.get('opacity',1),
 								font = dict(
@@ -529,6 +529,12 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 					d=ta._ohlc_dict(df)
 					maxv=df[d['high']].loc[k]
 					yref='y2'
+				elif kind=='scatter':
+					if k in df.index:
+						maxv=df[[annot_col]].loc[k].sum() 
+					else:
+						maxv = 0
+					yref='y'					
 				else:
 					maxv=df.loc[k].sum() if k in df.index else 0
 					yref='y1'
@@ -543,7 +549,7 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 								arrowcolor = kwargs['arrowcolor'],
 								ax=kwargs.get('ax',0),
 								ay=kwargs.get('ay',-100),
-								textangle=kwargs.get('anntextangle',-90),
+								textangle=kwargs.get('anntextangle',0),
 								hovertext=kwargs.get('hovertext', ''),
 								opacity=kwargs.get('opacity',1),
 								font = dict(
