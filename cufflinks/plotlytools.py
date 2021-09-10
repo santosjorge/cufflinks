@@ -206,7 +206,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 			bestfit_colors=None,mean=False,mean_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,
 			zerolinecolor=None,margin=None,labels=None,values=None,secondary_y='',secondary_y_title='',subplots=False,shape=None,error_x=None,
 			error_y=None,error_type='data',locations=None,lon=None,lat=None,asFrame=False,asDates=False,asFigure=False,
-			asImage=False,dimensions=None,asPlot=False,asUrl=False,online=None,hovertemplate=None,hovertext=None,textangle=None,**kwargs):
+			asImage=False,dimensions=None,asPlot=False,asUrl=False,online=None,hovertemplate=None,hovertext=None,textangle=None,arrowlen=-50,**kwargs):
 	"""
 	Returns a plotly chart either as inline chart, image of Figure object
 
