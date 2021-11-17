@@ -1346,7 +1346,7 @@ class QuantFig(object):
 			except:
 				pass
 		if asFigure:
-			return go.Figure(fig, write_html={'auto_open': auto_open})
+			return go.Figure(fig) # , write_html={'auto_open': auto_open}
 		else:
 			return pt_iplot(fig, **export_kwargs)
 	
