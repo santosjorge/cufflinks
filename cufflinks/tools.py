@@ -25,7 +25,7 @@ __GEO_KWARGS=['projection','showframe','showlakes','coastlinecolor','countrywidt
 			 'framecolor','coastlinewidth','landcolor','showcoastlines','framewidth','resolution','projection_type']
 
 __ANN_KWARGS=['xref','yref','text','showarrow',
-				 'arrowhead','ax','ay','anntextangle','arrowsize',
+				 'arrowhead','ax','ay','anntextangle','arrowsize', 'arrowlen',
 				 'arrowwidth','arrowcolor','fontcolor','fontsize','xanchor','yanchor','align']
 
 __LAYOUT_AXIS=['autorange','autotick','backgroundcolor','categoryarray','categoryarraysrc','categoryorder',
@@ -238,9 +238,12 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		layout.update(bargap=bargap)
 	if title:
 		try:
-			layout['title'].update({'text':title})
+			layout.update(title=title)
 		except:
-			layout.update({'title':title})
+			try:
+				layout['title'].update({'text':title})
+			except:
+				layout.update({'title':title})
 	if annotations:
 		layout.update({'annotations':annotations})
 
@@ -548,7 +551,7 @@ def get_annotations(df,annotations,kind='lines',theme=None, annot_col=None,**kwa
 								arrowhead=kwargs.get('arrowhead',7),
 								arrowcolor = kwargs['arrowcolor'],
 								ax=kwargs.get('ax',0),
-								ay=kwargs.get('ay',-100),
+								ay=kwargs.get('arrowlen',-50),
 								textangle=kwargs.get('anntextangle',0),
 								hovertext=kwargs.get('hovertext', ''),
 								opacity=kwargs.get('opacity',1),
