@@ -27,7 +27,7 @@ def _ohlc_dict(df_or_figure,open='',high='',low='',close='',volume='',
 	volume : string
 		Column name to be used for VOLUME values
 	validate : string
-		Validates that the stated column exists
+		Validates that the stated column existsa
 		Example:
 			validate='ohv' | Will ensure Open, High
 							 and close values exist. 
