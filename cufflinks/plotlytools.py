@@ -958,10 +958,10 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 						x=self.index.values.tolist()
 				y=self[y].values.tolist() if y else self.columns.values.tolist()
 				z=self[z].values.tolist() if z else self.values.transpose()
-				scale=get_scales('rdbu') if not colorscale else get_scales(colorscale)
-				scale=[normalize(_) for _ in scale]
-				colorscale=[[float(_)/(len(scale)-1),scale[_]] for _ in range(len(scale))]
-				center_scale = kwargs.get('center_scale',None)
+				# scale=get_scales('rdbu') if not colorscale else get_scales(colorscale)
+				scale=get_scales('rdbu') if not colorscale else colorscale
+				# scale=[normalize(_) for _ in scale]
+				# colorscale=[[float(_)/(len(scale)-1),scale[_]] for _ in range(len(scale))]
 				
 				if is_list(z):				
 					zmin=min(z)
