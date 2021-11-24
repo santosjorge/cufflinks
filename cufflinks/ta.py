@@ -277,11 +277,9 @@ def kalman(df,periods=1,column=None,include=True,str='{name}({period})',detail=F
 						transition_covariance=transition_covariance)
 
 		state_means, _ = kf.filter(df[column])
-		# print(state_means)
 
 		_df.index = df.index
 		_df["kalman"] = state_means
-		print(_df)
 		
 		__df = rename(df,_df,study,periods,column,include,str,detail)
 		__df.name = 'KALMAN'
