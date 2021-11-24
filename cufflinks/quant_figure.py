@@ -791,7 +791,40 @@ class QuantFig(object):
 						 'str':str},
 			  'display':utils.merge_dict({'legendgroup':False},kwargs)}
 		self._add_study(study)
-		
+
+	def add_kalman(self,periods=1,column=None,name='',
+					str=None,**kwargs):
+		"""
+		Saran: Add a Kalman Filter study to QuantFigure.studies
+
+		Parameters:
+			column :string
+				Defines the data column name that contains the 
+				data over which the study will be applied. 
+				Default: 'close'
+			name : string
+				Name given to the study
+			str : string
+				Label factory for studies
+				The following wildcards can be used:
+					{name} : Name of the column
+					{study} : Name of the study
+				Examples:
+					'study: {study}'
+		kwargs: 
+			legendgroup : bool
+				If true, all legend items are grouped into a 
+				single one
+			All formatting values available on iplot()
+		"""
+		if not column:
+			column=self._d['close']
+		study={'kind':'kalman',
+			   'name':name,
+			   'params':{'periods':periods,'column':column,
+						 'str':str},
+			  'display':utils.merge_dict({'legendgroup':False},kwargs)}
+		self._add_study(study)
 		
 	def add_rsi(self,periods=20,rsi_upper=70,rsi_lower=30,showbands=True,column=None,
 						   name='',str='{name}({period})',**kwargs):
@@ -1148,7 +1181,7 @@ class QuantFig(object):
 			fig['data'][0].update(marker=dict(color=bar_colors,line=dict(color=bar_colors)),
 					  opacity=0.8)
 
-		if kind in ('sma','ema','atr','adx','dmi','ptps','ama',f'{df}'): #Saran
+		if kind in ('sma','ema','atr','adx','dmi','ptps','ama','kalman', f'{df}'): #Saran
 			local_kwargs,params=get_params([],params,display)
 			fig=df.ta_figure(study=kind,**params)
 
@@ -1318,7 +1351,7 @@ class QuantFig(object):
 				if 'yaxis' in study_fig['layout']:
 					study_fig['layout']['yaxis1']=study_fig['layout']['yaxis'].copy()
 					del study_fig['layout']['yaxis']
-				if v['kind'] in ('boll','sma','ema','ptps','ama',f'{df}'): #Saran
+				if v['kind'] in ('boll','sma','ema','ptps','ama','kalman',f'{df}'): #Saran
 					tools._move_axis(study_fig, yaxis='y2')  # FIXME TKP
 					pass
 				if v['kind'] in ('rsi','volume','macd','atr','adx','cci','dmi'):
