@@ -963,6 +963,8 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				# scale=[normalize(_) for _ in scale]
 				# colorscale=[[float(_)/(len(scale)-1),scale[_]] for _ in range(len(scale))]
 				
+				center_scale = kwargs.get('center_scale',None)
+				
 				if is_list(z):				
 					zmin=min(z)
 					zmax=max(z)
@@ -1627,11 +1629,13 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str='{name}({period}
 	study_kwargs=check_kwargs(iplot_kwargs,__TA_KWARGS,{},clean_origin=True)
 	iplot_study_kwargs=kwargs_from_keyword(iplot_kwargs,{},'study')
 
+	# if not study == 'kalman': # Saran
+	# 	study_kwargs.update({'periods':periods})
 	study_kwargs.update({'periods':periods})
 
 	ta_func = eval('ta.{0}'.format(study))
 
-	inset=study in ('sma','boll','ema','atr','ptps','ama')
+	inset=study in ('sma','boll','ema','atr','ptps','ama', 'kalman')
 	figure=get_study(self,ta_func,iplot_kwargs,iplot_study_kwargs,include=include,
 					 column=column,str=str,inset=inset)
 

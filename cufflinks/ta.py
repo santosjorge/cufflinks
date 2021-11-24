@@ -5,6 +5,7 @@ import talib #Saran
 from plotly.graph_objs import Figure
 from .utils import make_list
 import ta #Saran
+from pykalman import KalmanFilter #Saran
 
 class StudyError(Exception):
 	pass
@@ -27,7 +28,7 @@ def _ohlc_dict(df_or_figure,open='',high='',low='',close='',volume='',
 	volume : string
 		Column name to be used for VOLUME values
 	validate : string
-		Validates that the stated column existsa
+		Validates that the stated column exists
 		Example:
 			validate='ohv' | Will ensure Open, High
 							 and close values exist. 
@@ -255,7 +256,45 @@ def ama(df,periods=9,column=None,include=True,str='{name}({column},{period})',de
 		return pd.concat([df,__df],axis=1)
 	else:
 		return __df
-	
+
+def kalman(df,periods=1,column=None,include=True,str='{name}({period})',detail=False):
+	def _kalman(df,periods,column,include,str,detail=False):
+		study="kalman"
+		df,_df,column=validate(df,column)
+
+		transition_matrices=[1]
+		observation_matrices=[1]
+		initial_state_mean=0
+		initial_state_covariance=1
+		observation_covariance=1,
+		transition_covariance=.01
+
+		kf = KalmanFilter(transition_matrices=transition_matrices,
+						observation_matrices=observation_matrices,
+						initial_state_mean=initial_state_mean,
+						initial_state_covariance=initial_state_covariance,
+						observation_covariance=observation_covariance,
+						transition_covariance=transition_covariance)
+
+		state_means, _ = kf.filter(df[column])
+		# print(state_means)
+
+		_df.index = df.index
+		_df["kalman"] = state_means
+		print(_df)
+		
+		__df = rename(df,_df,study,periods,column,include,str,detail)
+		__df.name = 'KALMAN'
+		return __df
+
+	column=make_list(column)
+	periods=make_list(periods)
+
+	__df=pd.concat([_kalman(df,column=x,periods=y,include=False,str=str) for y in periods for x in column],axis=1)
+	if include:
+		return pd.concat([df,__df],axis=1)
+	else:
+		return __df
 
 def dmi(df,periods=14,high='high',low='low',close='close',include=True,str='{name}({period})',**kwargs):
 	return adx(df,periods=periods,high=high,low=low,close=close,di=True,include=include,str=str,**kwargs)
