@@ -1,7 +1,7 @@
 ## TECHNICHAL ANALYSIS
 import pandas as pd
 import numpy as np
-import talib #Saran
+# import talib
 from plotly.graph_objs import Figure
 from .utils import make_list
 import ta #Saran
