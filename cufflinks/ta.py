@@ -264,7 +264,8 @@ def kalman(df,periods=1,column=None,include=True,str='{name}({period})',detail=F
 
 		transition_matrices=[1]
 		observation_matrices=[1]
-		initial_state_mean=0
+		# initial_state_mean=0
+		initial_state_mean= df[column][0]
 		initial_state_covariance=1
 		observation_covariance=1,
 		transition_covariance=.01
@@ -277,9 +278,12 @@ def kalman(df,periods=1,column=None,include=True,str='{name}({period})',detail=F
 						transition_covariance=transition_covariance)
 
 		state_means, _ = kf.filter(df[column])
+		# print(state_means)
 
 		_df.index = df.index
 		_df["kalman"] = state_means
+		# _df["kalman"] = _df["kalman"][19:]
+		# print(_df)
 		
 		__df = rename(df,_df,study,periods,column,include,str,detail)
 		__df.name = 'KALMAN'
