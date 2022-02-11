@@ -36,7 +36,7 @@ def dict_to_iplot(d):
 
 def _to_iplot(self,colors=None,colorscale=None,kind='scatter',mode='lines',interpolation='linear',symbol='dot',size='12',fill=False,
 		width=3,dash='solid',sortbars=False,keys=False,bestfit=False,bestfit_colors=None,opacity=0.6,
-		mean=False,mean_colors=None,asDates=False,asTimestamp=False,text=None,**kwargs):
+		mean=False,mean_colors=None,asDates=False,asTimestamp=False,text=None,hovertext=None,textangle=None,**kwargs):
 	"""
 	Generates a plotly Data object 
 
@@ -206,7 +206,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 			bestfit_colors=None,mean=False,mean_colors=None,categories='',x='',y='',z='',text='',gridcolor=None,
 			zerolinecolor=None,margin=None,labels=None,values=None,secondary_y='',secondary_y_title='',subplots=False,shape=None,error_x=None,
 			error_y=None,error_type='data',locations=None,lon=None,lat=None,asFrame=False,asDates=False,asFigure=False,
-			asImage=False,dimensions=None,asPlot=False,asUrl=False,online=None,**kwargs):
+			asImage=False,dimensions=None,asPlot=False,asUrl=False,online=None,hovertemplate=None,hovertext=None,textangle=None,arrowlen=-50,**kwargs):
 	"""
 	Returns a plotly chart either as inline chart, image of Figure object
 
@@ -666,9 +666,9 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 	"""
 
 	# Valid Kwargs
-	valid_kwargs = ['color','opacity','column','columns','labels','text','world_readable','colorbar']
+	valid_kwargs = ['color','opacity','column','columns','labels','text','world_readable','colorbar','hoverinfo','hovertext']
 	BUBBLE_KWARGS = ['abs_size']
-	TRACE_KWARGS = ['hoverinfo','connectgaps']
+	TRACE_KWARGS = ['hoverinfo','connectgaps','hovertext']
 	HEATMAP_SURFACE_KWARGS = ['center_scale','zmin','zmax']
 	PIE_KWARGS=['sort','pull','hole','textposition','textinfo','linecolor','linewidth','textcolor']
 	OHLC_KWARGS=['up_color','down_color','open','high','low','close','volume','name','decreasing','increasing']
@@ -770,7 +770,7 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 				df=self.copy()
 				df=df.set_index(categories)
 				fig=df.figure(kind=kind,colors=colors,colorscale=colorscale,fill=fill,width=width,sortbars=sortbars,opacity=opacity,
-						asDates=asDates,mode=mode,symbol=symbol,size=size,text=text,barmode=barmode,orientation=orientation)
+						asDates=asDates,mode=mode,symbol=symbol,size=size,text=text,barmode=barmode,orientation=orientation,textangle=textangle,hovertext=hovertext)
 				data=fig['data']			
 			else:
 				_keys=pd.unique(self[categories])
@@ -871,6 +871,8 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 					orientation = 'h' if kind=='barh' else orientation
 					for trace in data:
 						trace.update(orientation=orientation)
+						trace.update(textangle=textangle)
+						trace.update(hovertext=hovertext)
 						if orientation=='h':
 							trace['x'],trace['y']=trace['y'],trace['x']	
 						
@@ -956,9 +958,11 @@ def _iplot(self,kind='scatter',data=None,layout=None,filename='',sharing=None,ti
 						x=self.index.values.tolist()
 				y=self[y].values.tolist() if y else self.columns.values.tolist()
 				z=self[z].values.tolist() if z else self.values.transpose()
-				scale=get_scales('rdbu') if not colorscale else get_scales(colorscale)
-				scale=[normalize(_) for _ in scale]
-				colorscale=[[float(_)/(len(scale)-1),scale[_]] for _ in range(len(scale))]
+				# scale=get_scales('rdbu') if not colorscale else get_scales(colorscale)
+				scale=get_scales('rdbu') if not colorscale else colorscale
+				# scale=[normalize(_) for _ in scale]
+				# colorscale=[[float(_)/(len(scale)-1),scale[_]] for _ in range(len(scale))]
+				
 				center_scale = kwargs.get('center_scale',None)
 				
 				if is_list(z):				
@@ -1625,11 +1629,13 @@ def _ta_plot(self,study,periods=14,column=None,include=True,str='{name}({period}
 	study_kwargs=check_kwargs(iplot_kwargs,__TA_KWARGS,{},clean_origin=True)
 	iplot_study_kwargs=kwargs_from_keyword(iplot_kwargs,{},'study')
 
+	# if not study == 'kalman': # Saran
+	# 	study_kwargs.update({'periods':periods})
 	study_kwargs.update({'periods':periods})
 
 	ta_func = eval('ta.{0}'.format(study))
 
-	inset=study in ('sma','boll','ema','atr','ptps')
+	inset=study in ('sma','boll','ema','atr','ptps','ama', 'kalman')
 	figure=get_study(self,ta_func,iplot_kwargs,iplot_study_kwargs,include=include,
 					 column=column,str=str,inset=inset)
 

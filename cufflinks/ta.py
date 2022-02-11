@@ -4,7 +4,8 @@ import numpy as np
 # import talib
 from plotly.graph_objs import Figure
 from .utils import make_list
-
+import ta #Saran
+from pykalman import KalmanFilter #Saran
 
 class StudyError(Exception):
 	pass
@@ -176,6 +177,27 @@ def sma(df,periods=21,column=None,include=True,str='{name}({column},{period})',d
 		return pd.concat([df,__df],axis=1)
 	else:
 		return __df
+	
+def line(df,column=None,include=True,str='{name}({column})',detail=False):
+	def _line(df,column,include,str,detail=False):
+		study=f'{df}'
+		df,_df,column=validate(df,column)
+
+		## === talib ==== 
+		# _df['SMA']=pd.Series(talib.MA(df[column].values,periods),index=df.index)
+		## === /talib ==== 
+
+		## === pure python ==== 
+		_df[f'{df}']=df[column]
+		## === /pure python ==== 
+
+		return rename(df,_df,study,column,include,str,detail)
+	column=make_list(column)
+	__df=pd.concat([_sma(df,column=x,include=False,str=str) for y in periods],axis=1)
+	if include:
+		return pd.concat([df,__df],axis=1)
+	else:
+		return __df
 
 def ema(df,periods=21,column=None,include=True,str='{name}({column},{period})',detail=False):
 	def _ema(df,periods,column,include,str,detail=False):
@@ -194,6 +216,83 @@ def ema(df,periods=21,column=None,include=True,str='{name}({column},{period})',d
 	column=make_list(column)
 	periods=make_list(periods)
 	__df=pd.concat([_ema(df,column=x,periods=y,include=False,str=str) for y in periods for x in column],axis=1)
+	if include:
+		return pd.concat([df,__df],axis=1)
+	else:
+		return __df
+	
+# def ama(df,periods=9,fast_period=6,slow_period=12,column=None,include=True,str='{name}({column},{period})',detail=False):
+	
+def ama(df,periods=9,column=None,include=True,str='{name}({column},{period})',detail=False): #fast_period=6,slow_period=12,
+	def _ama(df,periods,column,include,str,detail=False):
+		fast_period=6
+		slow_period=12
+		study=f"AMA({fast_period},{slow_period})"
+		df,_df,column=validate(df,column)
+
+		## === talib ==== 
+		#_df['AMA']=pd.Series(talib.MA(df[column].values,periods),index=df.index)
+		#_df['AMA']=pd.Series(talib.KAMA(df[column].values,periods),index=df.index)
+		## === /talib ==== 
+
+		## === ta ==== 
+		window = periods
+
+		_df[f"AMA({fast_period},{slow_period})"]=ta.momentum.KAMAIndicator(df[column],window=window,pow1=6,pow2=12, fillna=False).kama()
+		#_df=pd.DataFrame({'AMA':ama,},index=df.index)
+		#_df= _df.reindex(df.index)
+		#ama.to_json(orient='real')
+		#_df=pd.DataFrame({'AMA':ama},index=df.index)
+		## === /ta ==== 
+
+		# macd,signal,hist=talib.MACD(df[column].values,fast_period,slow_period,signal_period)
+		# _df=pd.DataFrame({'MACD':macd,'SIGNAL':signal},index=df.index)
+		
+		return rename(df,_df,study,periods,column,include,str,detail)
+	column=make_list(column)
+	periods=make_list(periods)
+	__df=pd.concat([_ama(df,column=x,periods=y,include=False,str=str) for y in periods for x in column],axis=1)
+	if include:
+		return pd.concat([df,__df],axis=1)
+	else:
+		return __df
+
+def kalman(df,periods=1,column=None,include=True,str='{name}({period})',detail=False):
+	def _kalman(df,periods,column,include,str,detail=False):
+		study="kalman"
+		df,_df,column=validate(df,column)
+
+		transition_matrices=[1]
+		observation_matrices=[1]
+		# initial_state_mean=0
+		initial_state_mean= df[column][0]
+		initial_state_covariance=1
+		observation_covariance=1,
+		transition_covariance=.01
+
+		kf = KalmanFilter(transition_matrices=transition_matrices,
+						observation_matrices=observation_matrices,
+						initial_state_mean=initial_state_mean,
+						initial_state_covariance=initial_state_covariance,
+						observation_covariance=observation_covariance,
+						transition_covariance=transition_covariance)
+
+		state_means, _ = kf.filter(df[column])
+		# print(state_means)
+
+		_df.index = df.index
+		_df["kalman"] = state_means
+		# _df["kalman"] = _df["kalman"][19:]
+		# print(_df)
+		
+		__df = rename(df,_df,study,periods,column,include,str,detail)
+		__df.name = 'KALMAN'
+		return __df
+
+	column=make_list(column)
+	periods=make_list(periods)
+
+	__df=pd.concat([_kalman(df,column=x,periods=y,include=False,str=str) for y in periods for x in column],axis=1)
 	if include:
 		return pd.concat([df,__df],axis=1)
 	else:
@@ -435,7 +534,7 @@ def correl(df,periods=21,columns=None,include=True,str=None,detail=False,how='va
 	else:
 		return __df
 
-def boll(df,periods=20,boll_std=2,column=None,include=True,str='{name}({column},{period})',detail=False,**boll_kwargs):
+def boll(df,periods=20,boll_std=2,column=None,include=True,str='{name}({column},{period})',detail=True,**boll_kwargs):
 	def _boll(df,periods,column):
 		study='BOLL'
 		df,_df,column=validate(df,column)
