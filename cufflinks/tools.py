@@ -1408,7 +1408,8 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,
 		if term in ['y','year','yr']:
 					steps='year'
 		elif term in ['w','week','wk']:
-			steps='week'
+			steps='day'
+			cnt=cnt*7
 		elif term in ['m','month','mth','mnth','mo']:
 			steps='month'
 		elif term in ['hr','hour']:
