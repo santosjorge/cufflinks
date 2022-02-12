@@ -239,6 +239,7 @@ class QuantFig(object):
 
 		"""
 		kwargs['asFigure']=True
+		kwargs['auto_open']=auto_open #Saran
 		return self.iplot(**kwargs)
 	
 	def _panel_domains(self,n=2,min_panel_size=.15,spacing=0.08,top_margin=1,bottom_margin=0):
@@ -713,8 +714,120 @@ class QuantFig(object):
 			  'display':utils.merge_dict({'legendgroup':False},kwargs)}
 		self._add_study(study)
 		
+	def add_line(self,column=None,name='',
+					str=None,**kwargs):
+		"""
+		#Saran: Add another security (line, not OHLC) to QuantFigure.studies
+
+		Parameters:
+			periods : int or list(int)
+				Number of periods
+			column :string
+				Defines the data column name that contains the 
+				data over which the study will be applied. 
+				Default: 'close'
+			name : string
+				Name given to the study
+			str : string
+				Label factory for studies
+				The following wildcards can be used:
+					{name} : Name of the column
+					{study} : Name of the study
+					{period} : Period used
+				Examples:
+					'study: {study} - period: {period}'
+		kwargs: 
+			legendgroup : bool
+				If true, all legend items are grouped into a 
+				single one
+			All formatting values available on iplot()
+		"""
+		if not column:
+			column=self._d['close']
+		study={'kind':'line',
+			   'name':name,
+			   'params':{'column':column,
+						 'str':str},
+			  'display':utils.merge_dict({'legendgroup':False},kwargs)}
+		self._add_study(study)
+		
+	def add_ama(self,periods=9,column=None,name='',
+					str=None,**kwargs):
+		"""
+		Saran: Add Adaptive Moving Average (AMA) study to QuantFigure.studies
+
+		Parameters:
+			periods : int
+				Number of periods
+			fast_period : int
+				number of periods for the fastest EMA constant.
+			slow_period : int
+				number of periods for the slowest EMA constant.
+			column :string
+				Defines the data column name that contains the 
+				data over which the study will be applied. 
+				Default: 'close'
+			name : string
+				Name given to the study
+			str : string
+				Label factory for studies
+				The following wildcards can be used:
+					{name} : Name of the column
+					{study} : Name of the study
+					{period} : Period used
+				Examples:
+					'study: {study} - period: {period}'
+		kwargs: 
+			legendgroup : bool
+				If true, all legend items are grouped into a 
+				single one
+			All formatting values available on iplot()
+		"""
+		if not column:
+			column=self._d['close']
+		study={'kind':'ama',
+			   'name':name,
+			   'params':{'periods':periods,'column':column,
+						 'str':str},
+			  'display':utils.merge_dict({'legendgroup':False},kwargs)}
+		self._add_study(study)
+
+	def add_kalman(self,periods=1,column=None,name='',
+					str=None,**kwargs):
+		"""
+		Saran: Add a Kalman Filter study to QuantFigure.studies
+
+		Parameters:
+			column :string
+				Defines the data column name that contains the 
+				data over which the study will be applied. 
+				Default: 'close'
+			name : string
+				Name given to the study
+			str : string
+				Label factory for studies
+				The following wildcards can be used:
+					{name} : Name of the column
+					{study} : Name of the study
+				Examples:
+					'study: {study}'
+		kwargs: 
+			legendgroup : bool
+				If true, all legend items are grouped into a 
+				single one
+			All formatting values available on iplot()
+		"""
+		if not column:
+			column=self._d['close']
+		study={'kind':'kalman',
+			   'name':name,
+			   'params':{'periods':periods,'column':column,
+						 'str':str},
+			  'display':utils.merge_dict({'legendgroup':False},kwargs)}
+		self._add_study(study)
+		
 	def add_rsi(self,periods=20,rsi_upper=70,rsi_lower=30,showbands=True,column=None,
-						   name='',str=None,**kwargs):
+						   name='',str='{name}({period})',**kwargs):
 		"""
 		Add Relative Strength Indicator (RSI) study to QuantFigure.studies
 
@@ -763,7 +876,7 @@ class QuantFig(object):
 		self._add_study(study)
 	
 	def add_bollinger_bands(self,periods=20,boll_std=2,fill=True,column=None,name='',
-						   str='{name}({column},{period})',**kwargs):
+						   str='{name}({period})',**kwargs):
 		"""
 		Add Bollinger Bands (BOLL) study to QuantFigure.studies
 
@@ -1068,7 +1181,7 @@ class QuantFig(object):
 			fig['data'][0].update(marker=dict(color=bar_colors,line=dict(color=bar_colors)),
 					  opacity=0.8)
 
-		if kind in ('sma','ema','atr','adx','dmi','ptps'):
+		if kind in ('sma','ema','atr','adx','dmi','ptps','ama','kalman', f'{df}'): #Saran
 			local_kwargs,params=get_params([],params,display)
 			fig=df.ta_figure(study=kind,**params)
 
@@ -1144,7 +1257,7 @@ class QuantFig(object):
 	
 	def iplot(self,**kwargs):
 		__QUANT_FIGURE_EXPORT = ['asFigure','asUrl','asImage','asPlot','display_image','validate',
-						 'sharing','online','filename','dimensions']
+						 'sharing','online','filename','dimensions','auto_open'] # Saran added auto_open
 
 		layout=copy.deepcopy(self.layout)
 		data=copy.deepcopy(self.data)
@@ -1154,6 +1267,7 @@ class QuantFig(object):
 		data['resample']=kwargs.pop('resample',data.pop('resample',None))
 
 		asFigure=kwargs.pop('asFigure',False)
+		auto_open=kwargs.pop('auto_open',False) # Saran
 		showstudies=kwargs.pop('showstudies',True)
 		study_kwargs=utils.kwargs_from_keyword(kwargs,{},'study',True)
 		datalegend=kwargs.pop('datalegend',data.pop('datalegend',data.pop('showlegend',True)))
@@ -1237,7 +1351,7 @@ class QuantFig(object):
 				if 'yaxis' in study_fig['layout']:
 					study_fig['layout']['yaxis1']=study_fig['layout']['yaxis'].copy()
 					del study_fig['layout']['yaxis']
-				if v['kind'] in ('boll','sma','ema','ptps'):
+				if v['kind'] in ('boll','sma','ema','ptps','ama','kalman',f'{df}'): #Saran
 					tools._move_axis(study_fig, yaxis='y2')  # FIXME TKP
 					pass
 				if v['kind'] in ('rsi','volume','macd','atr','adx','cci','dmi'):
@@ -1265,7 +1379,7 @@ class QuantFig(object):
 			except:
 				pass
 		if asFigure:
-			return go.Figure(fig)
+			return go.Figure(fig) # , write_html={'auto_open': auto_open}
 		else:
 			return pt_iplot(fig, **export_kwargs)
 	

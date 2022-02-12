@@ -7,6 +7,7 @@ import os
 import json
 import warnings
 from .offline import go_offline
+from functools import lru_cache
 
 package='cufflinks'
 
@@ -176,7 +177,7 @@ def set_config_file(sharing=None,theme=None,colorscale=None,offline=None,offline
 	save_json_dict(CONFIG_FILE, config)
 	ensure_local_files()  
 
-
+@lru_cache(maxsize=32)
 def get_config_file(*args):
     """
     Return specified args from `~/.config`. as dict.

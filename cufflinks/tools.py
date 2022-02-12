@@ -25,7 +25,7 @@ __GEO_KWARGS=['projection','showframe','showlakes','coastlinecolor','countrywidt
 			 'framecolor','coastlinewidth','landcolor','showcoastlines','framewidth','resolution','projection_type']
 
 __ANN_KWARGS=['xref','yref','text','showarrow',
-				 'arrowhead','ax','ay','textangle','arrowsize',
+				 'arrowhead','ax','ay','anntextangle','arrowsize', 'arrowlen',
 				 'arrowwidth','arrowcolor','fontcolor','fontsize','xanchor','yanchor','align']
 
 __LAYOUT_AXIS=['autorange','autotick','backgroundcolor','categoryarray','categoryarraysrc','categoryorder',
@@ -54,7 +54,6 @@ __LAYOUT_KWARGS = []
 def getTheme(theme=None):
 	"""
 	Returns a theme definition.
-
 	To see the colors translated (hex) use
 	cufflinks.getLayout(theme) instead.
 	"""
@@ -95,7 +94,6 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 			  annotations=None,is3d=False,**kwargs):
 	"""
 	Generates a plotly Layout
-
 	Parameters:
 	-----------
 		theme : string
@@ -142,10 +140,8 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 			List of Plotly Annotations
 		is3d : bool
 			Indicates if the layout is for a 3D chart
-
 		Other Kwargs
 		============
-
 		Shapes
 			hline : int, list or dict
 				Draws a horizontal line at the
@@ -172,7 +168,6 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 				specifications of a given shape.
 				See help(cufflinks.tools.get_shape)
 				for more information
-
 		Axis Ranges
 			xrange : [lower_bound,upper_bound]
 				Sets the range for the x axis
@@ -180,13 +175,11 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 				Sets the range for the y axis
 			zrange : [lower_bound,upper_bound]
 				Sets the range for the z axis
-
 		Explicit Layout Updates
 			layout_update : dict
 				The layout will be modified with all
 				the explicit values stated in the
 				dictionary
-
 		Range Selector
 			rangeselector : dict
 				Defines a rangeselector object
@@ -195,7 +188,6 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 					{'steps':['1y','2 months','5 weeks','ytd','2mtd'],
 					 'axis':'xaxis', 'bgcolor' : ('blue',.3),
 					 'x': 0.2 , 'y' : 0.9}
-
 		Range Slider
 			rangeslider : bool or dict
 				Defines if a rangeslider is displayed
@@ -205,13 +197,12 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 					Rangeslider object
 				Example:
 					{'bgcolor':('blue',.3),'autorange':True}
-
 		Annotations
 			fontcolor : str
 				Text color for annotations
 			fontsize : int
 				Text size for annotations
-			textangle : int
+			anntextangle : int
 				Textt angle
 			See https://plot.ly/python/reference/#layout-annotations
 			for a complete list of valid parameters.
@@ -247,9 +238,12 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 		layout.update(bargap=bargap)
 	if title:
 		try:
-			layout['title'].update({'text':title})
+			layout.update(title=title)
 		except:
-			layout.update({'title':title})
+			try:
+				layout['title'].update({'text':title})
+			except:
+				layout.update({'title':title})
 	if annotations:
 		layout.update({'annotations':annotations})
 
@@ -463,10 +457,9 @@ def getLayout(kind=None,theme=None,title='',xTitle='',yTitle='',zTitle='',barmod
 	return layout
 
 
-def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
+def get_annotations(df,annotations,kind='lines',theme=None, annot_col=None,**kwargs):
 	"""
 	Generates an annotations object
-
 	Parameters:
 	-----------
 		df : DataFrame
@@ -523,7 +516,7 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 								arrowcolor=annotation.get('arrowcolor',kwargs.get('arrowcolor')),
 								ax=annotation.get('ax',0),
 								ay=annotation.get('ay',-100),
-								textangle=annotation.get('textangle',-90),
+								textangle=annotation.get('anntextangle',0),
 								hovertext=annotation.get('hovertext',''),
 								opacity=annotation.get('opacity',1),
 								font = dict(
@@ -539,6 +532,12 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 					d=ta._ohlc_dict(df)
 					maxv=df[d['high']].loc[k]
 					yref='y2'
+				elif kind=='scatter':
+					if k in df.index:
+						maxv=df[[annot_col]].loc[k].sum() 
+					else:
+						maxv = 0
+					yref='y'					
 				else:
 					maxv=df.loc[k].sum() if k in df.index else 0
 					yref='y1'
@@ -552,8 +551,8 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 								arrowhead=kwargs.get('arrowhead',7),
 								arrowcolor = kwargs['arrowcolor'],
 								ax=kwargs.get('ax',0),
-								ay=kwargs.get('ay',-100),
-								textangle=kwargs.get('textangle',-90),
+								ay=kwargs.get('arrowlen',-50),
+								textangle=kwargs.get('anntextangle',0),
 								hovertext=kwargs.get('hovertext', ''),
 								opacity=kwargs.get('opacity',1),
 								font = dict(
@@ -576,7 +575,6 @@ def get_annotations(df,annotations,kind='lines',theme=None,**kwargs):
 def strip_figures(figure):
 	"""
 	Strips a figure into multiple figures with a trace on each of them
-
 	Parameters:
 	-----------
 		figure : Figure
@@ -592,7 +590,6 @@ def get_base_layout(figs):
 	"""
 	Generates a layout with the union of all properties of multiple
 	figures' layouts
-
 	Parameters:
 	-----------
 		fig : list(Figures)
@@ -609,7 +606,6 @@ def get_base_layout(figs):
 def figures(df,specs,asList=False):
 	"""
 	Generates multiple Plotly figures for a given DataFrame
-
 	Parameters:
 	-----------
 		df : DataFrame
@@ -635,7 +631,6 @@ def figures(df,specs,asList=False):
 def merge_figures(figures):
 	"""
 	Generates a single Figure from a list of figures
-
 	Parameters:
 	-----------
 		figures : list(Figures)
@@ -658,7 +653,6 @@ def subplots(figures,shape=None,
 	"""
 	Generates a subplot view for a set of figures
 	This is a wrapper for plotly.subplots.make_subplots
-
 	Parameters:
 	-----------
 		figures : [Figures]
@@ -701,26 +695,19 @@ def subplots(figures,shape=None,
 			Subplot specifications.
 				ex1: specs=[[{}, {}], [{'colspan': 2}, None]]
 				ex2: specs=[[{'rowspan': 2}, {}], [None, {}]]
-
 			- Indices of the outer list correspond to subplot grid rows
 			  starting from the bottom. The number of rows in 'specs'
 			  must be equal to 'rows'.
-
 			- Indices of the inner lists correspond to subplot grid columns
 			  starting from the left. The number of columns in 'specs'
 			  must be equal to 'cols'.
-
 			- Each item in the 'specs' list corresponds to one subplot
 			  in a subplot grid. (N.B. The subplot grid has exactly 'rows'
 			  times 'cols' cells.)
-
 			- Use None for blank a subplot cell (or to move pass a col/row span).
-
 			- Note that specs[0][0] has the specs of the 'start_cell' subplot.
-
 			- Each item in 'specs' is a dictionary.
 				The available keys are:
-
 				* is_3d (boolean, default=False): flag for 3d scenes
 				* colspan (int, default=1): number of subplot columns
 					for this subplot to span.
@@ -730,16 +717,12 @@ def subplots(figures,shape=None,
 				* r (float, default=0.0): padding right of cell
 				* t (float, default=0.0): padding right of cell
 				* b (float, default=0.0): padding bottom of cell
-
 			- Use 'horizontal_spacing' and 'vertical_spacing' to adjust
 			  the spacing in between the subplots.
-
 		insets : list of dicts
 			Inset specifications.
-
 			- Each item in 'insets' is a dictionary.
 				The available keys are:
-
 				* cell (tuple, default=(1,1)): (row, col) index of the
 					subplot cell to overlay inset axes onto.
 				* is_3d (boolean, default=False): flag for 3d scenes
@@ -812,7 +795,6 @@ def get_subplots(rows=1,cols=1,
 
 	"""
 	Generates a subplot view for a set of figures
-
 	Parameters:
 	-----------
 		rows : int
@@ -848,26 +830,19 @@ def get_subplots(rows=1,cols=1,
 			Subplot specifications.
 				ex1: specs=[[{}, {}], [{'colspan': 2}, None]]
 				ex2: specs=[[{'rowspan': 2}, {}], [None, {}]]
-
 			- Indices of the outer list correspond to subplot grid rows
 			  starting from the bottom. The number of rows in 'specs'
 			  must be equal to 'rows'.
-
 			- Indices of the inner lists correspond to subplot grid columns
 			  starting from the left. The number of columns in 'specs'
 			  must be equal to 'cols'.
-
 			- Each item in the 'specs' list corresponds to one subplot
 			  in a subplot grid. (N.B. The subplot grid has exactly 'rows'
 			  times 'cols' cells.)
-
 			- Use None for blank a subplot cell (or to move pass a col/row span).
-
 			- Note that specs[0][0] has the specs of the 'start_cell' subplot.
-
 			- Each item in 'specs' is a dictionary.
 				The available keys are:
-
 				* is_3d (boolean, default=False): flag for 3d scenes
 				* colspan (int, default=1): number of subplot columns
 					for this subplot to span.
@@ -877,16 +852,12 @@ def get_subplots(rows=1,cols=1,
 				* r (float, default=0.0): padding right of cell
 				* t (float, default=0.0): padding right of cell
 				* b (float, default=0.0): padding bottom of cell
-
 			- Use 'horizontal_spacing' and 'vertical_spacing' to adjust
 			  the spacing in between the subplots.
-
 		insets : list of dicts
 			Inset specifications.
-
 			- Each item in 'insets' is a dictionary.
 				The available keys are:
-
 				* cell (tuple, default=(1,1)): (row, col) index of the
 					subplot cell to overlay inset axes onto.
 				* is_3d (boolean, default=False): flag for 3d scenes
@@ -1000,7 +971,6 @@ def scatter_matrix(df,theme=None,bins=10,color='grey',size=2):
 	Displays a matrix with scatter plot for each pair of
 	Series in the DataFrame.
 	The diagonal shows a histogram for each of the Series
-
 	Parameters:
 	-----------
 		df : DataFrame
@@ -1130,7 +1100,6 @@ def _set_axis(self,traces,on=None,side='right',title=''):
 	"""
 	Sets the axis in which each trace should appear
 	If the axis doesn't exist then a new axis is created
-
 	Parameters:
 	-----------
 		traces : list(str)
@@ -1265,7 +1234,6 @@ def get_shape(kind='line',x=None,y=None,x0=None,y0=None,x1=None,y1=None,span=0,c
 				fillcolor=None,fill=False,opacity=1,xref='x',yref='y'):
 	"""
 	Returns a plotly shape
-
 	Parameters:
 	-----------
 		kind : string
@@ -1390,7 +1358,6 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,
 	"""
 	Returns a range selector
 	Reference: https://plot.ly/python/reference/#layout-xaxis-rangeselector
-
 	Parameters:
 	-----------
 		steps : string or list(string)
@@ -1441,7 +1408,8 @@ def get_range_selector(steps=['1m','1y'],bgcolor='rgba(150, 200, 250, 0.4)',x=0,
 		if term in ['y','year','yr']:
 					steps='year'
 		elif term in ['w','week','wk']:
-			steps='week'
+			steps='day'
+			cnt=cnt*7
 		elif term in ['m','month','mth','mnth','mo']:
 			steps='month'
 		elif term in ['hr','hour']:
