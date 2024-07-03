@@ -37,19 +37,20 @@ def to_rgba(color, alpha):
             to_rgba('#f03',0.7)
             to_rgba('rgb(23,23,23)',.5)
     """
+
     if type(color) == tuple:
         color, alpha = color
     color = color.lower()
     if 'rgba' in color:
         cl = list(eval(color.replace('rgba', '')))
         if alpha:
-            cl[3] = alpha
+            cl[3] = float(alpha)
         return 'rgba' + str(tuple(cl))
     elif 'rgb' in color:
         r, g, b = eval(color.replace('rgb', ''))
-        return 'rgba' + str((r, g, b, alpha))
+        return 'rgba' + str((r, g, b, float(alpha)))
     else:
-        return to_rgba(hex_to_rgb(color), alpha)
+        return to_rgba(hex_to_rgb(color), float(alpha))
 
 
 def hex_to_rgb(color):
