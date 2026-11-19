@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 # import talib
+from fin_primitives import ta as fp_ta
 from plotly.graph_objs import Figure
 from .utils import make_list
 
@@ -129,6 +130,17 @@ INIDICATORS
 
 """
 
+def _wilder_avg(series,periods):
+	"""Wilder's moving average of `series` from its second value on (the first value has
+	no previous bar): the mean of the first `periods` values, then alpha = 1/periods.
+	Same numbers as the averages inside talib.RSI / talib.ATR."""
+	out=pd.Series(np.nan,index=series.index)
+	values=series.iloc[1:].astype(float)
+	if len(values)>=periods:
+		out.iloc[1:]=fp_ta.rma(values.reset_index(drop=True),length=periods).values
+	return out
+
+
 def rsi(df,periods=14,column=None,include=True,str='{name}({column},{period})',detail=False,**kwargs):
 	def _rsi(df,periods,column,include,str,detail):
 		study='RSI'
@@ -138,10 +150,13 @@ def rsi(df,periods=14,column=None,include=True,str='{name}({column},{period})',d
 		## === /talib ==== 
 
 		## === pure python ==== 
+		# Wilder's RSI, the value talib.RSI returns: the averages are seeded with the
+		# mean of the first `periods` changes and then smoothed with alpha = 1/periods.
+		# A rolling mean of gains and losses (Cutler's RSI) never converges to it.
 		_df['Up']=df[column].diff().apply(lambda x:x if x>0 else 0)
 		_df['Down']=df[column].diff().apply(lambda x:-x if x<0 else 0)
-		_df['UpAvg']=_df['Up'].rolling(window=periods).mean()
-		_df['DownAvg']= _df['Down'].rolling(window=periods).mean()
+		_df['UpAvg']=_wilder_avg(_df['Up'],periods)
+		_df['DownAvg']=_wilder_avg(_df['Down'],periods)
 		_df['RSI']=100-(100/(1+_df['UpAvg']/_df['DownAvg']))
 		## === /pure python ==== 
 
@@ -265,7 +280,8 @@ def atr(df,periods=14,high='high',low='low',close='close',include=True,str='{nam
 		_df['HmC']=abs(df[high]-df[close].shift(1))
 		_df['LmC']=abs(df[low]-df[close].shift(1))
 		_df['TR']=_df.apply(max,axis=1)
-		_df['ATR']=_df['TR'].rolling(periods).mean()
+		# Wilder's smoothing of the true range, as talib.ATR (the first bar has no previous close)
+		_df['ATR']=_wilder_avg(_df['TR'],periods)
 		## === /pure python ==== 
 		return rename(df,_df,study,periods,'',include,str,detail)
 	periods=make_list(periods)
